@@ -1,1 +1,0 @@
-web: gunicorn pathfinder_api.wsgi:application --preload --timeout 120

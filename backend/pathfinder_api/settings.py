@@ -23,10 +23,10 @@ else:
     DEBUG = False
 
 # ALLOWED_HOSTS configuration
-if ENVIRONMENT == "production":
-    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
-else:
+if ENVIRONMENT == "development":
     ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+else:
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 
 # Application definition
@@ -115,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Singapore"
 
 USE_I18N = True
 
@@ -144,13 +144,13 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # CORS settings
-if ENVIRONMENT == "production":
-    CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
-else:
+if ENVIRONMENT == "development":
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ]
+else:
+    CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 
 # REST Framework settings
 REST_FRAMEWORK = {
