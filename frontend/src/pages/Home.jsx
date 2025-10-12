@@ -45,104 +45,20 @@ function Home() {
                     link="#"
                 />
                 <Item
-                    title="Tutoring"
-                    description="Tutoring"
+                    title="Competitions"
+                    description="Competitions"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
-                    title="Research"
-                    description="Research"
+                    title="Clubs"
+                    description="Clubs"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
-                    title="Scholarships"
-                    description="Scholarships"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Workshops"
-                    description="Workshops"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Conferences"
-                    description="Conferences"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Scholarships"
-                    description="Scholarships"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Workshops"
-                    description="Workshops"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Conferences"
-                    description="Conferences"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Scholarships"
-                    description="Scholarships"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Workshops"
-                    description="Workshops"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Conferences"
-                    description="Conferences"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Scholarships"
-                    description="Scholarships"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Workshops"
-                    description="Workshops"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Conferences"
-                    description="Conferences"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Scholarships"
-                    description="Scholarships"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Workshops"
-                    description="Workshops"
-                    image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
-                    link="#"
-                />
-                <Item
-                    title="Conferences"
-                    description="Conferences"
+                    title="Internships"
+                    description="Internships"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />

@@ -1,10 +1,10 @@
 # PathFinder
 
-PathFinder is a web application designed to provide personalized suggestions for high school students on competitions, clubs, and internships based on their interests, skills, and academic goals.
+PathFinder is a web application designed to provide personalized suggestions for SAS high school students on competitions, clubs, and tutoring based on their interests, skills, and academic goals.
 
 ## Purpose
 
-High school students often struggle to discover relevant extracurricular opportunities that align with their interests and career aspirations. PathFinder solves this problem by:
+High school students (including SAS students) often struggle to discover relevant extracurricular opportunities that align with their interests and career aspirations. PathFinder solves this problem by:
 
 -   **Personalized Recommendations**: Get tailored suggestions for competitions, clubs, and internships based on your profile
 -   **Comprehensive Database**: Access a curated collection of opportunities across various fields
@@ -18,7 +18,7 @@ High school students often struggle to discover relevant extracurricular opportu
 -   **Django 5.2.7**: Python web framework for building the REST API
 -   **Django REST Framework 3.16.1**: Powerful toolkit for building Web APIs
 -   **django-cors-headers**: Handles Cross-Origin Resource Sharing (CORS) for frontend-backend communication
--   **SQLite**: Default database for development (can be easily switched to PostgreSQL/MySQL for production)
+-   **PostgreSQL/Sqlite**: Sqlite for production + PostgreSQL for production
 
 ### Frontend
 
@@ -35,13 +35,14 @@ path-finder/
 │   ├── pathfinder_api/     # Main Django project
 │   ├── suggestions/        # Django app for handling suggestions
 │   ├── manage.py           # Django management script
-│   ├── requirements.txt    # Python dependencies
-│   └── venv/              # Python virtual environment
+│   ├── render-build.py     # automatically runs when deploy to Render
+│   └── requirements.txt    # Python dependencies
 ├── frontend/               # React frontend
 │   ├── src/               # Source files
 │   ├── public/            # Static assets
 │   ├── package.json       # Node.js dependencies
-│   └── vite.config.js     # Vite configuration
+│   ├── vite.config.js     # Vite configuration
+│   └── ...                # other files
 └── README.md              # This file
 ```
 
@@ -55,32 +56,38 @@ path-finder/
 
 ### Backend Setup
 
-1. Navigate to the backend directory:
+1. Navigate to the repo directory:
 
 ```bash
-cd backend
+cd path-finder
 ```
 
 2. Create and activate a virtual environment:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+python -m venv env
+source env/bin/activate  # On Windows: env\Scripts\activate
 ```
 
-3. Install dependencies:
+3. Navigate to the backend directory:
+
+```bash
+cd backend
+```
+
+4. Install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Run migrations:
+5. Run migrations:
 
 ```bash
 python manage.py migrate
 ```
 
-5. Start the development server:
+6. Start the development server:
 
 ```bash
 python manage.py runserver
@@ -93,7 +100,7 @@ The API will be available at `http://localhost:8000`
 1. Navigate to the frontend directory:
 
 ```bash
-cd frontend
+cd ../frontend
 ```
 
 2. Install dependencies:

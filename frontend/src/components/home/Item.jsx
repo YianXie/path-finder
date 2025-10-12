@@ -19,23 +19,36 @@ function Item({ title, description, image, link }) {
     const [isFavorite, setIsFavorite] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
     const openMenu = Boolean(anchorEl);
 
-    const handleClose = () => {
+    const handleMenuClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleSave = async () => {
+        setSnackbarMessage("Item saved");
+        setOpenSnackbar(true);
+        setIsFavorite(!isFavorite);
     };
 
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(link);
             setOpenSnackbar(true);
+            setSnackbarMessage("Link copied to clipboard");
         } catch (error) {
             console.error("Failed to copy link to clipboard", error);
         }
+    };
+
+    const handleCloseSnackbar = (_, reason) => {
+        if (reason === "clickaway") return;
+        setOpenSnackbar(false);
     };
 
     return (
@@ -60,21 +73,17 @@ function Item({ title, description, image, link }) {
                 </CardContent>
             </CardActionArea>
             <CardActions className="flex items-center justify-end">
-                <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => setIsFavorite(!isFavorite)}
-                >
+                <Button size="small" color="primary" onClick={handleSave}>
                     {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                 </Button>
-                <Button size="small" color="primary" onClick={handleClick}>
+                <Button size="small" color="primary" onClick={handleMenuClick}>
                     <MenuIcon />
                 </Button>
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}
                     open={openMenu}
-                    onClose={handleClose}
+                    onClose={handleCloseMenu}
                     slotProps={{
                         list: {
                             "aria-labelledby": "basic-button",
@@ -84,21 +93,25 @@ function Item({ title, description, image, link }) {
                     <MenuItem
                         onClick={() => {
                             handleShare();
-                            handleClose();
+                            handleCloseMenu();
                         }}
                     >
                         Share
                     </MenuItem>
-                    <MenuItem onClick={handleClose}>Recommend more</MenuItem>
-                    <MenuItem onClick={handleClose}>Not interested</MenuItem>
+                    <MenuItem onClick={handleCloseMenu}>
+                        Recommend more
+                    </MenuItem>
+                    <MenuItem onClick={handleCloseMenu}>
+                        Not interested
+                    </MenuItem>
                 </Menu>
-                <Snackbar
-                    open={openSnackbar}
-                    autoHideDuration={3000}
-                    onClose={handleClose}
-                    message="Link copied to clipboard"
-                />
             </CardActions>
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={3000}
+                message={snackbarMessage}
+                onClose={handleCloseSnackbar}
+            />
         </Card>
     );
 }
