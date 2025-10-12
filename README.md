@@ -120,6 +120,9 @@ The application will be available at `http://localhost:5173`
 ## API Endpoints
 
 -   `GET /api/health/` - Health check endpoint to verify the API is running
+-   `GET /api/test-jwt/` - JWT authentication test endpoint (requires authentication)
+-   `POST /api/token/` - Obtain JWT access and refresh tokens
+-   `POST /api/token/refresh/` - Refresh JWT access token using refresh token
 
 ## Development
 
@@ -128,6 +131,21 @@ The application will be available at `http://localhost:5173`
 -   The backend uses Django REST Framework to create RESTful APIs
 -   API endpoints are defined in the `suggestions` app
 -   CORS is configured to allow requests from the React frontend
+
+#### Running Tests
+
+To run the backend tests:
+
+```bash
+cd backend
+python manage.py test
+```
+
+The test suite includes comprehensive tests for:
+- Health check endpoint
+- JWT authentication
+- Token generation and refresh
+- Protected endpoint access control
 
 ### Frontend Development
 
