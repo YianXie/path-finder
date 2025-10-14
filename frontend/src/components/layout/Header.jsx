@@ -3,10 +3,12 @@ import Box from "@mui/material/Box";
 import { useEffect, useState } from "react";
 import { Divider, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const navigate = useNavigate();
+    const { user, isAuthenticated, logout } = useAuth();
 
     useEffect(() => {
         document.addEventListener("scroll", (e) => {
@@ -50,9 +52,9 @@ function Header() {
                     </Typography>
                 </Box>
                 <Divider orientation="vertical" flexItem />
-                <HeaderLink to="#">Clubs</HeaderLink>
-                <HeaderLink to="#">Competitions</HeaderLink>
-                <HeaderLink to="#">Tutoring</HeaderLink>
+                <HeaderLink to="/clubs">Clubs</HeaderLink>
+                <HeaderLink to="/competitions">Competitions</HeaderLink>
+                <HeaderLink to="/tutoring">Tutoring</HeaderLink>
                 <Box
                     display="flex"
                     alignItems="center"
@@ -61,7 +63,11 @@ function Header() {
                     ml="auto"
                 >
                     <Divider orientation="vertical" flexItem />
-                    <HeaderLink to="/profile">Profile</HeaderLink>
+                    {isAuthenticated ? (
+                        <HeaderLink to="/profile">Profile</HeaderLink>
+                    ) : (
+                        <HeaderLink to="/login">Login</HeaderLink>
+                    )}
                 </Box>
             </Box>
         </header>
