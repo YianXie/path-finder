@@ -35,7 +35,7 @@ class GoogleLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        credential = request.data.get("credentials")
+        credential = request.data.get("credential")
         if not credential:
             return Response(
                 {"status": "error", "message": "Credentials are required"},

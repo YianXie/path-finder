@@ -11,6 +11,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Snackbar from "@mui/material/Snackbar";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -18,8 +19,7 @@ function Item({ title, description, image, link }) {
     const navigate = useNavigate();
     const [isFavorite, setIsFavorite] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [openSnackbar, setOpenSnackbar] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const { setSnackBar } = useSnackBar();
     const openMenu = Boolean(anchorEl);
 
     const handleMenuClick = (event) => {
@@ -31,24 +31,22 @@ function Item({ title, description, image, link }) {
     };
 
     const handleSave = async () => {
-        setSnackbarMessage("Item saved");
-        setOpenSnackbar(true);
+        if (isFavorite) {
+            setSnackBar({ open: true, message: "Item unsaved" });
+            setIsFavorite(false);
+            return;
+        }
+        setSnackBar({ open: true, message: "Item saved" });
         setIsFavorite(!isFavorite);
     };
 
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(link);
-            setOpenSnackbar(true);
-            setSnackbarMessage("Link copied to clipboard");
+            setSnackBar({ open: true, message: "Link copied to clipboard" });
         } catch (error) {
             console.error("Failed to copy link to clipboard", error);
         }
-    };
-
-    const handleCloseSnackbar = (_, reason) => {
-        if (reason === "clickaway") return;
-        setOpenSnackbar(false);
     };
 
     return (
@@ -106,12 +104,6 @@ function Item({ title, description, image, link }) {
                     </MenuItem>
                 </Menu>
             </CardActions>
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={3000}
-                message={snackbarMessage}
-                onClose={handleCloseSnackbar}
-            />
         </Card>
     );
 }

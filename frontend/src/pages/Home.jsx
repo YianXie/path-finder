@@ -5,7 +5,6 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import Item from "../components/home/Item";
-import GoogleButton from "../components/global/GoogleButton";
 
 function Home() {
     usePageTitle("PathFinder | Home");
@@ -19,7 +18,6 @@ function Home() {
                 <Typography variant="h6" fontWeight={400}>
                     All items
                 </Typography>
-                <GoogleButton />
             </Box>
             <Divider sx={{ marginBlock: 4 }} />
             <Grid

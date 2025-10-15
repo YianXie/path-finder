@@ -8,7 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const navigate = useNavigate();
-    const { user, isAuthenticated, logout } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     useEffect(() => {
         document.addEventListener("scroll", (e) => {

@@ -1,18 +1,28 @@
 import api from "../../api";
+import { useAuth } from "../../contexts/AuthContext";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function GoogleButton() {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const { setSnackBar } = useSnackBar();
+
     useEffect(() => {
         if (window.google) {
             window.google.accounts.id.initialize({
                 client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
                 callback: async (response) => {
-                    const res = await api.post("auth/google/", {
+                    const { data } = await api.post("auth/google/", {
                         credential: response.credential,
                     });
-                    const data = await res.json();
-                    localStorage.setItem("access", data.tokens.access);
-                    localStorage.setItem("refresh", data.tokens.refresh);
+                    login(data.tokens, data.user);
+                    setSnackBar({
+                        open: true,
+                        message: "Logged in successfully",
+                    });
+                    navigate("/");
                 },
             });
             window.google.accounts.id.renderButton(
@@ -20,7 +30,7 @@ export default function GoogleButton() {
                 { theme: "outline", size: "large" }
             );
         }
-    }, []);
+    }, [login, navigate]);
 
     return <div id="google-signin" />;
 }

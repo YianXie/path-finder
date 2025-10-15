@@ -22,7 +22,7 @@ class TestJWTAuthentication(APIView):
 
 
 SHEET_CSV_URL = (
-    "https://opensheet.elk.sh/1tqu2QGwlpXoT11iJnKudpukwB0NwZhseDNYnNWA6MP0/1"
+    "https://opensheet.elk.sh/1ktwR4Oqw4AhySra-prVWPH8fwbKbTK31T0N_2gWehnI/1"
 )
 
 
