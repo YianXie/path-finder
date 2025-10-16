@@ -15,7 +15,7 @@ import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function Item({ id, title, description, image, link }) {
+function Item({ id, title, description, image }) {
     const navigate = useNavigate();
     const [isFavorite, setIsFavorite] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -42,7 +42,7 @@ function Item({ id, title, description, image, link }) {
 
     const handleShare = async () => {
         try {
-            await navigator.clipboard.writeText(link);
+            await navigator.clipboard.writeText(location.href + `item/${id}`);
             setSnackBar({ open: true, message: "Link copied to clipboard" });
         } catch (error) {
             console.error("Failed to copy link to clipboard", error);
@@ -50,13 +50,15 @@ function Item({ id, title, description, image, link }) {
     };
 
     return (
-        <Card sx={{ maxWidth: 300 }}>
+        <Card sx={{ width: 300, maxHeight: 400 }}>
             <CardActionArea onClick={() => navigate(`/item/${id}`)}>
                 <CardMedia
                     component="img"
                     height="140"
                     image={image}
-                    alt="green iguana"
+                    draggable={false}
+                    alt={title}
+                    sx={{ objectFit: "cover" }}
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">

@@ -23,7 +23,7 @@ function Login() {
                     color="primary.dark"
                     className="text-center text-sm"
                 >
-                    Sign in with your Google account to continue
+                    Sign in with your school Google account to continue
                 </Typography>
                 <GoogleButton />
             </Box>

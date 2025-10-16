@@ -8,6 +8,15 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 class HealthCheck(APIView):
+    """A simple health check endpoint to verify the API is running
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -15,15 +24,23 @@ class HealthCheck(APIView):
 
 
 class TestJWTAuthentication(APIView):
+    """A simple endpoint to test JWT authentication
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         return Response({"status": "ok", "message": "JWT authentication test"})
 
 
-SHEET_CSV_URL = (
-    "https://opensheet.elk.sh/1ktwR4Oqw4AhySra-prVWPH8fwbKbTK31T0N_2gWehnI/1"
-)
+sheet_id = os.getenv("SHEET_ID")
+SHEET_CSV_URL = f"https://opensheet.elk.sh/{sheet_id}/1"
 
 
 @method_decorator(cache_page(60 * 5), name="dispatch")
@@ -37,7 +54,7 @@ class GetSuggestions(APIView):
         Response: Response
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         r = requests.get(SHEET_CSV_URL)
