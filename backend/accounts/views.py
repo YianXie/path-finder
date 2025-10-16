@@ -67,6 +67,8 @@ class GoogleLoginView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
+            print(idinfo)
+
             # Upsert user
             user, created = User.objects.get_or_create(
                 email=email,

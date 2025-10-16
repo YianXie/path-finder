@@ -14,15 +14,23 @@ export default function GoogleButton() {
             window.google.accounts.id.initialize({
                 client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
                 callback: async (response) => {
-                    const { data } = await api.post("auth/google/", {
-                        credential: response.credential,
-                    });
-                    login(data.tokens, data.user);
-                    setSnackBar({
-                        open: true,
-                        message: "Logged in successfully",
-                    });
-                    navigate("/");
+                    try {
+                        const { data } = await api.post("auth/google/", {
+                            credential: response.credential,
+                        });
+                        login(data.tokens, data.user);
+                        setSnackBar({
+                            open: true,
+                            message: "Logged in successfully",
+                        });
+                        navigate("/");
+                    } catch (error) {
+                        setSnackBar({
+                            open: true,
+                            message: error.response.data.detail,
+                            severity: "error",
+                        });
+                    }
                 },
             });
             window.google.accounts.id.renderButton(

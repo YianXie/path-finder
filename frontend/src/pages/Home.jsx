@@ -27,36 +27,42 @@ function Home() {
                 justifyContent="center"
             >
                 <Item
+                    id="1"
                     title="Competitions"
                     description="Competitions"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
+                    id="2"
                     title="Clubs"
                     description="Clubs"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
+                    id="3"
                     title="Internships"
                     description="Internships"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
+                    id="4"
                     title="Competitions"
                     description="Competitions"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
+                    id="5"
                     title="Clubs"
                     description="Clubs"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"
                     link="#"
                 />
                 <Item
+                    id="6"
                     title="Internships"
                     description="Internships"
                     image="https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"

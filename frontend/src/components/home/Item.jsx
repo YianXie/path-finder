@@ -15,7 +15,7 @@ import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function Item({ title, description, image, link }) {
+function Item({ id, title, description, image, link }) {
     const navigate = useNavigate();
     const [isFavorite, setIsFavorite] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -51,7 +51,7 @@ function Item({ title, description, image, link }) {
 
     return (
         <Card sx={{ maxWidth: 300 }}>
-            <CardActionArea onClick={() => navigate(link)}>
+            <CardActionArea onClick={() => navigate(`/item/${id}`)}>
                 <CardMedia
                     component="img"
                     height="140"

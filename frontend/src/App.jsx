@@ -6,6 +6,7 @@ import Clubs from "./pages/Clubs";
 import Tutoring from "./pages/Tutoring";
 import Login from "./pages/auth/Login";
 import Profile from "./pages/auth/Profile";
+import ItemDetail from "./pages/ItemDetail";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -22,6 +23,7 @@ function App() {
                     <Route path="/competitions" element={<Competitions />} />
                     <Route path="/clubs" element={<Clubs />} />
                     <Route path="/tutoring" element={<Tutoring />} />
+                    <Route path="/item/:id" element={<ItemDetail />} />
                 </Route>
             </Routes>
         </Router>
