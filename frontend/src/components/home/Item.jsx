@@ -2,7 +2,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -10,7 +10,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import Snackbar from "@mui/material/Snackbar";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -73,12 +72,20 @@ function Item({ id, title, description, image }) {
                 </CardContent>
             </CardActionArea>
             <CardActions className="flex items-center justify-end">
-                <Button size="small" color="primary" onClick={handleSave}>
+                <IconButton
+                    aria-label="Save item"
+                    onClick={handleSave}
+                    color="primary"
+                >
                     {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                </Button>
-                <Button size="small" color="primary" onClick={handleMenuClick}>
+                </IconButton>
+                <IconButton
+                    aria-label="Open menu"
+                    onClick={handleMenuClick}
+                    color="primary"
+                >
                     <MenuIcon />
-                </Button>
+                </IconButton>
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}

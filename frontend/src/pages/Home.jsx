@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSnackBar } from "../contexts/SnackBarContext";
 import api from "../api";
 import Item from "../components/home/Item";
 import usePageTitle from "../hooks/usePageTitle";
@@ -9,12 +10,21 @@ import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import SwapVertIcon from "@mui/icons-material/SwapVert";
+import IconButton from "@mui/material/IconButton";
 
 function Home() {
     usePageTitle("PathFinder | Home");
 
+    const { setSnackBar } = useSnackBar();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
+    const [sortBy, setSortBy] = useState("alphabetical");
+    const [sortDirection, setSortDirection] = useState(1); // 1 for ascending, -1 for descending
 
     useEffect(() => {
         async function getSuggestions() {
@@ -29,6 +39,29 @@ function Home() {
         }
         getSuggestions();
     }, []);
+
+    useEffect(() => {
+        switch (sortBy.toLowerCase()) {
+            case "alphabetical":
+                setSuggestions(
+                    suggestions.sort(
+                        (a, b) => a.title.localeCompare(b.title) * sortDirection
+                    )
+                );
+                break;
+            case "newest":
+                // TODO: Need to implement this
+                break;
+
+            case "oldest":
+                // TODO: Need to implement this
+                break;
+
+            default:
+                setSuggestions(suggestions);
+                break;
+        }
+    }, [sortBy, suggestions, sortDirection]);
 
     return (
         <Container maxWidth="xl" sx={{ paddingBlock: 4 }}>
@@ -49,7 +82,34 @@ function Home() {
                     All items
                 </Typography>
             </Box>
-            <Divider sx={{ marginBlock: 4 }} />
+            <Divider sx={{ marginTop: 2 }} />
+            <Box display="flex" flexDirection="row" gap={2} alignItems="center">
+                <FormControl sx={{ marginBlock: 4 }} size="small">
+                    <InputLabel id="sort-by-label">Sort by</InputLabel>
+                    <Select
+                        labelId="sort-by-label"
+                        label="Sort by"
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                    >
+                        <MenuItem value="alphabetical">Alphabetical</MenuItem>
+                        <MenuItem value="newest">Newest</MenuItem>
+                        <MenuItem value="oldest">Oldest</MenuItem>
+                    </Select>
+                </FormControl>
+                <IconButton
+                    onClick={() => {
+                        setSnackBar({
+                            open: true,
+                            message: `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`,
+                        });
+                        setSortDirection(sortDirection * -1);
+                    }}
+                    aria-label="Toggle sort direction"
+                >
+                    <SwapVertIcon />
+                </IconButton>
+            </Box>
             <Grid
                 container
                 rowSpacing={5}
