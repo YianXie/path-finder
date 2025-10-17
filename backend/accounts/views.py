@@ -1,4 +1,5 @@
 import os
+import psycopg2
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -8,6 +9,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from .models import UserModel
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 ALLOWED_GOOGLE_HD = os.getenv("ALLOWED_GOOGLE_HD")
@@ -67,8 +69,6 @@ class GoogleLoginView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            print(idinfo)
-
             # Upsert user
             user, created = User.objects.get_or_create(
                 email=email,
@@ -85,6 +85,9 @@ class GoogleLoginView(APIView):
             user.save()
 
             tokens = issue_tokens_for_user(user)
+
+            UserModel.objects.update_or_create(email=email, name=name, google_sub=sub)
+
             return Response(
                 {"tokens": tokens, "user": {"email": user.email, "name": name}}
             )

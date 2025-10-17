@@ -50,10 +50,7 @@ export const AuthProvider = ({ children }) => {
                 // Extract user info from new token
                 const payload = JSON.parse(atob(newAccessToken.split(".")[1]));
                 setUser({ email: payload.email, name: payload.name });
-
-                console.log("Token refreshed successfully");
             } else {
-                console.log("Token refresh failed, logging out");
                 logout();
             }
         } catch (error) {
@@ -86,7 +83,6 @@ export const AuthProvider = ({ children }) => {
                     }
                 } else {
                     // Access token expired, try to refresh
-                    console.log("Access token expired, attempting refresh...");
                     refreshToken(storedRefresh);
                 }
             }
@@ -138,7 +134,6 @@ export const AuthProvider = ({ children }) => {
 
         if (timeUntilExpiry < 300) {
             // Less than 5 minutes
-            console.log("Token expires soon, refreshing...");
             const refreshTokenValue = localStorage.getItem("refresh");
             if (refreshTokenValue) {
                 await refreshToken(refreshTokenValue);
