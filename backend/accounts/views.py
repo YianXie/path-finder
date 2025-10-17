@@ -1,5 +1,4 @@
 import os
-import psycopg2
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -10,6 +9,8 @@ from google.auth.transport import requests as grequests
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from .models import UserModel
+from .serializers import CustomRefreshToken
+from jwt import decode
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 ALLOWED_GOOGLE_HD = os.getenv("ALLOWED_GOOGLE_HD")
@@ -17,7 +18,7 @@ User = get_user_model()
 
 
 def issue_tokens_for_user(user: User):
-    refresh = RefreshToken.for_user(user)
+    refresh = CustomRefreshToken.for_user(user)
     return {
         "refresh": str(refresh),
         "access": str(refresh.access_token),
@@ -61,7 +62,6 @@ class GoogleLoginView(APIView):
             email = idinfo.get("email")
             email_verified = idinfo.get("email_verified", False)
             name = idinfo.get("name") or ""
-            picture = idinfo.get("picture")  # optional
 
             if not email or not email_verified:
                 return Response(
@@ -95,4 +95,73 @@ class GoogleLoginView(APIView):
             return Response(
                 {"status": "error", "message": "Invalid credentials"},
                 status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class ParseTokenView(APIView):
+    """Parse Token View
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get("token")
+        if not token:
+            return Response(
+                {"status": "error", "message": "Token is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            payload = decode(token, options={"verify_signature": False})
+            return Response({"payload": payload})
+        except Exception as e:
+            return Response(
+                {"status": "error", "message": "Invalid token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class UserProfileView(APIView):
+    """Get current user profile
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
+    def get(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"status": "error", "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            # Try to get user data from UserModel first
+            user_model = UserModel.objects.get(email=user.email)
+            return Response(
+                {
+                    "email": user.email,
+                    "name": user_model.name,
+                    "google_sub": user_model.google_sub,
+                }
+            )
+        except UserModel.DoesNotExist:
+            # Fallback to Django user data
+            return Response(
+                {
+                    "email": user.email,
+                    "name": getattr(user, "first_name", "") or user.username,
+                    "google_sub": getattr(user, "google_sub", None),
+                }
             )

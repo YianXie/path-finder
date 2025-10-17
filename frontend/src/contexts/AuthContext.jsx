@@ -5,6 +5,7 @@ import {
     useEffect,
     useCallback,
 } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -17,13 +18,38 @@ export const AuthProvider = ({ children }) => {
     // Check if token is expired
     const isTokenExpired = (token) => {
         try {
-            const payload = JSON.parse(atob(token.split(".")[1]));
+            const payload = jwtDecode(token);
             const currentTime = Date.now() / 1000;
             return payload.exp < currentTime;
         } catch {
             return true; // If we can't parse the token, consider it expired
         }
     };
+
+    // Function to fetch user profile from backend
+    const fetchUserProfile = useCallback(async (accessToken) => {
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/auth/profile/`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (response.ok) {
+                const userData = await response.json();
+                setUser({ email: userData.email, name: userData.name });
+            } else {
+                console.error("Failed to fetch user profile:", response.status);
+            }
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    }, []);
 
     // Function to refresh access token using refresh token
     const refreshToken = useCallback(async (refreshTokenValue) => {
@@ -48,8 +74,16 @@ export const AuthProvider = ({ children }) => {
                 setAccess(newAccessToken);
 
                 // Extract user info from new token
-                const payload = JSON.parse(atob(newAccessToken.split(".")[1]));
-                setUser({ email: payload.email, name: payload.name });
+                const payload = jwtDecode(newAccessToken);
+
+                // Check if email and name are in the token, otherwise keep existing user data
+                if (payload.email && payload.name) {
+                    setUser({ email: payload.email, name: payload.name });
+                } else {
+                    console.warn(
+                        "Email or name not found in refreshed token payload"
+                    );
+                }
             } else {
                 logout();
             }
@@ -69,12 +103,24 @@ export const AuthProvider = ({ children }) => {
                 // Check if access token is still valid
                 if (!isTokenExpired(storedAccess)) {
                     try {
-                        const payload = JSON.parse(
-                            atob(storedAccess.split(".")[1])
-                        );
+                        const payload = jwtDecode(storedAccess);
                         setAccess(storedAccess);
                         setRefresh(storedRefresh);
-                        setUser({ email: payload.email, name: payload.name });
+
+                        // Check if email and name are in the token
+                        if (payload.email && payload.name) {
+                            setUser({
+                                email: payload.email,
+                                name: payload.name,
+                            });
+                        } else {
+                            console.warn(
+                                "Email or name not found in stored token payload"
+                            );
+                            // Try to get user data from the backend if not in token
+                            // This is a fallback for existing tokens without custom claims
+                            fetchUserProfile(storedAccess);
+                        }
                     } catch (error) {
                         console.error("Error parsing stored token:", error);
                         // Clear invalid tokens
@@ -90,12 +136,24 @@ export const AuthProvider = ({ children }) => {
         };
 
         initializeAuth();
-    }, [refreshToken]);
+    }, [refreshToken, fetchUserProfile]);
 
     useEffect(() => {
         if (access) {
-            const payload = JSON.parse(atob(access.split(".")[1]));
-            setUser({ email: payload.email, name: payload.name });
+            try {
+                const payload = jwtDecode(access);
+
+                // Only update user if email and name are present in the token
+                if (payload.email && payload.name) {
+                    setUser({ email: payload.email, name: payload.name });
+                } else {
+                    console.warn(
+                        "Email or name not found in access token payload"
+                    );
+                }
+            } catch (error) {
+                console.error("Error decoding access token:", error);
+            }
         }
     }, [access]);
 
@@ -128,7 +186,7 @@ export const AuthProvider = ({ children }) => {
         }
 
         // Check if token expires in the next 5 minutes
-        const payload = JSON.parse(atob(currentAccess.split(".")[1]));
+        const payload = jwtDecode(currentAccess);
         const currentTime = Date.now() / 1000;
         const timeUntilExpiry = payload.exp - currentTime;
 

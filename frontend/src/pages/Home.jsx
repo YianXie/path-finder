@@ -107,7 +107,18 @@ function Home() {
                     }}
                     aria-label="Toggle sort direction"
                 >
-                    <SwapVertIcon />
+                    {sortDirection === 1 ? (
+                        <SwapVertIcon
+                            sx={{ transition: "transform 0.3s ease-in-out" }}
+                        />
+                    ) : (
+                        <SwapVertIcon
+                            sx={{
+                                transform: "scaleY(-1)",
+                                transition: "transform 0.3s ease-in-out",
+                            }}
+                        />
+                    )}
                 </IconButton>
             </Box>
             <Grid

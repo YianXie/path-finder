@@ -10,6 +10,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -53,11 +54,10 @@ function Item({ id, title, description, image }) {
             <CardActionArea onClick={() => navigate(`/item/${id}`)}>
                 <CardMedia
                     component="img"
-                    height="140"
                     image={image}
                     draggable={false}
                     alt={title}
-                    sx={{ objectFit: "cover" }}
+                    sx={{ objectFit: "cover", maxHeight: 200 }}
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
@@ -72,20 +72,24 @@ function Item({ id, title, description, image }) {
                 </CardContent>
             </CardActionArea>
             <CardActions className="flex items-center justify-end">
-                <IconButton
-                    aria-label="Save item"
-                    onClick={handleSave}
-                    color="primary"
-                >
-                    {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                </IconButton>
-                <IconButton
-                    aria-label="Open menu"
-                    onClick={handleMenuClick}
-                    color="primary"
-                >
-                    <MenuIcon />
-                </IconButton>
+                <Tooltip title="Save item" placement="bottom" arrow>
+                    <IconButton
+                        aria-label="Save item"
+                        onClick={handleSave}
+                        color="primary"
+                    >
+                        {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                    </IconButton>
+                </Tooltip>
+                <Tooltip title="Open menu" placement="bottom" arrow>
+                    <IconButton
+                        aria-label="Open menu"
+                        onClick={handleMenuClick}
+                        color="primary"
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                </Tooltip>
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}
