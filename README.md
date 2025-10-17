@@ -31,18 +31,18 @@ High school students (including SAS students) often struggle to discover relevan
 
 ```
 path-finder/
-├── backend/                 # Django REST Framework backend
+├── backend/               # Django REST Framework backend
 │   ├── pathfinder_api/     # Main Django project
 │   ├── suggestions/        # Django app for handling suggestions
 │   ├── manage.py           # Django management script
 │   ├── render-build.py     # automatically runs when deploy to Render
 │   └── requirements.txt    # Python dependencies
-├── frontend/               # React frontend
-│   ├── src/               # Source files
-│   ├── public/            # Static assets
-│   ├── package.json       # Node.js dependencies
-│   ├── vite.config.js     # Vite configuration
-│   └── ...                # other files
+├── frontend/              # React frontend
+│   ├── src/                # Source files
+│   ├── public/             # Static assets
+│   ├── package.json        # Node.js dependencies
+│   ├── vite.config.js      # Vite configuration
+│   └── ...                 # other files
 └── README.md              # This file
 ```
 
@@ -93,7 +93,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-The API will be available at `http://localhost:8000`
+The API should be available at `http://localhost:8000`
 
 ### Frontend Setup
 
@@ -120,9 +120,10 @@ The application will be available at `http://localhost:5173`
 ## API Endpoints
 
 -   `GET /api/health/` - Health check endpoint to verify the API is running
--   `GET /api/test-jwt/` - JWT authentication test endpoint (requires authentication)
 -   `POST /api/token/` - Obtain JWT access and refresh tokens
 -   `POST /api/token/refresh/` - Refresh JWT access token using refresh token
+-   `GET /api/suggestions/` - Get Google Spreadsheet data
+-   `POST /auth/google/` - Login with Google
 
 ## Development
 
@@ -142,10 +143,10 @@ python manage.py test
 ```
 
 The test suite includes comprehensive tests for:
-- Health check endpoint
-- JWT authentication
-- Token generation and refresh
-- Protected endpoint access control
+
+-   Health check endpoint
+-   Token generation and refresh
+-   Protected endpoint access control
 
 ### Frontend Development
 
@@ -153,14 +154,23 @@ The test suite includes comprehensive tests for:
 -   Tailwind CSS is used for styling instead of CSS modules
 -   Components are located in the `src` directory
 
+### Environment Variables
+
+Refer to .env.example file located in the backend and frontend directory for more details
+
+## Current Available Features
+
+-   Login with Google
+-   Email authentication to ensure only sas students or teachers have access to the website
+-   Fetching Google Spreadsheet data
+-   Create database rows with user data
+
 ## Future Features
 
--   User authentication and profile management
+-   Profile management
 -   Advanced search and filtering
 -   Personalized recommendation algorithm
--   Opportunity submissions from organizations
 -   User reviews and ratings
--   Application tracking
 
 ## License
 

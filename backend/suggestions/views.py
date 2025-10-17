@@ -1,7 +1,6 @@
 import requests, os
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
-from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -21,22 +20,6 @@ class HealthCheck(APIView):
 
     def get(self, request):
         return Response({"status": "ok", "message": "PathFinder API is running"})
-
-
-class TestJWTAuthentication(APIView):
-    """A simple endpoint to test JWT authentication
-
-    Args:
-        APIView: APIView
-
-    Returns:
-        Response: Response
-    """
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        return Response({"status": "ok", "message": "JWT authentication test"})
 
 
 sheet_id = os.getenv("SHEET_ID")
@@ -63,8 +46,3 @@ class GetSuggestions(APIView):
         return Response(
             {"status": "ok", "message": "Suggestions retrieved", "data": r.json()}
         )
-
-
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-ALLOWED_GOOGLE_HD = os.getenv("ALLOWED_GOOGLE_HD")
-User = get_user_model()
