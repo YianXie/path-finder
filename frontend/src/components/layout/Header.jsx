@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
+import { useColorScheme } from "@mui/material/styles";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import HeaderLink from "./HeaderLink";
@@ -14,22 +15,37 @@ import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import PersonIcon from "@mui/icons-material/Person";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import Settings from "@mui/icons-material/Settings";
+import ContrastIcon from "@mui/icons-material/Contrast";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import ComputerIcon from "@mui/icons-material/Computer";
+import CheckIcon from "@mui/icons-material/Check";
 import Logout from "@mui/icons-material/Logout";
 
 function Header() {
     const { isAuthenticated, user, logout } = useAuth();
-    const [anchorEl, setAnchorEl] = useState(null);
     const { setSnackBar } = useSnackBar();
-    const open = Boolean(anchorEl);
+    const { mode, setMode } = useColorScheme();
+    const [mainMenuAnchorEl, setMainMenuAnchorEl] = useState(null);
+    const [themeMenuAnchorEl, setThemeMenuAnchorEl] = useState(null);
+    const mainMenuOpen = Boolean(mainMenuAnchorEl);
+    const themeMenuOpen = Boolean(themeMenuAnchorEl);
     const navigate = useNavigate();
 
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
+    const handleMenuClick = (event) => {
+        setMainMenuAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
-        setAnchorEl(null);
+    const handleMenuClose = () => {
+        setMainMenuAnchorEl(null);
+    };
+
+    const handleThemeMenuClick = (event) => {
+        setThemeMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleThemeMenuClose = () => {
+        setThemeMenuAnchorEl(null);
     };
 
     function stringToColor(string) {
@@ -109,7 +125,12 @@ function Header() {
                     {isAuthenticated && user ? (
                         <>
                             <Tooltip title="Profile" placement="bottom">
-                                <IconButton size="small" onClick={handleClick}>
+                                <IconButton
+                                    size="small"
+                                    onClick={(event) => {
+                                        handleMenuClick(event);
+                                    }}
+                                >
                                     <Avatar
                                         {...stringAvatar(user.name)}
                                         sx={{ width: 32, height: 32 }}
@@ -117,10 +138,9 @@ function Header() {
                                 </IconButton>
                             </Tooltip>
                             <Menu
-                                anchorEl={anchorEl}
-                                id="account-menu"
-                                open={open}
-                                onClose={handleClose}
+                                anchorEl={mainMenuAnchorEl}
+                                open={mainMenuOpen}
+                                onClose={handleMenuClose}
                                 slotProps={{
                                     paper: {
                                         elevation: 0,
@@ -159,29 +179,29 @@ function Header() {
                                     vertical: "bottom",
                                 }}
                             >
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={handleMenuClose}>
                                     <ListItemIcon>
                                         <PersonIcon fontSize="small" />
                                     </ListItemIcon>
                                     My profile
                                 </MenuItem>
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={handleMenuClose}>
                                     <ListItemIcon>
-                                        <FavoriteIcon fontSize="small" />{" "}
+                                        <FavoriteIcon fontSize="small" />
                                     </ListItemIcon>
                                     Saved items
                                 </MenuItem>
-                                <MenuItem onClick={handleClose}>
+                                <MenuItem onClick={handleThemeMenuClick}>
                                     <ListItemIcon>
-                                        <Settings fontSize="small" />
+                                        <ContrastIcon fontSize="small" />
                                     </ListItemIcon>
-                                    Settings
+                                    Theme
                                 </MenuItem>
                                 <Divider />
                                 <MenuItem
                                     onClick={() => {
                                         logout();
-                                        handleClose();
+                                        handleMenuClose();
                                         setSnackBar({
                                             open: true,
                                             message: "Logged out successfully",
@@ -194,6 +214,84 @@ function Header() {
                                         <Logout fontSize="small" />
                                     </ListItemIcon>
                                     Logout
+                                </MenuItem>
+                            </Menu>
+                            <Menu
+                                anchorEl={themeMenuAnchorEl}
+                                open={themeMenuOpen}
+                                onClose={handleThemeMenuClose}
+                                slotProps={{
+                                    paper: {
+                                        elevation: 0,
+                                        sx: {
+                                            overflow: "visible",
+                                            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                                            mt: 1.5,
+                                            "& .MuiAvatar-root": {
+                                                width: 32,
+                                                height: 32,
+                                                ml: -0.5,
+                                                mr: 1,
+                                            },
+                                        },
+                                    },
+                                }}
+                                transformOrigin={{
+                                    horizontal: "right",
+                                    vertical: "top",
+                                }}
+                                anchorOrigin={{
+                                    horizontal: "right",
+                                    vertical: "bottom",
+                                }}
+                            >
+                                <MenuItem
+                                    onClick={() => {
+                                        setMode("system");
+                                        handleThemeMenuClose();
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <ComputerIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    System default
+                                    {mode === "system" && (
+                                        <ListItemIcon sx={{ marginLeft: 2 }}>
+                                            <CheckIcon fontSize="small" />
+                                        </ListItemIcon>
+                                    )}
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setMode("light");
+                                        handleThemeMenuClose();
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <LightModeIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    Light mode
+                                    {mode === "light" && (
+                                        <ListItemIcon sx={{ marginLeft: 2 }}>
+                                            <CheckIcon fontSize="small" />
+                                        </ListItemIcon>
+                                    )}
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => {
+                                        setMode("dark");
+                                        handleThemeMenuClose();
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <DarkModeIcon fontSize="small" />
+                                    </ListItemIcon>
+                                    Dark mode
+                                    {mode === "dark" && (
+                                        <ListItemIcon sx={{ marginLeft: 2 }}>
+                                            <CheckIcon fontSize="small" />
+                                        </ListItemIcon>
+                                    )}
                                 </MenuItem>
                             </Menu>
                         </>
