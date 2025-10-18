@@ -20,7 +20,7 @@ import Logout from "@mui/icons-material/Logout";
 function Header() {
     const { isAuthenticated, user, logout } = useAuth();
     const [anchorEl, setAnchorEl] = useState(null);
-    const setSnackBar = useSnackBar();
+    const { setSnackBar } = useSnackBar();
     const open = Boolean(anchorEl);
     const navigate = useNavigate();
 
@@ -183,6 +183,7 @@ function Header() {
                                         logout();
                                         handleClose();
                                         setSnackBar({
+                                            open: true,
                                             message: "Logged out successfully",
                                             severity: "success",
                                         });

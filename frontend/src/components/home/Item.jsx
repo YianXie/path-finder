@@ -15,7 +15,7 @@ import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function Item({ id, title, description, image }) {
+function Item({ id, name, category, description, image }) {
     const navigate = useNavigate();
     const [isFavorite, setIsFavorite] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -49,6 +49,13 @@ function Item({ id, title, description, image }) {
         }
     };
 
+    const truncateString = (string, maxLength) => {
+        if (string.length > maxLength) {
+            return string.slice(0, maxLength) + "...";
+        }
+        return string;
+    };
+
     return (
         <Card sx={{ width: 300, maxHeight: 400 }}>
             <CardActionArea onClick={() => navigate(`/item/${id}`)}>
@@ -56,18 +63,24 @@ function Item({ id, title, description, image }) {
                     component="img"
                     image={image}
                     draggable={false}
-                    alt={title}
+                    alt={name}
                     sx={{ objectFit: "cover", maxHeight: 200 }}
                 />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                        {title}
+                        {truncateString(name, 20)}
+                    </Typography>
+                    <Typography
+                        variant="body1"
+                        sx={{ color: "text.secondary" }}
+                    >
+                        {truncateString(description, 100)}
                     </Typography>
                     <Typography
                         variant="body2"
                         sx={{ color: "text.secondary" }}
                     >
-                        {description}
+                        {category.join(", ")}
                     </Typography>
                 </CardContent>
             </CardActionArea>

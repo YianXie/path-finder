@@ -6,6 +6,7 @@ import {
     useCallback,
 } from "react";
 import { jwtDecode } from "jwt-decode";
+import api from "../api";
 
 const AuthContext = createContext();
 
@@ -29,19 +30,12 @@ export const AuthProvider = ({ children }) => {
     // Function to fetch user profile from backend
     const fetchUserProfile = useCallback(async (accessToken) => {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/auth/profile/`,
-                {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+            const response = await api.get("/auth/profile/", {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
 
-            if (response.ok) {
-                const userData = await response.json();
+            if (response.status === 200) {
+                const userData = response.data;
                 setUser({ email: userData.email, name: userData.name });
             } else {
                 console.error("Failed to fetch user profile:", response.status);
@@ -54,19 +48,12 @@ export const AuthProvider = ({ children }) => {
     // Function to refresh access token using refresh token
     const refreshToken = useCallback(async (refreshTokenValue) => {
         try {
-            const response = await fetch(
-                `${import.meta.env.VITE_API_URL}/api/token/refresh/`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ refresh: refreshTokenValue }),
-                }
-            );
+            const response = await api.post("/api/token/refresh/", {
+                refresh: refreshTokenValue,
+            });
 
-            if (response.ok) {
-                const data = await response.json();
+            if (response.status === 200) {
+                const data = response.data;
                 const newAccessToken = data.access;
 
                 // Update stored tokens

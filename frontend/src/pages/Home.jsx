@@ -30,7 +30,7 @@ function Home() {
         async function getSuggestions() {
             try {
                 const res = await api.get("/api/suggestions/");
-                setSuggestions(res.data.data);
+                setSuggestions(res.data);
             } catch (error) {
                 console.error(error);
             } finally {
@@ -45,7 +45,7 @@ function Home() {
             case "alphabetical":
                 setSuggestions(
                     suggestions.sort(
-                        (a, b) => a.title.localeCompare(b.title) * sortDirection
+                        (a, b) => a.name.localeCompare(b.name) * sortDirection
                     )
                 );
                 break;

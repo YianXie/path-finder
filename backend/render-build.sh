@@ -11,3 +11,6 @@ python manage.py collectstatic --no-input
 
 echo "Migrating database..."
 python manage.py migrate
+
+echo "Syncing suggestions..."
+python manage.py sync_sheet
