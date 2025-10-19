@@ -20,7 +20,7 @@ import IconButton from "@mui/material/IconButton";
 function Home() {
     usePageTitle("PathFinder | Home");
 
-    const { setSnackBar } = useSnackBar();
+    const { snackBar, setSnackBar } = useSnackBar();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
     const [sortBy, setSortBy] = useState("alphabetical");
@@ -100,6 +100,8 @@ function Home() {
                 <IconButton
                     onClick={() => {
                         setSnackBar({
+                            ...snackBar,
+                            severity: "success",
                             open: true,
                             message: `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`,
                         });

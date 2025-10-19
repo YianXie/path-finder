@@ -4,9 +4,10 @@ import { useSnackBar } from "../../contexts/SnackBarContext";
 
 function Logout() {
     const { logout } = useAuth();
-    const { setSnackBar } = useSnackBar();
+    const { snackBar, setSnackBar } = useSnackBar();
     logout();
     setSnackBar({
+        ...snackBar,
         open: true,
         severity: "success",
         message: "Logged out successfully",

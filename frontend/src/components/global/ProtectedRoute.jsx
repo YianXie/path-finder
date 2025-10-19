@@ -4,9 +4,10 @@ import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({ children, redirectTo = "/login" }) {
     const { isAuthenticated } = useAuth();
-    const { setSnackBar } = useSnackBar();
+    const { snackBar, setSnackBar } = useSnackBar();
     if (!isAuthenticated) {
         setSnackBar({
+            ...snackBar,
             open: true,
             severity: "warning",
             message: "Please login to access this page",

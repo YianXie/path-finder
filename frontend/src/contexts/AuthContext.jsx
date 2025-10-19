@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     // Function to fetch user profile from backend
     const fetchUserProfile = useCallback(async (accessToken) => {
         try {
-            const response = await api.get("/auth/profile/", {
+            const response = await api.get("/accounts/profile/", {
                 headers: { Authorization: `Bearer ${accessToken}` },
             });
 

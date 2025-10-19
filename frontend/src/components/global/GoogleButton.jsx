@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 export default function GoogleButton() {
     const navigate = useNavigate();
     const { login } = useAuth();
-    const { setSnackBar } = useSnackBar();
+    const { snackBar, setSnackBar } = useSnackBar();
 
     useEffect(() => {
         if (window.google) {
@@ -20,12 +20,15 @@ export default function GoogleButton() {
                         });
                         login(data.tokens, data.user);
                         setSnackBar({
+                            ...snackBar,
                             open: true,
+                            severity: "success",
                             message: "Logged in successfully",
                         });
                         navigate("/");
                     } catch (error) {
                         setSnackBar({
+                            ...snackBar,
                             open: true,
                             message: error.response.data.detail,
                             severity: "error",

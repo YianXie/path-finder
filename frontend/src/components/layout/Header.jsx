@@ -24,7 +24,7 @@ import Logout from "@mui/icons-material/Logout";
 
 function Header() {
     const { isAuthenticated, user, logout } = useAuth();
-    const { setSnackBar } = useSnackBar();
+    const { snackBar, setSnackBar } = useSnackBar();
     const { mode, setMode } = useColorScheme();
     const [mainMenuAnchorEl, setMainMenuAnchorEl] = useState(null);
     const [themeMenuAnchorEl, setThemeMenuAnchorEl] = useState(null);
@@ -203,9 +203,10 @@ function Header() {
                                         logout();
                                         handleMenuClose();
                                         setSnackBar({
+                                            ...snackBar,
                                             open: true,
-                                            message: "Logged out successfully",
                                             severity: "success",
+                                            message: "Logged out successfully",
                                         });
                                         navigate("/login");
                                     }}

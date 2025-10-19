@@ -20,8 +20,16 @@ export const SnackBarProvider = ({ children }) => {
 
     return (
         <SnackBarContext.Provider value={{ snackBar, setSnackBar }}>
-            <Snackbar open={snackBar.open} onClose={handleClose}>
-                <Alert severity={snackBar.severity} onClose={handleClose}>
+            <Snackbar
+                open={snackBar.open}
+                onClose={handleClose}
+                autoHideDuration={snackBar.duration}
+            >
+                <Alert
+                    severity={snackBar.severity}
+                    onClose={handleClose}
+                    sx={{ width: "100%" }}
+                >
                     {snackBar.message}
                     {snackBar.action}
                 </Alert>

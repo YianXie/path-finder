@@ -1,3 +1,8 @@
+import { useSnackBar } from "../../contexts/SnackBarContext";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import api from "../../api";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
@@ -11,15 +16,16 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
-import { useSnackBar } from "../../contexts/SnackBarContext";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import Backdrop from "@mui/material/Backdrop";
 
 function Item({ id, name, category, description, image }) {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const { setSnackBar } = useSnackBar();
+    const { snackBar, setSnackBar } = useSnackBar();
     const openMenu = Boolean(anchorEl);
 
     const handleMenuClick = (event) => {
@@ -31,21 +37,57 @@ function Item({ id, name, category, description, image }) {
     };
 
     const handleSave = async () => {
-        if (isFavorite) {
-            setSnackBar({ open: true, message: "Item unsaved" });
-            setIsFavorite(false);
+        if (!isAuthenticated) {
+            setSnackBar({
+                ...snackBar,
+                open: true,
+                severity: "error",
+                message: "Please login to save items",
+            });
             return;
         }
-        setSnackBar({ open: true, message: "Item saved" });
-        setIsFavorite(!isFavorite);
+
+        try {
+            setIsLoading(true);
+            await api.post("/accounts/save-item/", { item_id: id });
+            setSnackBar({
+                ...snackBar,
+                open: true,
+                severity: "success",
+                message: `Item ${isFavorite ? "removed from" : "saved to"} your profile`,
+            });
+            setIsFavorite(!isFavorite);
+        } catch (error) {
+            console.error("Failed to save item to your profile", error);
+            setSnackBar({
+                ...snackBar,
+                severity: "error",
+                open: true,
+                message:
+                    "Failed to save item to your profile: " + error.message,
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleShare = async () => {
         try {
             await navigator.clipboard.writeText(location.href + `item/${id}`);
-            setSnackBar({ open: true, message: "Link copied to clipboard" });
+            setSnackBar({
+                ...snackBar,
+                open: true,
+                severity: "success",
+                message: "Link copied to clipboard",
+            });
         } catch (error) {
             console.error("Failed to copy link to clipboard", error);
+            setSnackBar({
+                ...snackBar,
+                open: true,
+                severity: "error",
+                message: "Failed to copy link to clipboard: " + error.message,
+            });
         }
     };
 
@@ -58,6 +100,15 @@ function Item({ id, name, category, description, image }) {
 
     return (
         <Card sx={{ width: 300, maxHeight: 400 }}>
+            <Backdrop
+                open={isLoading}
+                sx={(theme) => ({
+                    color: "#fff",
+                    zIndex: theme.zIndex.drawer + 1,
+                })}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <CardActionArea onClick={() => navigate(`/item/${id}`)}>
                 <CardMedia
                     component="img"

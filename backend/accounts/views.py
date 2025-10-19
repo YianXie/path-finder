@@ -1,16 +1,15 @@
 import os
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from rest_framework.response import Response
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from jwt import decode
 from .models import UserModel
 from .serializers import CustomRefreshToken
-from jwt import decode
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 ALLOWED_GOOGLE_HD = os.getenv("ALLOWED_GOOGLE_HD")
@@ -164,4 +163,62 @@ class UserProfileView(APIView):
                     "name": getattr(user, "first_name", "") or user.username,
                     "google_sub": getattr(user, "google_sub", None),
                 }
+            )
+
+
+class SaveItemView(APIView):
+    """Save item view
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"status": "error", "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            item_id = request.data.get("item_id")
+            if not item_id:
+                return Response(
+                    {"status": "error", "message": "Item ID is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            user_model = UserModel.objects.get(email=user.email)
+            if item_id in user_model.saved_items:
+                UserModel.objects.update_or_create(
+                    email=user.email,
+                    defaults={
+                        "saved_items": [
+                            item for item in user_model.saved_items if item != item_id
+                        ]
+                    },
+                )
+                return Response(
+                    {"status": "ok", "message": "Item removed from saved items"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                UserModel.objects.update_or_create(
+                    email=user.email,
+                    defaults={"saved_items": [*user_model.saved_items, item_id]},
+                )
+                return Response(
+                    {"status": "ok", "message": "Item added to saved items"},
+                    status=status.HTTP_200_OK,
+                )
+        except Exception as e:
+            return Response(
+                {"status": "error", "message": "Failed to save item: " + str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
             )

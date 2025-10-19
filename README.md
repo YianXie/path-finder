@@ -2,6 +2,8 @@
 
 PathFinder is a web application designed to provide personalized suggestions for SAS high school students on competitions, clubs, and tutoring based on their interests, skills, and academic goals.
 
+[Demo link](https://sas-pathfinder.org)
+
 ## Purpose
 
 High school students (including SAS students) often struggle to discover relevant extracurricular opportunities that align with their interests and career aspirations. PathFinder solves this problem by:
@@ -123,7 +125,10 @@ The application will be available at `http://localhost:5173`
 -   `POST /api/token/` - Obtain JWT access and refresh tokens
 -   `POST /api/token/refresh/` - Refresh JWT access token using refresh token
 -   `GET /api/suggestions/` - Get Google Spreadsheet data
--   `POST /auth/google/` - Login with Google
+-   `POST /accounts/google/` - Login with Google
+-   `POST /accounts/parse-token/` - Parse a JWT token
+-   `GET /accounts/profile/` - Get user info (e.g., email & name)
+-   `POST /accounts/save-item/` - Save/unsave item
 
 ## Development
 
