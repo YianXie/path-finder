@@ -64,7 +64,7 @@ function Saved() {
                 columnSpacing={{ xs: 4, sm: 5, md: 6 }}
             >
                 {savedItems.map((item) => (
-                    <Item {...item} />
+                    <Item {...item} is_saved={true} /> // set is_saved to true since this is the saved page
                 ))}
             </Grid>
         </Container>

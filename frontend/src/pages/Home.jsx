@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useSnackBar } from "../contexts/SnackBarContext";
+import { useAuth } from "../contexts/AuthContext";
 import api from "../api";
 import Item from "../components/home/Item";
 import usePageTitle from "../hooks/usePageTitle";
@@ -17,52 +18,116 @@ import FormControl from "@mui/material/FormControl";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 function Home() {
     usePageTitle("PathFinder | Home");
 
     const { snackBar, setSnackBar } = useSnackBar();
+    const { isAuthenticated } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
     const [sortBy, setSortBy] = useState("alphabetical");
     const [sortDirection, setSortDirection] = useState(1); // 1 for ascending, -1 for descending
+    const [pagination, setPagination] = useState({
+        page: 1,
+        page_size: 50,
+        total_pages: 1,
+        total_count: 0,
+        has_next: false,
+        has_previous: false,
+    });
 
-    useEffect(() => {
-        async function getSuggestions() {
+    const getSuggestions = useCallback(
+        async (page = 1) => {
             try {
-                const res = await api.get("/api/suggestions/");
-                setSuggestions(res.data);
+                setIsLoading(true);
+                // Use the optimized endpoint for authenticated users
+                const endpoint = isAuthenticated
+                    ? "/api/suggestions-with-saved-status/"
+                    : "/api/suggestions/";
+
+                const params = isAuthenticated ? { page, page_size: 50 } : {};
+                const res = await api.get(endpoint, { params });
+
+                if (isAuthenticated && res.data.results) {
+                    // Handle paginated response
+                    setSuggestions(res.data.results);
+                    setPagination(res.data.pagination);
+                } else {
+                    // Handle non-paginated response
+                    setSuggestions(res.data);
+                    setPagination({
+                        page: 1,
+                        page_size: res.data.length,
+                        total_pages: 1,
+                        total_count: res.data.length,
+                        has_next: false,
+                        has_previous: false,
+                    });
+                }
             } catch (error) {
-                console.error(error);
+                console.error("Failed to fetch suggestions:", error);
+                setSnackBar({
+                    ...snackBar,
+                    severity: "error",
+                    open: true,
+                    message: "Failed to load suggestions. Please try again.",
+                });
             } finally {
                 setIsLoading(false);
             }
+        },
+        [isAuthenticated, snackBar, setSnackBar]
+    );
+
+    // Function to refresh suggestions (useful after saving/unsaving items)
+    const refreshSuggestions = useCallback(() => {
+        if (isAuthenticated) {
+            getSuggestions(pagination.page);
         }
-        getSuggestions();
-    }, []);
+    }, [isAuthenticated, getSuggestions, pagination.page]);
 
     useEffect(() => {
+        getSuggestions();
+    }, [getSuggestions]);
+
+    // Memoized sorted suggestions to avoid unnecessary re-sorting
+    const sortedSuggestions = useMemo(() => {
+        const suggestionsCopy = [...suggestions];
+
         switch (sortBy.toLowerCase()) {
             case "alphabetical":
-                setSuggestions(
-                    suggestions.sort(
-                        (a, b) => a.name.localeCompare(b.name) * sortDirection
-                    )
+                return suggestionsCopy.sort(
+                    (a, b) => a.name.localeCompare(b.name) * sortDirection
                 );
-                break;
             case "newest":
-                // TODO: Need to implement this
-                break;
-
+                // Sort by created_at if available, otherwise by name
+                return suggestionsCopy.sort((a, b) => {
+                    if (a.created_at && b.created_at) {
+                        return (
+                            (new Date(b.created_at) - new Date(a.created_at)) *
+                            sortDirection
+                        );
+                    }
+                    return a.name.localeCompare(b.name) * sortDirection;
+                });
             case "oldest":
-                // TODO: Need to implement this
-                break;
-
+                // Sort by created_at if available, otherwise by name
+                return suggestionsCopy.sort((a, b) => {
+                    if (a.created_at && b.created_at) {
+                        return (
+                            (new Date(a.created_at) - new Date(b.created_at)) *
+                            sortDirection
+                        );
+                    }
+                    return a.name.localeCompare(b.name) * sortDirection;
+                });
             default:
-                setSuggestions(suggestions);
-                break;
+                return suggestionsCopy;
         }
-    }, [sortBy, suggestions, sortDirection]);
+    }, [suggestions, sortBy, sortDirection]);
 
     return (
         <Container maxWidth="xl" sx={{ paddingBlock: 4 }}>
@@ -135,10 +200,39 @@ function Home() {
                 alignItems="center"
                 justifyContent="space-between"
             >
-                {suggestions.map((suggestion, index) => (
-                    <Item id={index + 1} {...suggestion} />
+                {sortedSuggestions.map((suggestion, index) => (
+                    <Item
+                        key={suggestion.external_id}
+                        id={index + 1}
+                        {...suggestion}
+                        onSaveSuccess={refreshSuggestions}
+                    />
                 ))}
             </Grid>
+
+            {/* Pagination Controls */}
+            {pagination.total_pages > 1 && (
+                <Stack spacing={2} alignItems="center" sx={{ marginTop: 4 }}>
+                    <Pagination
+                        count={pagination.total_pages}
+                        page={pagination.page}
+                        onChange={(event, page) => getSuggestions(page)}
+                        color="primary"
+                        size="large"
+                        showFirstButton
+                        showLastButton
+                    />
+                    <Typography variant="body2" color="text.secondary">
+                        Showing{" "}
+                        {(pagination.page - 1) * pagination.page_size + 1} to{" "}
+                        {Math.min(
+                            pagination.page * pagination.page_size,
+                            pagination.total_count
+                        )}{" "}
+                        of {pagination.total_count} items
+                    </Typography>
+                </Stack>
+            )}
         </Container>
     );
 }

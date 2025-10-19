@@ -1,6 +1,6 @@
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../api";
 import Card from "@mui/material/Card";
@@ -16,32 +16,27 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
-import Skeleton from "@mui/material/Skeleton";
 
-function Item({ external_id, name, category, description, image }) {
+function Item({
+    external_id,
+    name,
+    category,
+    description,
+    image,
+    is_saved: initialIsSaved = false,
+    onSaveSuccess,
+}) {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSaved, setIsSaved] = useState(false);
+    const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [anchorEl, setAnchorEl] = useState(null);
     const { snackBar, setSnackBar } = useSnackBar();
     const openMenu = Boolean(anchorEl);
 
+    // Update isSaved when initialIsSaved prop changes
     useEffect(() => {
-        async function checkIfItemSaved() {
-            try {
-                const res = await api.post("/accounts/check-item-saved/", {
-                    external_id: external_id,
-                });
-                setIsSaved(res.data.is_saved);
-            } catch (error) {
-                console.error("Failed to check if item is saved", error);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        checkIfItemSaved();
-    }, [external_id]);
+        setIsSaved(initialIsSaved);
+    }, [initialIsSaved]);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -63,7 +58,6 @@ function Item({ external_id, name, category, description, image }) {
         }
 
         try {
-            setIsLoading(true);
             await api.post("/accounts/save-item/", {
                 external_id: external_id,
             });
@@ -74,6 +68,10 @@ function Item({ external_id, name, category, description, image }) {
                 message: `Item ${isSaved ? "removed from" : "saved to"} your profile`,
             });
             setIsSaved(!isSaved);
+            // Notify parent component to refresh suggestions
+            if (onSaveSuccess) {
+                onSaveSuccess();
+            }
         } catch (error) {
             console.error("Failed to save item to your profile", error);
             setSnackBar({
@@ -83,8 +81,6 @@ function Item({ external_id, name, category, description, image }) {
                 message:
                     "Failed to save item to your profile: " + error.message,
             });
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -117,9 +113,7 @@ function Item({ external_id, name, category, description, image }) {
         return string;
     };
 
-    return isLoading ? (
-        <Skeleton variant="rounded" width={300} height={350} animation="wave" />
-    ) : (
+    return (
         <Card sx={{ width: 300, maxHeight: 400 }}>
             <CardActionArea onClick={() => navigate(`/item/${external_id}`)}>
                 <CardMedia
@@ -197,4 +191,5 @@ function Item({ external_id, name, category, description, image }) {
     );
 }
 
-export default Item;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(Item);
