@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { Box, CircularProgress } from "@mui/material";
 import { useAuth } from "./contexts/AuthContext";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
@@ -8,9 +7,10 @@ import Clubs from "./pages/Clubs";
 import Tutoring from "./pages/Tutoring";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
-import Profile from "./pages/auth/Profile";
+import Saved from "./pages/auth/Saved";
 import ItemDetail from "./pages/ItemDetail";
-import ProtectedRoute from "./components/global/ProtectedRoute";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -21,14 +21,15 @@ function App() {
 
     if (isLoading) {
         return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="100vh"
+            <Backdrop
+                open={isLoading}
+                sx={(theme) => ({
+                    zIndex: theme.zIndex.drawer + 1,
+                    color: "#fff",
+                })}
             >
-                <CircularProgress />
-            </Box>
+                <CircularProgress color="inherit" />
+            </Backdrop>
         );
     }
 
@@ -37,14 +38,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
-                    <Route
-                        path="/profile"
-                        element={
-                            <ProtectedRoute>
-                                <Profile />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route path="/saved" element={<Saved />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/logout" element={<Logout />} />
                     <Route path="/competitions" element={<Competitions />} />

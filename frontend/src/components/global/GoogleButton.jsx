@@ -15,7 +15,7 @@ export default function GoogleButton() {
                 client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
                 callback: async (response) => {
                     try {
-                        const { data } = await api.post("auth/google/", {
+                        const { data } = await api.post("accounts/google/", {
                             credential: response.credential,
                         });
                         login(data.tokens, data.user);
@@ -41,7 +41,7 @@ export default function GoogleButton() {
                 { theme: "outline", size: "large" }
             );
         }
-    }, [login, navigate]);
+    }, [login, navigate, setSnackBar, snackBar]);
 
     return <div id="google-signin" />;
 }

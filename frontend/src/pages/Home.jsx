@@ -16,6 +16,7 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
 
 function Home() {
     usePageTitle("PathFinder | Home");
@@ -97,38 +98,42 @@ function Home() {
                         <MenuItem value="oldest">Oldest</MenuItem>
                     </Select>
                 </FormControl>
-                <IconButton
-                    onClick={() => {
-                        setSnackBar({
-                            ...snackBar,
-                            severity: "success",
-                            open: true,
-                            message: `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`,
-                        });
-                        setSortDirection(sortDirection * -1);
-                    }}
-                    aria-label="Toggle sort direction"
-                >
-                    {sortDirection === 1 ? (
-                        <SwapVertIcon
-                            sx={{ transition: "transform 0.3s ease-in-out" }}
-                        />
-                    ) : (
-                        <SwapVertIcon
-                            sx={{
-                                transform: "scaleY(-1)",
-                                transition: "transform 0.3s ease-in-out",
-                            }}
-                        />
-                    )}
-                </IconButton>
+                <Tooltip title="Toggle sort direction" placement="bottom" arrow>
+                    <IconButton
+                        onClick={() => {
+                            setSnackBar({
+                                ...snackBar,
+                                severity: "success",
+                                open: true,
+                                message: `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`,
+                            });
+                            setSortDirection(sortDirection * -1);
+                        }}
+                        aria-label="Toggle sort direction"
+                    >
+                        {sortDirection === 1 ? (
+                            <SwapVertIcon
+                                sx={{
+                                    transition: "transform 0.3s ease-in-out",
+                                }}
+                            />
+                        ) : (
+                            <SwapVertIcon
+                                sx={{
+                                    transform: "scaleY(-1)",
+                                    transition: "transform 0.3s ease-in-out",
+                                }}
+                            />
+                        )}
+                    </IconButton>
+                </Tooltip>
             </Box>
             <Grid
                 container
                 rowSpacing={5}
                 columnSpacing={{ xs: 4, sm: 5, md: 6 }}
                 alignItems="center"
-                justifyContent="center"
+                justifyContent="space-between"
             >
                 {suggestions.map((suggestion, index) => (
                     <Item id={index + 1} {...suggestion} />

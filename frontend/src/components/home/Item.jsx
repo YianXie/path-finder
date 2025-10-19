@@ -1,6 +1,6 @@
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../api";
 import Card from "@mui/material/Card";
@@ -16,17 +16,32 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
-import CircularProgress from "@mui/material/CircularProgress";
-import Backdrop from "@mui/material/Backdrop";
+import Skeleton from "@mui/material/Skeleton";
 
-function Item({ id, name, category, description, image }) {
+function Item({ external_id, name, category, description, image }) {
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
-    const [isLoading, setIsLoading] = useState(false);
-    const [isFavorite, setIsFavorite] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaved, setIsSaved] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const { snackBar, setSnackBar } = useSnackBar();
     const openMenu = Boolean(anchorEl);
+
+    useEffect(() => {
+        async function checkIfItemSaved() {
+            try {
+                const res = await api.post("/accounts/check-item-saved/", {
+                    external_id: external_id,
+                });
+                setIsSaved(res.data.is_saved);
+            } catch (error) {
+                console.error("Failed to check if item is saved", error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        checkIfItemSaved();
+    }, [external_id]);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -49,14 +64,16 @@ function Item({ id, name, category, description, image }) {
 
         try {
             setIsLoading(true);
-            await api.post("/accounts/save-item/", { item_id: id });
+            await api.post("/accounts/save-item/", {
+                external_id: external_id,
+            });
             setSnackBar({
                 ...snackBar,
                 open: true,
                 severity: "success",
-                message: `Item ${isFavorite ? "removed from" : "saved to"} your profile`,
+                message: `Item ${isSaved ? "removed from" : "saved to"} your profile`,
             });
-            setIsFavorite(!isFavorite);
+            setIsSaved(!isSaved);
         } catch (error) {
             console.error("Failed to save item to your profile", error);
             setSnackBar({
@@ -73,7 +90,9 @@ function Item({ id, name, category, description, image }) {
 
     const handleShare = async () => {
         try {
-            await navigator.clipboard.writeText(location.href + `item/${id}`);
+            await navigator.clipboard.writeText(
+                location.href + `item/${external_id}`
+            );
             setSnackBar({
                 ...snackBar,
                 open: true,
@@ -98,18 +117,11 @@ function Item({ id, name, category, description, image }) {
         return string;
     };
 
-    return (
+    return isLoading ? (
+        <Skeleton variant="rounded" width={300} height={350} animation="wave" />
+    ) : (
         <Card sx={{ width: 300, maxHeight: 400 }}>
-            <Backdrop
-                open={isLoading}
-                sx={(theme) => ({
-                    color: "#fff",
-                    zIndex: theme.zIndex.drawer + 1,
-                })}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
-            <CardActionArea onClick={() => navigate(`/item/${id}`)}>
+            <CardActionArea onClick={() => navigate(`/item/${external_id}`)}>
                 <CardMedia
                     component="img"
                     image={image}
@@ -125,13 +137,13 @@ function Item({ id, name, category, description, image }) {
                         variant="body1"
                         sx={{ color: "text.secondary" }}
                     >
-                        {truncateString(description, 100)}
+                        {truncateString(description, 25)}
                     </Typography>
                     <Typography
                         variant="body2"
                         sx={{ color: "text.secondary" }}
                     >
-                        {category.join(", ")}
+                        {truncateString(category.join(", "), 20)}
                     </Typography>
                 </CardContent>
             </CardActionArea>
@@ -142,7 +154,7 @@ function Item({ id, name, category, description, image }) {
                         onClick={handleSave}
                         color="primary"
                     >
-                        {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        {isSaved ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="Open menu" placement="bottom" arrow>

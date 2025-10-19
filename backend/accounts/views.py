@@ -8,6 +8,9 @@ from google.auth.transport import requests as grequests
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from jwt import decode
+
+from suggestions.models import SuggestionModel
+from suggestions.serializers import SuggestionSerializer
 from .models import UserModel
 from .serializers import CustomRefreshToken
 
@@ -187,20 +190,22 @@ class SaveItemView(APIView):
             )
 
         try:
-            item_id = request.data.get("item_id")
-            if not item_id:
+            external_id = request.data.get("external_id")
+            if not external_id:
                 return Response(
-                    {"status": "error", "message": "Item ID is required"},
+                    {"status": "error", "message": "External ID is required"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
             user_model = UserModel.objects.get(email=user.email)
-            if item_id in user_model.saved_items:
+            if external_id in user_model.saved_items:
                 UserModel.objects.update_or_create(
                     email=user.email,
                     defaults={
                         "saved_items": [
-                            item for item in user_model.saved_items if item != item_id
+                            item
+                            for item in user_model.saved_items
+                            if item != external_id
                         ]
                     },
                 )
@@ -211,7 +216,7 @@ class SaveItemView(APIView):
             else:
                 UserModel.objects.update_or_create(
                     email=user.email,
-                    defaults={"saved_items": [*user_model.saved_items, item_id]},
+                    defaults={"saved_items": [*user_model.saved_items, external_id]},
                 )
                 return Response(
                     {"status": "ok", "message": "Item added to saved items"},
@@ -220,5 +225,97 @@ class SaveItemView(APIView):
         except Exception as e:
             return Response(
                 {"status": "error", "message": "Failed to save item: " + str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class CheckItemSavedView(APIView):
+    """Check if item is saved view
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"status": "error", "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            external_id = request.data.get("external_id")
+            if not external_id:
+                return Response(
+                    {"status": "error", "message": "External ID is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            user_model = UserModel.objects.get(email=user.email)
+            if external_id in user_model.saved_items:
+                return Response(
+                    {"status": "ok", "message": "Item is saved", "is_saved": True},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(
+                    {"status": "ok", "message": "Item is not saved", "is_saved": False},
+                    status=status.HTTP_200_OK,
+                )
+
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Failed to check if item is saved: " + str(e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class SavedItemsView(APIView):
+    """Saved items view
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"status": "error", "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            user_model = UserModel.objects.get(email=user.email)
+            saved_items = user_model.saved_items
+            suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
+            return Response(
+                {
+                    "status": "ok",
+                    "message": "Saved items retrieved successfully",
+                    "suggestions": SuggestionSerializer(suggestions, many=True).data,
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Failed to retrieve saved items: " + str(e),
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )

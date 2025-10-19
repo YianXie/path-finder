@@ -71,6 +71,9 @@ export const AuthProvider = ({ children }) => {
                         "Email or name not found in refreshed token payload"
                     );
                 }
+
+                // Ensure loading is false after successful refresh
+                setIsLoading(false);
             } else {
                 logout();
             }
@@ -108,6 +111,9 @@ export const AuthProvider = ({ children }) => {
                             // This is a fallback for existing tokens without custom claims
                             fetchUserProfile(storedAccess);
                         }
+
+                        // Set loading to false after processing tokens
+                        setIsLoading(false);
                     } catch (error) {
                         console.error("Error parsing stored token:", error);
                         // Clear invalid tokens
@@ -118,8 +124,10 @@ export const AuthProvider = ({ children }) => {
                     // Access token expired, try to refresh
                     refreshToken(storedRefresh);
                 }
+            } else {
+                // No tokens found, user is not authenticated
+                setIsLoading(false);
             }
-            setIsLoading(false);
         };
 
         initializeAuth();
@@ -192,6 +200,9 @@ export const AuthProvider = ({ children }) => {
         return currentAccess;
     };
 
+    // More robust authentication check
+    const isAuthenticated = !!(access && user);
+
     return (
         <AuthContext.Provider
             value={{
@@ -200,7 +211,7 @@ export const AuthProvider = ({ children }) => {
                 refresh,
                 login,
                 logout,
-                isAuthenticated: !!user,
+                isAuthenticated,
                 isLoading,
                 getValidAccessToken,
             }}

@@ -124,7 +124,10 @@ function Header() {
                     <Divider orientation="vertical" flexItem />
                     {isAuthenticated && user ? (
                         <>
-                            <Tooltip title="Profile" placement="bottom">
+                            <Tooltip
+                                title="Account Settings"
+                                placement="bottom"
+                            >
                                 <IconButton
                                     size="small"
                                     onClick={(event) => {
@@ -179,13 +182,12 @@ function Header() {
                                     vertical: "bottom",
                                 }}
                             >
-                                <MenuItem onClick={handleMenuClose}>
-                                    <ListItemIcon>
-                                        <PersonIcon fontSize="small" />
-                                    </ListItemIcon>
-                                    My profile
-                                </MenuItem>
-                                <MenuItem onClick={handleMenuClose}>
+                                <MenuItem
+                                    onClick={() => {
+                                        navigate("/saved");
+                                        handleMenuClose();
+                                    }}
+                                >
                                     <ListItemIcon>
                                         <FavoriteIcon fontSize="small" />
                                     </ListItemIcon>
