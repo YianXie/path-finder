@@ -195,10 +195,9 @@ function Home() {
             </Box>
             <Grid
                 container
-                rowSpacing={5}
-                columnSpacing={{ xs: 4, sm: 5, md: 6 }}
+                spacing={6}
+                justifyContent="center"
                 alignItems="center"
-                justifyContent="space-between"
             >
                 {sortedSuggestions.map((suggestion, index) => (
                     <Item
