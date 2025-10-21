@@ -1,8 +1,9 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 export default function GoogleButton() {
     const navigate = useNavigate();

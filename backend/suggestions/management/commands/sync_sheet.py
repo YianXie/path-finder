@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 import requests
 
@@ -33,7 +34,7 @@ class Command(BaseCommand):
             csv_url = SHEET_CSV_URL
 
         self.stdout.write(self.style.NOTICE(f"Syncing suggestions from {csv_url}"))
-        response = requests.get(csv_url, timeout=15)
+        response = requests.get(csv_url, timeout=timedelta(seconds=30))
         response.raise_for_status()
 
         incoming_ext_ids = set()
@@ -63,5 +64,6 @@ class Command(BaseCommand):
                 )
                 incoming_ext_ids.add(external_id)
                 upserts += 1
+                self.stdout.write(self.style.SUCCESS(f"Synced {external_id}"))
 
         self.stdout.write(self.style.SUCCESS(f"Synced {upserts}"))

@@ -44,7 +44,7 @@ format:
 	@echo "Formatting backend code..."
 	cd backend && black . && isort .
 	@echo "Formatting frontend code..."
-	cd frontend && npx prettier --write "src/**/*.{js,jsx,css,md}"
+	cd frontend && npx prettier . --write --ignore-path .prettierignore
 
 # Run security checks
 security:

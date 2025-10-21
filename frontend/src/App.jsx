@@ -1,23 +1,22 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useAuth } from "./contexts/AuthContext";
-import Layout from "./components/layout/Layout";
-import Home from "./pages/Home";
-import Competitions from "./pages/Competitions";
-import Clubs from "./pages/Clubs";
-import Tutoring from "./pages/Tutoring";
-import Login from "./pages/auth/Login";
-import Logout from "./pages/auth/Logout";
-import Saved from "./pages/auth/Saved";
-import ItemDetail from "./pages/ItemDetail";
-import ProtectedRoute from "./ProtectedRoute";
-
-// Material UI components
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+
+import ProtectedRoute from "./ProtectedRoute";
+import Layout from "./components/layout/Layout";
+import { useAuth } from "./contexts/AuthContext";
+import Clubs from "./pages/Clubs";
+import Competitions from "./pages/Competitions";
+import Home from "./pages/Home";
+import ItemDetail from "./pages/ItemDetail";
+import Tutoring from "./pages/Tutoring";
+import Login from "./pages/auth/Login";
+import Logout from "./pages/auth/Logout";
+import Saved from "./pages/auth/Saved";
 
 function App() {
     const { isLoading } = useAuth();

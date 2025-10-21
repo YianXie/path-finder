@@ -1,27 +1,26 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { useSnackBar } from "../contexts/SnackBarContext";
-import { useAuth } from "../contexts/AuthContext";
-import usePageTitle from "../hooks/usePageTitle";
-import api from "../api";
-
-// Material UI components
-import Item from "../components/global/Item";
-import Box from "@mui/material/Box";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Grid from "@mui/material/Grid";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
+import Backdrop from "@mui/material/Backdrop";
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
+import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
+import FormControl from "@mui/material/FormControl";
+import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
 import Pagination from "@mui/material/Pagination";
+import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import api from "../api";
+import Item from "../components/global/Item";
+import { useAuth } from "../contexts/AuthContext";
+import { useSnackBar } from "../contexts/SnackBarContext";
+import usePageTitle from "../hooks/usePageTitle";
 
 function Home() {
     usePageTitle("PathFinder | Home");

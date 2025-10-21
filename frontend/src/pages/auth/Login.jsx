@@ -1,11 +1,12 @@
-import { useAuth } from "../../contexts/AuthContext";
-import usePageTitle from "../../hooks/usePageTitle";
-import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import GoogleButton from "../../components/global/GoogleButton";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+import GoogleButton from "../../components/global/GoogleButton";
+import { useAuth } from "../../contexts/AuthContext";
+import usePageTitle from "../../hooks/usePageTitle";
 
 function Login() {
     usePageTitle("PathFinder | Login");

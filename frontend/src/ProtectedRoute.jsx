@@ -1,6 +1,7 @@
-import { useAuth } from "./contexts/AuthContext";
-import { Navigate } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
+import { Navigate } from "react-router-dom";
+
+import { useAuth } from "./contexts/AuthContext";
 
 function ProtectedRoute({ children }) {
     const { access } = useAuth();

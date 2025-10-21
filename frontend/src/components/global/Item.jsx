@@ -1,23 +1,22 @@
-import { useSnackBar } from "../../contexts/SnackBarContext";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect, memo } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import api from "../../api";
-
-// Material UI components
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import MenuIcon from "@mui/icons-material/Menu";
 import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import MenuIcon from "@mui/icons-material/Menu";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { memo, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import api from "../../api";
+import { useAuth } from "../../contexts/AuthContext";
+import { useSnackBar } from "../../contexts/SnackBarContext";
 
 function Item({
     external_id,

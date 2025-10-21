@@ -171,3 +171,10 @@ SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
     "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.CustomTokenObtainPairSerializer",
 }
+
+CELERY_BEAT_SCHEDULE = {
+    "sync_sheet_every_30_minutes": {
+        "task": "suggestions.tasks.sync_sheet_task",
+        "schedule": timedelta(minutes=30),
+    },
+}

@@ -1,38 +1,36 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { useSnackBar } from "../contexts/SnackBarContext";
-import api from "../api";
-import usePageTitle from "../hooks/usePageTitle";
-
-// Material UI components
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
+// Icons
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CategoryIcon from "@mui/icons-material/Category";
+import DescriptionIcon from "@mui/icons-material/Description";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import LinkIcon from "@mui/icons-material/Link";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import ShareIcon from "@mui/icons-material/Share";
+import Alert from "@mui/material/Alert";
 import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
 import Chip from "@mui/material/Chip";
-import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
+import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
-import Alert from "@mui/material/Alert";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-// Icons
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import CategoryIcon from "@mui/icons-material/Category";
-import DescriptionIcon from "@mui/icons-material/Description";
-import LinkIcon from "@mui/icons-material/Link";
+import api from "../api";
+import { useAuth } from "../contexts/AuthContext";
+import { useSnackBar } from "../contexts/SnackBarContext";
+import usePageTitle from "../hooks/usePageTitle";
 
 function ItemDetail() {
     usePageTitle("PathFinder | Item Detail");
