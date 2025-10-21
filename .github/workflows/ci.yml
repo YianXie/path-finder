@@ -148,7 +148,8 @@ jobs:
 
             - name: Run safety scan (dependency vulnerabilities)
               working-directory: ./backend
-              run: safety scan --no-prompt
+              run: |
+                  safety scan --api-key ${{ secrets.SAFETY_API_KEY }}
 
             - name: Run bandit (security linting)
               working-directory: ./backend
