@@ -148,7 +148,7 @@ jobs:
 
             - name: Run safety scan (dependency vulnerabilities)
               working-directory: ./backend
-              run: safety scan
+              run: safety scan --no-prompt
 
             - name: Run bandit (security linting)
               working-directory: ./backend
