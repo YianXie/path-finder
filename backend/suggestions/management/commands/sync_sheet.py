@@ -33,7 +33,7 @@ class Command(BaseCommand):
             csv_url = SHEET_CSV_URL
 
         self.stdout.write(self.style.NOTICE(f"Syncing suggestions from {csv_url}"))
-        response = requests.get(csv_url)
+        response = requests.get(csv_url, timeout=15)
         response.raise_for_status()
 
         incoming_ext_ids = set()
