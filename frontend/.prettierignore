@@ -1,3 +1,9 @@
 # Ignore artifacts:
 build
 coverage
+dist
+node_modules
+
+# Ignore generated files:
+*.min.js
+*.min.css

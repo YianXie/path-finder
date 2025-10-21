@@ -8,6 +8,7 @@ import {
 import { jwtDecode } from "jwt-decode";
 import api from "../api";
 
+// Create context for authentication
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

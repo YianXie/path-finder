@@ -9,6 +9,9 @@ import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
 import Saved from "./pages/auth/Saved";
 import ItemDetail from "./pages/ItemDetail";
+import ProtectedRoute from "./ProtectedRoute";
+
+// Material UI components
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import "@fontsource/roboto/300.css";
@@ -38,13 +41,41 @@ function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
-                    <Route path="/saved" element={<Saved />} />
+                    <Route
+                        path="/saved"
+                        element={
+                            <ProtectedRoute>
+                                <Saved />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="/login" element={<Login />} />
                     <Route path="/logout" element={<Logout />} />
-                    <Route path="/competitions" element={<Competitions />} />
-                    <Route path="/clubs" element={<Clubs />} />
-                    <Route path="/tutoring" element={<Tutoring />} />
-                    <Route path="/item/:id" element={<ItemDetail />} />
+                    <Route
+                        path="/competitions"
+                        element={
+                            <ProtectedRoute>
+                                <Competitions />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/clubs"
+                        element={
+                            <ProtectedRoute>
+                                <Clubs />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/tutoring"
+                        element={
+                            <ProtectedRoute>
+                                <Tutoring />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/item/:external_id" element={<ItemDetail />} />
                 </Route>
             </Routes>
         </Router>

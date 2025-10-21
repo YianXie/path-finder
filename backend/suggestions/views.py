@@ -91,3 +91,76 @@ class SuggestionListWithSavedStatusView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+
+class SuggestionDetailView(APIView):
+    """Suggestion Detail View"""
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, external_id):
+        try:
+            suggestion = SuggestionModel.objects.get(external_id=external_id)
+            serializer = SuggestionSerializer(suggestion)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Handle suggestion not found
+        except SuggestionModel.DoesNotExist:
+            return Response(
+                {"status": "error", "message": "Suggestion not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Other exceptions
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Failed to retrieve suggestion: " + str(e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class SuggestionDetailWithSavedStatusView(APIView):
+    """Suggestion Detail View with saved status for authenticated users"""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, external_id):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"status": "error", "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            suggestion = SuggestionModel.objects.get(external_id=external_id)
+            user_model = UserModel.objects.get(email=user.email)
+            saved_items = set(user_model.saved_items)
+            is_saved = external_id in saved_items
+            serializer = SuggestionSerializer(suggestion)
+
+            return Response(
+                {
+                    "suggestion": serializer.data,
+                    "is_saved": is_saved,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except SuggestionModel.DoesNotExist:
+            return Response(
+                {"status": "error", "message": "Suggestion not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Failed to retrieve suggestion: " + str(e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

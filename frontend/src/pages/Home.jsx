@@ -1,9 +1,11 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { useSnackBar } from "../contexts/SnackBarContext";
 import { useAuth } from "../contexts/AuthContext";
-import api from "../api";
-import Item from "../components/home/Item";
 import usePageTitle from "../hooks/usePageTitle";
+import api from "../api";
+
+// Material UI components
+import Item from "../components/global/Item";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
@@ -199,10 +201,9 @@ function Home() {
                 justifyContent="center"
                 alignItems="center"
             >
-                {sortedSuggestions.map((suggestion, index) => (
+                {sortedSuggestions.map((suggestion) => (
                     <Item
                         key={suggestion.external_id}
-                        id={index + 1}
                         {...suggestion}
                         onSaveSuccess={refreshSuggestions}
                     />

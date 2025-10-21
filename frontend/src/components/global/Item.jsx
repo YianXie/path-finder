@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect, memo } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../api";
+
+// Material UI components
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
@@ -26,11 +28,12 @@ function Item({
     is_saved: initialIsSaved = false,
     onSaveSuccess,
 }) {
+    // React hooks
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+    const { snackBar, setSnackBar } = useSnackBar();
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [anchorEl, setAnchorEl] = useState(null);
-    const { snackBar, setSnackBar } = useSnackBar();
     const openMenu = Boolean(anchorEl);
 
     // Update isSaved when initialIsSaved prop changes
@@ -58,22 +61,31 @@ function Item({
         }
 
         try {
+            // Save item to user's profile
             await api.post("/accounts/save-item/", {
                 external_id: external_id,
             });
+
+            // Show success snackbar
             setSnackBar({
                 ...snackBar,
                 open: true,
                 severity: "success",
                 message: `Item ${isSaved ? "removed from" : "saved to"} your profile`,
             });
+
+            // Update local state
             setIsSaved(!isSaved);
+
             // Notify parent component to refresh suggestions
             if (onSaveSuccess) {
                 onSaveSuccess();
             }
         } catch (error) {
+            // Log error
             console.error("Failed to save item to your profile", error);
+
+            // Show error snackbar
             setSnackBar({
                 ...snackBar,
                 severity: "error",
@@ -86,9 +98,12 @@ function Item({
 
     const handleShare = async () => {
         try {
+            // Copy link to clipboard
             await navigator.clipboard.writeText(
                 location.href + `item/${external_id}`
             );
+
+            // Show success snackbar
             setSnackBar({
                 ...snackBar,
                 open: true,
@@ -96,16 +111,20 @@ function Item({
                 message: "Link copied to clipboard",
             });
         } catch (error) {
+            // Log error
             console.error("Failed to copy link to clipboard", error);
+
+            // Show error snackbar
             setSnackBar({
                 ...snackBar,
-                open: true,
                 severity: "error",
+                open: true,
                 message: "Failed to copy link to clipboard: " + error.message,
             });
         }
     };
 
+    // Truncate string to max length
     const truncateString = (string, maxLength) => {
         if (string.length > maxLength) {
             return string.slice(0, maxLength) + "...";
@@ -115,6 +134,7 @@ function Item({
 
     return (
         <Card sx={{ width: 300, maxHeight: 400 }}>
+            {/* Card action area to navigate to item detail page */}
             <CardActionArea onClick={() => navigate(`/item/${external_id}`)}>
                 <CardMedia
                     component="img"
@@ -123,6 +143,7 @@ function Item({
                     alt={name}
                     sx={{ objectFit: "cover", maxHeight: 200 }}
                 />
+                {/* Card content to display item details */}
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {truncateString(name, 20)}
@@ -141,6 +162,7 @@ function Item({
                     </Typography>
                 </CardContent>
             </CardActionArea>
+            {/* Card actions to display save and share buttons */}
             <CardActions className="flex items-center justify-end">
                 <Tooltip title="Save item" placement="bottom" arrow>
                     <IconButton

@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
-import Item from "../../components/home/Item";
+import Item from "../../components/global/Item";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 
@@ -57,14 +57,12 @@ function Saved() {
             <Divider sx={{ marginTop: 2, marginBottom: 4 }} />
             <Grid
                 container
-                spacing={2}
-                justifyContent="space-between"
+                spacing={6}
+                justifyContent="center"
                 alignItems="center"
-                rowSpacing={5}
-                columnSpacing={{ xs: 4, sm: 5, md: 6 }}
             >
                 {savedItems.map((item) => (
-                    <Item {...item} is_saved={true} /> // set is_saved to true since this is the saved page
+                    <Item key={item.external_id} {...item} is_saved={true} /> // set is_saved to true since this is the saved page
                 ))}
             </Grid>
         </Container>
