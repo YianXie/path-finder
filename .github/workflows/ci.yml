@@ -146,10 +146,12 @@ jobs:
                   pip install -r requirements.txt
                   pip install safety bandit
 
-            - name: Run safety scan (dependency vulnerabilities)
-              working-directory: ./backend
-              run: |
-                  safety scan --api-key ${{ secrets.SAFETY_API_KEY }}
+            - uses: actions/checkout@main
+            - name: Run Safety CLI to check for vulnerabilities
+              uses: pyupio/safety-action@v1
+              with:
+                  api-key: ${{ secrets.SAFETY_API_KEY }}
+                  args: --detailed-output
 
             - name: Run bandit (security linting)
               working-directory: ./backend
