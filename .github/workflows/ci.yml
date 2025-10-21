@@ -146,9 +146,9 @@ jobs:
                   pip install -r requirements.txt
                   pip install safety bandit
 
-            - name: Run safety check (dependency vulnerabilities)
+            - name: Run safety scan (dependency vulnerabilities)
               working-directory: ./backend
-              run: safety check
+              run: safety scan
 
             - name: Run bandit (security linting)
               working-directory: ./backend

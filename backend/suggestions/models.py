@@ -10,6 +10,7 @@ def slug_from_name_category(name, category, description):
 DEFAULT_IMAGE = r"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQeJQeJyzgAzTEVqXiGe90RGBFhfp_4RcJJMQ&s"
 DEFAULT_URL = ""
 DEFAULT_DESCRIPTION = ""
+EXAMPLE_EXTERNAL_ID = "example-example-this-is-an-example-item"
 
 
 class SuggestionModel(models.Model):

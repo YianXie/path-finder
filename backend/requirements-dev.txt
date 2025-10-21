@@ -7,5 +7,5 @@ isort==5.13.2
 flake8==7.1.1
 
 # Security checks
-safety==3.2.1
+safety==3.6.2
 bandit==1.7.10

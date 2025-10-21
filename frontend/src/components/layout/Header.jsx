@@ -36,7 +36,6 @@ import HeaderLink from "./HeaderLink";
 
 function HideOnScroll({ children }) {
     const trigger = useScrollTrigger();
-    console.log(trigger);
 
     return (
         <Slide appear={false} direction="down" in={!trigger}>

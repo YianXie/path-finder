@@ -76,11 +76,11 @@ else
 fi
 
 # Run security checks
-echo "Running safety check..."
-if safety check; then
-    print_status "Safety check passed"
+echo "Running safety scan..."
+if safety scan; then
+    print_status "Safety scan passed"
 else
-    print_warning "Safety check found issues"
+    print_warning "Safety scan found issues"
 fi
 
 echo "Running bandit security check..."
