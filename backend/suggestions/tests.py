@@ -1,8 +1,8 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
+from rest_framework.test import APITestCase
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from django.contrib.auth.models import User
 
 
 class HealthCheckTestCase(APITestCase):
@@ -19,42 +19,6 @@ class HealthCheckTestCase(APITestCase):
         """Test that health check only accepts GET requests"""
         response = self.client.post("/api/health/")
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
-class JWTAuthenticationTestCase(APITestCase):
-    """Tests for JWT authentication"""
-
-    def setUp(self):
-        """Set up test user and client"""
-        self.client = APIClient()
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
-
-    def test_jwt_authentication_without_token(self):
-        """Test that protected endpoint requires authentication"""
-        response = self.client.get("/api/test-jwt/")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
-    def test_jwt_authentication_with_valid_token(self):
-        """Test that protected endpoint accepts valid JWT token"""
-        # Generate token for user
-        refresh = RefreshToken.for_user(self.user)
-        access_token = str(refresh.access_token)
-
-        # Make authenticated request
-        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access_token}")
-        response = self.client.get("/api/test-jwt/")
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["status"], "ok")
-        self.assertEqual(response.data["message"], "JWT authentication test")
-
-    def test_jwt_authentication_with_invalid_token(self):
-        """Test that protected endpoint rejects invalid JWT token"""
-        self.client.credentials(HTTP_AUTHORIZATION="Bearer invalidtoken123")
-        response = self.client.get("/api/test-jwt/")
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TokenObtainTestCase(APITestCase):

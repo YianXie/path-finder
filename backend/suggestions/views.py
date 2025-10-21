@@ -1,12 +1,13 @@
 from rest_framework.exceptions import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
+
 from django.core.paginator import Paginator
-from suggestions.serializers import SuggestionSerializer
-from suggestions.models import SuggestionModel
+
 from accounts.models import UserModel
+from suggestions.models import SuggestionModel
+from suggestions.serializers import SuggestionSerializer
 
 
 class HealthCheckView(APIView):

@@ -1,8 +1,11 @@
-import os, requests, csv, io, json
+import os
+
+import requests
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from suggestions.models import SuggestionModel
 
+from suggestions.models import SuggestionModel
 
 sheet_id = os.getenv("SHEET_ID")
 SHEET_CSV_URL = f"https://opensheet.elk.sh/{sheet_id}/1"

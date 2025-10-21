@@ -1,16 +1,19 @@
 import os
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status
-from rest_framework.response import Response
-from google.oauth2 import id_token
+
 from google.auth.transport import requests as grequests
-from django.utils import timezone
-from django.contrib.auth import get_user_model
+from google.oauth2 import id_token
 from jwt import decode
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from suggestions.models import SuggestionModel
 from suggestions.serializers import SuggestionSerializer
+
 from .models import UserModel
 from .serializers import CustomRefreshToken
 
@@ -93,7 +96,7 @@ class GoogleLoginView(APIView):
             return Response(
                 {"tokens": tokens, "user": {"email": user.email, "name": name}}
             )
-        except Exception as e:
+        except Exception:
             return Response(
                 {"status": "error", "message": "Invalid credentials"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -123,7 +126,7 @@ class ParseTokenView(APIView):
         try:
             payload = decode(token, options={"verify_signature": False})
             return Response({"payload": payload})
-        except Exception as e:
+        except Exception:
             return Response(
                 {"status": "error", "message": "Invalid token"},
                 status=status.HTTP_400_BAD_REQUEST,
