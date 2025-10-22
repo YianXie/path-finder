@@ -29,7 +29,7 @@ function Item({
 }) {
     // React hooks
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { access } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -38,7 +38,7 @@ function Item({
     // Update isSaved when initialIsSaved prop changes
     useEffect(() => {
         setIsSaved(initialIsSaved);
-    }, [initialIsSaved]);
+    }, [initialIsSaved, access]);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -49,7 +49,7 @@ function Item({
     };
 
     const handleSave = async () => {
-        if (!isAuthenticated) {
+        if (!access) {
             setSnackBar({
                 ...snackBar,
                 open: true,

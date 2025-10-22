@@ -11,13 +11,13 @@ import usePageTitle from "../../hooks/usePageTitle";
 function Login() {
     usePageTitle("PathFinder | Login");
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { access } = useAuth();
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (access) {
             navigate("/");
         }
-    }, [isAuthenticated, navigate]);
+    }, [access, navigate]);
 
     return (
         <Container className="flex h-screen items-center justify-center">

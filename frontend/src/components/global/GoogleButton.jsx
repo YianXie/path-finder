@@ -26,7 +26,13 @@ export default function GoogleButton() {
                             severity: "success",
                             message: "Logged in successfully",
                         });
-                        navigate("/");
+                        if (!data.user.finished_onboarding) {
+                            console.log("redirecting to onboarding");
+                            navigate("/onboarding");
+                        } else {
+                            console.log("redirecting to home");
+                            navigate("/");
+                        }
                     } catch (error) {
                         setSnackBar({
                             ...snackBar,

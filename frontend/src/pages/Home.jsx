@@ -26,7 +26,7 @@ function Home() {
     usePageTitle("PathFinder | Home");
 
     const { snackBar, setSnackBar } = useSnackBar();
-    const { isAuthenticated } = useAuth();
+    const { access } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
     const [sortBy, setSortBy] = useState("alphabetical");
@@ -45,14 +45,14 @@ function Home() {
             try {
                 setIsLoading(true);
                 // Use the optimized endpoint for authenticated users
-                const endpoint = isAuthenticated
+                const endpoint = access
                     ? "/api/suggestions-with-saved-status/"
                     : "/api/suggestions/";
 
-                const params = isAuthenticated ? { page, page_size: 50 } : {};
+                const params = access ? { page, page_size: 50 } : {};
                 const res = await api.get(endpoint, { params });
 
-                if (isAuthenticated && res.data.results) {
+                if (access && res.data.results) {
                     // Handle paginated response
                     setSuggestions(res.data.results);
                     setPagination(res.data.pagination);
@@ -80,15 +80,15 @@ function Home() {
                 setIsLoading(false);
             }
         },
-        [isAuthenticated, snackBar, setSnackBar]
+        [access, snackBar, setSnackBar]
     );
 
     // Function to refresh suggestions (useful after saving/unsaving items)
     const refreshSuggestions = useCallback(() => {
-        if (isAuthenticated) {
+        if (access) {
             getSuggestions(pagination.page);
         }
-    }, [isAuthenticated, getSuggestions, pagination.page]);
+    }, [access, getSuggestions, pagination.page]);
 
     useEffect(() => {
         getSuggestions();

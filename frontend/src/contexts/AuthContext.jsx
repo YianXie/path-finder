@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [access, setAccess] = useState(null);
     const [refresh, setRefresh] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
 
     // Check if token is expired
     const isTokenExpired = (token) => {
@@ -73,9 +72,6 @@ export const AuthProvider = ({ children }) => {
                         "Email or name not found in refreshed token payload"
                     );
                 }
-
-                // Ensure loading is false after successful refresh
-                setIsLoading(false);
             } else {
                 logout();
             }
@@ -113,9 +109,6 @@ export const AuthProvider = ({ children }) => {
                             // This is a fallback for existing tokens without custom claims
                             fetchUserProfile(storedAccess);
                         }
-
-                        // Set loading to false after processing tokens
-                        setIsLoading(false);
                     } catch (error) {
                         console.error("Error parsing stored token:", error);
                         // Clear invalid tokens
@@ -126,9 +119,6 @@ export const AuthProvider = ({ children }) => {
                     // Access token expired, try to refresh
                     refreshToken(storedRefresh);
                 }
-            } else {
-                // No tokens found, user is not authenticated
-                setIsLoading(false);
             }
         };
 
@@ -202,9 +192,6 @@ export const AuthProvider = ({ children }) => {
         return currentAccess;
     };
 
-    // More robust authentication check
-    const isAuthenticated = !!(access && user);
-
     return (
         <AuthContext.Provider
             value={{
@@ -213,8 +200,6 @@ export const AuthProvider = ({ children }) => {
                 refresh,
                 login,
                 logout,
-                isAuthenticated,
-                isLoading,
                 getValidAccessToken,
             }}
         >

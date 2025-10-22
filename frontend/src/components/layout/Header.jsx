@@ -45,7 +45,7 @@ function HideOnScroll({ children }) {
 }
 
 function Header() {
-    const { isAuthenticated, user, logout } = useAuth();
+    const { access, user, logout } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
     const { mode, setMode } = useColorScheme();
     const [mainMenuAnchorEl, setMainMenuAnchorEl] = useState(null);
@@ -149,8 +149,8 @@ function Header() {
                     position: "sticky",
                     top: 0,
                     zIndex: 1000,
-                    backgroundColor: "#fff",
-                    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                    backdropFilter: "blur(6px)",
+                    boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
                 }}
             >
                 <Box
@@ -212,7 +212,7 @@ function Header() {
                                 ml="auto"
                             >
                                 <Divider orientation="vertical" flexItem />
-                                {isAuthenticated && user ? (
+                                {access && user ? (
                                     <>
                                         <Tooltip
                                             title="Account Settings"

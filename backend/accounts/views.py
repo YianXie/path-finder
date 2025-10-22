@@ -55,7 +55,8 @@ class GoogleLoginView(APIView):
             idinfo = id_token.verify_oauth2_token(
                 credential, grequests.Request(), GOOGLE_CLIENT_ID
             )
-            # Optional: host domain restriction (for Google Workspace)
+
+            # Hosted domain restriction
             if ALLOWED_GOOGLE_HD and idinfo.get("hd") != ALLOWED_GOOGLE_HD:
                 return Response(
                     {"detail": "Unauthorized hosted domain."},
@@ -79,11 +80,13 @@ class GoogleLoginView(APIView):
                 email=email,
                 defaults={"username": email.split("@")[0], "is_active": True},
             )
-            # You can store google sub to avoid conflicts & for future checks
+
+            # Store google sub to avoid conflicts & for future checks
             if hasattr(user, "google_sub"):
                 if not user.google_sub:
                     user.google_sub = sub  # custom field if you add it
-            # Update profile fields you care about
+
+            # Update profile fields
             if not user.first_name and name:
                 user.first_name = name.split(" ")[0]
             user.last_login = timezone.now()
@@ -91,10 +94,27 @@ class GoogleLoginView(APIView):
 
             tokens = issue_tokens_for_user(user)
 
-            UserModel.objects.update_or_create(email=email, name=name, google_sub=sub)
+            user_model = UserModel.objects.get(email=email)
+            if user_model:
+                finished_onboarding = user_model.finished_onboarding
+            else:
+                finished_onboarding = False
+            UserModel.objects.update_or_create(
+                email=email,
+                name=name,
+                google_sub=sub,
+                finished_onboarding=finished_onboarding,
+            )
 
             return Response(
-                {"tokens": tokens, "user": {"email": user.email, "name": name}}
+                {
+                    "tokens": tokens,
+                    "user": {
+                        "email": user.email,
+                        "name": name,
+                        "finished_onboarding": finished_onboarding,
+                    },
+                }
             )
         except Exception:
             return Response(

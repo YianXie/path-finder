@@ -32,7 +32,7 @@ function Saved() {
     }, []);
 
     return (
-        <Container>
+        <Container maxWidth="xl">
             <Backdrop
                 open={isLoading}
                 sx={(theme) => ({

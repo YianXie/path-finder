@@ -1,4 +1,3 @@
-// Icons
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CategoryIcon from "@mui/icons-material/Category";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -182,7 +181,7 @@ function ItemDetail() {
                         </Grid>
 
                         {/* Content Section */}
-                        <Grid item xs={12} md={6}>
+                        <Grid>
                             <CardContent
                                 sx={{
                                     height: "100%",
