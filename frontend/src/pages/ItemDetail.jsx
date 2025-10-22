@@ -165,7 +165,7 @@ function ItemDetail() {
                 <Card elevation={2}>
                     <Grid container spacing={0}>
                         {/* Image Section */}
-                        <Grid item xs={12} md={6} padding={2}>
+                        <Grid padding={2}>
                             <CardMedia
                                 component="img"
                                 image={itemInfo.image}
