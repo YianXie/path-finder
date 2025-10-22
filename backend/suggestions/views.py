@@ -25,9 +25,42 @@ class SuggestionListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        suggestions = SuggestionModel.objects.all().order_by("name")
-        serializer = SuggestionSerializer(suggestions, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Get pagination parameters
+        try:
+            page = int(request.GET.get("page", 1))
+            page_size = int(
+                request.GET.get("page_size", 50)
+            )  # Default 50 items per page
+
+            # Get all suggestions with pagination
+            suggestions = SuggestionModel.objects.all().order_by("name")
+            paginator = Paginator(suggestions, page_size)
+            page_obj = paginator.get_page(page)
+
+            serializer = SuggestionSerializer(page_obj, many=True)
+            suggestions_data = serializer.data
+            return Response(
+                {
+                    "results": suggestions_data,
+                    "pagination": {
+                        "page": page,
+                        "page_size": page_size,
+                        "total_pages": paginator.num_pages,
+                        "total_count": paginator.count,
+                        "has_next": page_obj.has_next(),
+                        "has_previous": page_obj.has_previous(),
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Failed to retrieve suggestions: " + str(e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class SuggestionListWithSavedStatusView(APIView):

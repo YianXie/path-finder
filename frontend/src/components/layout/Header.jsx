@@ -35,10 +35,12 @@ import { useSnackBar } from "../../contexts/SnackBarContext";
 import HeaderLink from "./HeaderLink";
 
 function HideOnScroll({ children }) {
-    const trigger = useScrollTrigger();
+    const trigger = useScrollTrigger({
+        threshold: 100,
+    });
 
     return (
-        <Slide appear={false} direction="down" in={!trigger}>
+        <Slide appear={false} direction="down" in={!trigger} timeout={200}>
             {children}
         </Slide>
     );
@@ -149,8 +151,9 @@ function Header() {
                     position: "sticky",
                     top: 0,
                     zIndex: 1000,
-                    backdropFilter: "blur(6px)",
-                    boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
+                    backdropFilter: "blur(4px)",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    willChange: "transform",
                 }}
             >
                 <Box

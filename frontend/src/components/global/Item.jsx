@@ -30,7 +30,7 @@ function Item({
     // React hooks
     const navigate = useNavigate();
     const { access } = useAuth();
-    const { snackBar, setSnackBar } = useSnackBar();
+    const { setSnackBar } = useSnackBar();
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -50,12 +50,12 @@ function Item({
 
     const handleSave = async () => {
         if (!access) {
-            setSnackBar({
-                ...snackBar,
+            setSnackBar((prev) => ({
+                ...prev,
                 open: true,
                 severity: "error",
                 message: "Please login to save items",
-            });
+            }));
             return;
         }
 
@@ -66,12 +66,12 @@ function Item({
             });
 
             // Show success snackbar
-            setSnackBar({
-                ...snackBar,
+            setSnackBar((prev) => ({
+                ...prev,
                 open: true,
                 severity: "success",
                 message: `Item ${isSaved ? "removed from" : "saved to"} your profile`,
-            });
+            }));
 
             // Update local state
             setIsSaved(!isSaved);
@@ -85,13 +85,13 @@ function Item({
             console.error("Failed to save item to your profile", error);
 
             // Show error snackbar
-            setSnackBar({
-                ...snackBar,
+            setSnackBar((prev) => ({
+                ...prev,
                 severity: "error",
                 open: true,
                 message:
                     "Failed to save item to your profile: " + error.message,
-            });
+            }));
         }
     };
 
@@ -103,23 +103,23 @@ function Item({
             );
 
             // Show success snackbar
-            setSnackBar({
-                ...snackBar,
+            setSnackBar((prev) => ({
+                ...prev,
                 open: true,
                 severity: "success",
                 message: "Link copied to clipboard",
-            });
+            }));
         } catch (error) {
             // Log error
             console.error("Failed to copy link to clipboard", error);
 
             // Show error snackbar
-            setSnackBar({
-                ...snackBar,
+            setSnackBar((prev) => ({
+                ...prev,
                 severity: "error",
                 open: true,
                 message: "Failed to copy link to clipboard: " + error.message,
-            });
+            }));
         }
     };
 

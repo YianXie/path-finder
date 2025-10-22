@@ -25,7 +25,7 @@ import usePageTitle from "../hooks/usePageTitle";
 function Home() {
     usePageTitle("PathFinder | Home");
 
-    const { snackBar, setSnackBar } = useSnackBar();
+    const { setSnackBar } = useSnackBar();
     const { access } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
@@ -49,38 +49,24 @@ function Home() {
                     ? "/api/suggestions-with-saved-status/"
                     : "/api/suggestions/";
 
-                const params = access ? { page, page_size: 50 } : {};
+                const params = { page, page_size: 50 };
                 const res = await api.get(endpoint, { params });
 
-                if (access && res.data.results) {
-                    // Handle paginated response
-                    setSuggestions(res.data.results);
-                    setPagination(res.data.pagination);
-                } else {
-                    // Handle non-paginated response
-                    setSuggestions(res.data);
-                    setPagination({
-                        page: 1,
-                        page_size: res.data.length,
-                        total_pages: 1,
-                        total_count: res.data.length,
-                        has_next: false,
-                        has_previous: false,
-                    });
-                }
+                setSuggestions(res.data.results);
+                setPagination(res.data.pagination);
             } catch (error) {
                 console.error("Failed to fetch suggestions:", error);
-                setSnackBar({
-                    ...snackBar,
+                setSnackBar((prev) => ({
+                    ...prev,
                     severity: "error",
                     open: true,
                     message: "Failed to load suggestions. Please try again.",
-                });
+                }));
             } finally {
                 setIsLoading(false);
             }
         },
-        [access, snackBar, setSnackBar]
+        [access, setSnackBar]
     );
 
     // Function to refresh suggestions (useful after saving/unsaving items)
@@ -167,12 +153,12 @@ function Home() {
                 <Tooltip title="Toggle sort direction" placement="bottom" arrow>
                     <IconButton
                         onClick={() => {
-                            setSnackBar({
-                                ...snackBar,
+                            setSnackBar((prev) => ({
+                                ...prev,
                                 severity: "success",
                                 open: true,
                                 message: `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`,
-                            });
+                            }));
                             setSortDirection(sortDirection * -1);
                         }}
                         aria-label="Toggle sort direction"

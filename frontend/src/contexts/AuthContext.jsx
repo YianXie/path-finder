@@ -4,6 +4,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 
@@ -144,15 +145,15 @@ export const AuthProvider = ({ children }) => {
         }
     }, [access]);
 
-    const login = (tokens, userData) => {
+    const login = useCallback((tokens, userData) => {
         localStorage.setItem("access", tokens.access);
         localStorage.setItem("refresh", tokens.refresh);
         setAccess(tokens.access);
         setRefresh(tokens.refresh);
         setUser(userData);
-    };
+    }, []);
 
-    const logout = () => {
+    const logout = useCallback(() => {
         try {
             localStorage.removeItem("access");
             localStorage.removeItem("refresh");
@@ -162,10 +163,10 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Error logging out:", error);
         }
-    };
+    }, []);
 
     // Function to get a valid access token (refreshes if needed)
-    const getValidAccessToken = async () => {
+    const getValidAccessToken = useCallback(async () => {
         const currentAccess = localStorage.getItem("access");
 
         if (!currentAccess) {
@@ -190,19 +191,22 @@ export const AuthProvider = ({ children }) => {
         }
 
         return currentAccess;
-    };
+    }, [refreshToken, logout]);
+
+    const contextValue = useMemo(
+        () => ({
+            user,
+            access,
+            refresh,
+            login,
+            logout,
+            getValidAccessToken,
+        }),
+        [user, access, refresh, login, logout, getValidAccessToken]
+    );
 
     return (
-        <AuthContext.Provider
-            value={{
-                user,
-                access,
-                refresh,
-                login,
-                logout,
-                getValidAccessToken,
-            }}
-        >
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

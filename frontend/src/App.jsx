@@ -1,20 +1,21 @@
-import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 import ProtectedRoute from "./ProtectedRoute";
+import {
+    LazyClubs,
+    LazyCompetitions,
+    LazyItemDetail,
+    LazyOnBoarding,
+    LazySaved,
+    LazyTutoring,
+} from "./components/LazyWrapper";
 import Layout from "./components/layout/Layout";
-import Clubs from "./pages/Clubs";
-import Competitions from "./pages/Competitions";
 import Home from "./pages/Home";
-import ItemDetail from "./pages/ItemDetail";
-import OnBoarding from "./pages/OnBoarding";
-import Tutoring from "./pages/Tutoring";
+import NotFoundPage from "./pages/NotFoundPage";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
-import Saved from "./pages/auth/Saved";
 
 function App() {
     return (
@@ -26,7 +27,7 @@ function App() {
                         path="/saved"
                         element={
                             <ProtectedRoute>
-                                <Saved />
+                                <LazySaved />
                             </ProtectedRoute>
                         }
                     />
@@ -34,7 +35,7 @@ function App() {
                         path="/onboarding"
                         element={
                             // <ProtectedRoute>
-                            <OnBoarding />
+                            <LazyOnBoarding />
                             // </ProtectedRoute>
                         }
                     />
@@ -51,7 +52,7 @@ function App() {
                         path="/competitions"
                         element={
                             <ProtectedRoute>
-                                <Competitions />
+                                <LazyCompetitions />
                             </ProtectedRoute>
                         }
                     />
@@ -59,7 +60,7 @@ function App() {
                         path="/clubs"
                         element={
                             <ProtectedRoute>
-                                <Clubs />
+                                <LazyClubs />
                             </ProtectedRoute>
                         }
                     />
@@ -67,11 +68,15 @@ function App() {
                         path="/tutoring"
                         element={
                             <ProtectedRoute>
-                                <Tutoring />
+                                <LazyTutoring />
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/item/:external_id" element={<ItemDetail />} />
+                    <Route
+                        path="/item/:external_id"
+                        element={<LazyItemDetail />}
+                    />
+                    <Route path="*" element={<NotFoundPage />} />
                 </Route>
             </Routes>
         </Router>
