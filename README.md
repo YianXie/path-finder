@@ -1,6 +1,6 @@
 # PathFinder
 
-## Table of Contents
+### Table of Contents
 
 -   [Purpose](#purpose)
 -   [Tech Stack](#tech-stack)
@@ -21,9 +21,11 @@
 -   [Future features](#future-features)
 -   [License](#license)
 
-## Other README files
+### Other README files
 
 -   [GitHub Actions](.github/README_TEMPLATE.md)
+
+## Introduction
 
 PathFinder is a web application designed to provide personalized suggestions for SAS high school students on competitions, clubs, and tutoring based on their interests, skills, and academic goals.
 
