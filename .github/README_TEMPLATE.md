@@ -1,6 +1,6 @@
 # GitHub Actions CI/CD
 
-This directory contains GitHub Actions workflows for continuous integration and deployment.
+This directory contains GitHub Actions workflows for continuous integration (CI) and deployment.
 
 ## Workflows
 
@@ -69,6 +69,8 @@ The CI workflows use the following environment variables for testing:
 -   `CORS_ALLOWED_ORIGINS`: Comma-separated list of CORS origins
 -   `GOOGLE_CLIENT_ID`: Google OAuth client ID (test value)
 -   `ALLOWED_GOOGLE_HD`: Google hosted domain (test value)
+
+Or check the .env.example for more details
 
 ## Adding New Checks
 

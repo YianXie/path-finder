@@ -1,8 +1,33 @@
 # PathFinder
 
+## Table of Contents
+
+-   [Purpose](#purpose)
+-   [Tech Stack](#tech-stack)
+    -   [Backend](#backend)
+    -   [Frontend](#frontend)
+-   [Project Structure](#project-structure)
+-   [Getting Started](#getting-started)
+    -   [Prerequisites](#prerequisites)
+    -   [Backend setup](#backend-setup)
+    -   [Frontend setup](#frontend-setup)
+-   [API endpoints](#api-endpoints)
+-   [Development](#development)
+    -   [Backend development](#backend-development)
+        -   [Running tests](#running-tests)
+    -   [Frontend development](#frontend-development)
+    -   [Environment variables](#environment-variables)
+-   [Current available features](#current-available-features)
+-   [Future features](#future-features)
+-   [License](#license)
+
+## Other README files
+
+-   [GitHub Actions](.github/README_TEMPLATE.md)
+
 PathFinder is a web application designed to provide personalized suggestions for SAS high school students on competitions, clubs, and tutoring based on their interests, skills, and academic goals.
 
-[Demo link](https://sas-pathfinder.org)
+[Website link](https://sas-pathfinder.org)
 
 ## Purpose
 
@@ -17,10 +42,10 @@ High school students (including SAS students) often struggle to discover relevan
 
 ### Backend
 
--   **Django 5.2.7**: Python web framework for building the REST API
--   **Django REST Framework 3.16.1**: Powerful toolkit for building Web APIs
+-   **Django**: Python web framework for building the REST API
+-   **Django REST Framework**: Powerful toolkit for building Web APIs
 -   **django-cors-headers**: Handles Cross-Origin Resource Sharing (CORS) for frontend-backend communication
--   **PostgreSQL/Sqlite**: Sqlite for production + PostgreSQL for production
+-   **PostgreSQL**: A solid database
 
 ### Frontend
 
@@ -54,7 +79,7 @@ path-finder/
 
 -   Python 3.8 or higher
 -   Node.js 18 or higher
--   npm or yarn
+-   npm
 
 ### Backend Setup
 
@@ -121,14 +146,27 @@ The application will be available at `http://localhost:5173`
 
 ## API Endpoints
 
--   `GET /api/health/` - Health check endpoint to verify the API is running
--   `POST /api/token/` - Obtain JWT access and refresh tokens
--   `POST /api/token/refresh/` - Refresh JWT access token using refresh token
--   `GET /api/suggestions/` - Get Google Spreadsheet data
--   `POST /accounts/google/` - Login with Google
--   `POST /accounts/parse-token/` - Parse a JWT token
--   `GET /accounts/profile/` - Get user info (e.g., email & name)
--   `POST /accounts/save-item/` - Save/unsave item
+### `/api`
+
+-   `GET /api/health/` — Check if the API is running (health check).
+-   `GET /api/suggestions/` — List all suggestions with pagination (public).
+-   `GET /api/suggestions/{external_id}/` — Retrieve details for a specific suggestion by its `external_id` (public).
+-   `GET /api/suggestions/saved/` — List all suggestions for the current user, including saved-status (authenticated).
+-   `GET /api/suggestions/saved/{external_id}/` — Get suggestion detail with saved status for the current user (authenticated).
+
+### `/accounts`
+
+-   `POST /accounts/google/` — Login or register with Google OAuth2.
+-   `POST /accounts/parse-token/` — Parse the JWT token and return its payload.
+-   `GET /accounts/profile/` — Retrieve the current user's profile (email, name, Google sub).
+-   `POST /accounts/save-item/` — Save or unsave an item for the current user (toggle).
+-   `POST /accounts/item-saved/` — Check if a particular item is saved to the current user's list.
+-   `POST /accounts/saved-items/` — Get a list of all saved items for the current user.
+
+### `others`
+
+-   `POST /api/token/` — Obtain JWT access and refresh tokens with username/password.
+-   `POST /api/token/refresh/` — Refresh JWT access token using the refresh token.
 
 ## Development
 
@@ -165,17 +203,19 @@ Refer to .env.example file located in the backend and frontend directory for mor
 
 ## Current Available Features
 
--   Login with Google
--   Email authentication to ensure only sas students or teachers have access to the website
+-   Login with Google (oAuth2)
+-   Email authentication to ensure only SAS students, teachers, and staff members have access to the website
 -   Fetching Google Spreadsheet data
 -   Create database rows with user data
+-   Remember users' saved items
+-   Toggle between light/dark mode
 
 ## Future Features
 
--   Profile management
 -   Advanced search and filtering
 -   Personalized recommendation algorithm
 -   User reviews and ratings
+-   User settings
 
 ## License
 
