@@ -3,7 +3,7 @@ import { Suspense, lazy } from "react";
 
 // Lazy load components for better code splitting
 const ItemDetail = lazy(() => import("../pages/ItemDetail"));
-const OnBoarding = lazy(() => import("../pages/OnBoarding"));
+const OnBoarding = lazy(() => import("../pages/onBoarding/OnBoarding"));
 const Saved = lazy(() => import("../pages/auth/Saved"));
 const Competitions = lazy(() => import("../pages/Competitions"));
 const Clubs = lazy(() => import("../pages/Clubs"));

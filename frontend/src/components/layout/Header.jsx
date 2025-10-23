@@ -47,6 +47,28 @@ function HideOnScroll({ children }) {
 }
 
 function Header() {
+    const drawerListItems = [
+        {
+            label: "Clubs",
+            icon: <GroupsIcon />,
+            path: "/clubs",
+        },
+        {
+            label: "Competitions",
+            icon: <CalculateIcon />,
+            path: "/competitions",
+        },
+        {
+            label: "Tutoring",
+            icon: <SchoolIcon />,
+            path: "/tutoring",
+        },
+        {
+            label: "Saved",
+            icon: <FavoriteIcon />,
+            path: "/saved",
+        },
+    ];
     const { access, user, logout } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
     const { mode, setMode } = useColorScheme();
@@ -108,38 +130,16 @@ function Header() {
     const drawerList = (
         <Box onClick={() => toggleDrawer(false)}>
             <List>
-                <ListItem>
-                    <ListItemButton onClick={() => navigate("/clubs")}>
-                        <ListItemIcon>
-                            <GroupsIcon fontSize="medium" />
-                        </ListItemIcon>
-                        <ListItemText primary="Clubs" />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem>
-                    <ListItemButton onClick={() => navigate("/competitions")}>
-                        <ListItemIcon>
-                            <CalculateIcon fontSize="medium" />
-                        </ListItemIcon>
-                        <ListItemText primary="Competitions" />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem>
-                    <ListItemButton onClick={() => navigate("/tutoring")}>
-                        <ListItemIcon>
-                            <SchoolIcon fontSize="medium" />
-                        </ListItemIcon>
-                        <ListItemText primary="Tutoring" />
-                    </ListItemButton>
-                </ListItem>
-                <ListItem>
-                    <ListItemButton onClick={() => navigate("/saved")}>
-                        <ListItemIcon>
-                            <FavoriteIcon fontSize="medium" />
-                        </ListItemIcon>
-                        <ListItemText primary="Saved" />
-                    </ListItemButton>
-                </ListItem>
+                {drawerListItems.map((item) => (
+                    <ListItem key={item.path}>
+                        <ListItemButton onClick={() => navigate(item.path)}>
+                            <ListItemIcon sx={{ minWidth: 32 }}>
+                                {item.icon}
+                            </ListItemIcon>
+                            <ListItemText primary={item.label} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
             </List>
         </Box>
     );
@@ -188,7 +188,7 @@ function Header() {
                     </Box>
                     {isMobile && (
                         <IconButton onClick={() => toggleDrawer(true)}>
-                            <MenuIcon fontSize="medium" />
+                            <MenuIcon />
                         </IconButton>
                     )}
                     {isMobile ? (

@@ -7,13 +7,13 @@ import {
     LazyClubs,
     LazyCompetitions,
     LazyItemDetail,
+    LazyNotFoundPage,
     LazyOnBoarding,
     LazySaved,
     LazyTutoring,
 } from "./components/LazyWrapper";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
-import NotFoundPage from "./pages/NotFoundPage";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
 
@@ -34,9 +34,9 @@ function App() {
                     <Route
                         path="/onboarding"
                         element={
-                            // <ProtectedRoute>
-                            <LazyOnBoarding />
-                            // </ProtectedRoute>
+                            <ProtectedRoute>
+                                <LazyOnBoarding />
+                            </ProtectedRoute>
                         }
                     />
                     <Route path="/login" element={<Login />} />
@@ -76,7 +76,7 @@ function App() {
                         path="/item/:external_id"
                         element={<LazyItemDetail />}
                     />
-                    <Route path="*" element={<NotFoundPage />} />
+                    <Route path="*" element={<LazyNotFoundPage />} />
                 </Route>
             </Routes>
         </Router>

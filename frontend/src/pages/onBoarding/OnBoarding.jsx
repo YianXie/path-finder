@@ -1,19 +1,38 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
 
+import { useSnackBar } from "../../contexts/SnackBarContext";
+import usePageTitle from "../../hooks/usePageTitle";
+import OnBoardingFinished from "./OnBoardingFinished";
+import Step1 from "./Step1";
+import Step2 from "./Step2";
+import Step3 from "./Step3";
+
 function OnBoarding() {
-    const steps = ["Basic Information", "Interests", "Skills & Goals"];
+    usePageTitle("PathFinder | Onboarding");
+
+    const steps = ["Basic Information", "Interests", "Goals"];
+    const [basicInformation, setBasicInformation] = useState({
+        role: "student",
+        grade: "9",
+        subject: "math",
+    });
+    const [interests, setInterests] = useState([]);
+    const [goals, setGoals] = useState([]);
+    const [otherGoals, setOtherGoals] = useState("");
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
+    const { setSnackBar } = useSnackBar();
 
     const isStepOptional = (step) => {
-        return step === 1;
+        return step === 2;
     };
 
     const isStepSkipped = (step) => {
@@ -25,6 +44,15 @@ function OnBoarding() {
         if (isStepSkipped(activeStep)) {
             newSkipped = new Set(newSkipped.values());
             newSkipped.delete(activeStep);
+        }
+        if (activeStep === 1 && interests.length < 1) {
+            setSnackBar((prev) => ({
+                ...prev,
+                open: true,
+                message: "You must select at least 1 interest",
+                severity: "warning",
+            }));
+            return;
         }
 
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -49,7 +77,10 @@ function OnBoarding() {
     };
 
     return (
-        <Container maxWidth="xl">
+        <Container
+            maxWidth="lg"
+            sx={{ display: "flex", flexDirection: "column" }}
+        >
             <Box
                 display="flex"
                 gap={1}
@@ -63,27 +94,42 @@ function OnBoarding() {
                 </Typography>
             </Box>
             <Stepper activeStep={activeStep} alternativeLabel>
-                {steps.map((step) => (
-                    <Step>
-                        <StepLabel>{step}</StepLabel>
-                    </Step>
-                ))}
+                {steps.map((step, index) => {
+                    const labelProps = {};
+                    const stepProps = {};
+                    if (isStepOptional(index)) {
+                        labelProps.optional = (
+                            <Typography variant="caption">Optional</Typography>
+                        );
+                    }
+                    if (isStepSkipped(index)) {
+                        stepProps.completed = false;
+                    }
+                    return (
+                        <Step {...stepProps}>
+                            <StepLabel {...labelProps}>{step}</StepLabel>
+                        </Step>
+                    );
+                })}
             </Stepper>
             {activeStep === 0 && (
-                <Box>
-                    <Typography variant="h6">Step {activeStep + 1}</Typography>
-                </Box>
+                <Step1
+                    basicInformation={basicInformation}
+                    setBasicInformation={setBasicInformation}
+                />
             )}
             {activeStep === 1 && (
-                <Box>
-                    <Typography variant="h6">Step {activeStep + 1}</Typography>
-                </Box>
+                <Step2 interests={interests} setInterests={setInterests} />
             )}
             {activeStep === 2 && (
-                <Box>
-                    <Typography variant="h6">Step {activeStep + 1}</Typography>
-                </Box>
+                <Step3
+                    goals={goals}
+                    setGoals={setGoals}
+                    otherGoals={otherGoals}
+                    setOtherGoals={setOtherGoals}
+                />
             )}
+            {activeStep === 3 && <OnBoardingFinished />}
             <Box
                 display="flex"
                 justifyContent="space-between"
@@ -118,6 +164,14 @@ function OnBoarding() {
                     </Button>
                 </Box>
             </Box>
+            <Stack alignItems="center" marginTop={4} marginBottom={2} gap={1}>
+                <Typography variant="body1" textAlign={"center"}>
+                    Your data will be used to personalize your recommendations.
+                </Typography>
+                <Typography variant="body2" textAlign={"center"}>
+                    You can always update your information later.
+                </Typography>
+            </Stack>
         </Container>
     );
 }
