@@ -1,9 +1,6 @@
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
-import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
@@ -17,15 +14,16 @@ import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import api from "../api";
+import { LoadingBackdrop, PageHeader } from "../components/common";
 import Item from "../components/global/Item";
 import { useAuth } from "../contexts/AuthContext";
-import { useSnackBar } from "../contexts/SnackBarContext";
+import { useApiError } from "../hooks";
 import usePageTitle from "../hooks/usePageTitle";
 
 function Home() {
     usePageTitle("PathFinder | Home");
 
-    const { setSnackBar } = useSnackBar();
+    const { handleError, handleSuccess } = useApiError();
     const { access } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
@@ -44,7 +42,6 @@ function Home() {
         async (page = 1) => {
             try {
                 setIsLoading(true);
-                // Use the optimized endpoint for authenticated users
                 const endpoint = access
                     ? "/api/suggestions-with-saved-status/"
                     : "/api/suggestions/";
@@ -55,18 +52,15 @@ function Home() {
                 setSuggestions(res.data.results);
                 setPagination(res.data.pagination);
             } catch (error) {
-                console.error("Failed to fetch suggestions:", error);
-                setSnackBar((prev) => ({
-                    ...prev,
-                    severity: "error",
-                    open: true,
-                    message: "Failed to load suggestions. Please try again.",
-                }));
+                handleError(
+                    error,
+                    "Failed to load suggestions. Please try again."
+                );
             } finally {
                 setIsLoading(false);
             }
         },
-        [access, setSnackBar]
+        [access, handleError]
     );
 
     // Function to refresh suggestions (useful after saving/unsaving items)
@@ -117,27 +111,18 @@ function Home() {
     }, [suggestions, sortBy, sortDirection]);
 
     return (
-        <Container maxWidth="xl" sx={{ paddingBlock: 4 }}>
-            <Backdrop
-                open={isLoading}
-                sx={(theme) => ({
-                    color: "#fff",
-                    zIndex: theme.zIndex.drawer + 1,
-                })}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
-            <Box display="flex" flexDirection="column" gap={2}>
-                <Typography variant="h3" fontWeight={500}>
-                    Welcome to PathFinder
-                </Typography>
-                <Typography variant="h6" fontWeight={400}>
-                    All items
-                </Typography>
-            </Box>
-            <Divider sx={{ marginTop: 2 }} />
+        <Container maxWidth="xl">
+            <LoadingBackdrop open={isLoading} />
+            <PageHeader
+                title="Welcome to PathFinder"
+                subtitle="All items"
+                className="mt-6 mb-4"
+            />
             <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-                <FormControl sx={{ marginBlock: 4 }} size="small">
+                <FormControl
+                    sx={{ marginBottom: 4, marginTop: 2 }}
+                    size="small"
+                >
                     <InputLabel id="sort-by-label">Sort by</InputLabel>
                     <Select
                         labelId="sort-by-label"
@@ -153,12 +138,9 @@ function Home() {
                 <Tooltip title="Toggle sort direction" placement="bottom" arrow>
                     <IconButton
                         onClick={() => {
-                            setSnackBar((prev) => ({
-                                ...prev,
-                                severity: "success",
-                                open: true,
-                                message: `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`,
-                            }));
+                            handleSuccess(
+                                `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`
+                            );
                             setSortDirection(sortDirection * -1);
                         }}
                         aria-label="Toggle sort direction"

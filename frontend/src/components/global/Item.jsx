@@ -14,9 +14,8 @@ import Typography from "@mui/material/Typography";
 import { memo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import api from "../../api";
-import { useAuth } from "../../contexts/AuthContext";
-import { useSnackBar } from "../../contexts/SnackBarContext";
+import { useItemActions } from "../../hooks";
+import { truncateString } from "../../utils";
 
 function Item({
     external_id,
@@ -29,8 +28,7 @@ function Item({
 }) {
     // React hooks
     const navigate = useNavigate();
-    const { access } = useAuth();
-    const { setSnackBar } = useSnackBar();
+    const { handleSave: saveItem, handleShare: shareItem } = useItemActions();
     const [isSaved, setIsSaved] = useState(initialIsSaved);
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
@@ -38,7 +36,7 @@ function Item({
     // Update isSaved when initialIsSaved prop changes
     useEffect(() => {
         setIsSaved(initialIsSaved);
-    }, [initialIsSaved, access]);
+    }, [initialIsSaved]);
 
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -49,86 +47,16 @@ function Item({
     };
 
     const handleSave = async () => {
-        if (!access) {
-            setSnackBar((prev) => ({
-                ...prev,
-                open: true,
-                severity: "error",
-                message: "Please login to save items",
-            }));
-            return;
-        }
-
-        try {
-            // Save item to user's profile
-            await api.post("/accounts/save-item/", {
-                external_id: external_id,
-            });
-
-            // Show success snackbar
-            setSnackBar((prev) => ({
-                ...prev,
-                open: true,
-                severity: "success",
-                message: `Item ${isSaved ? "removed from" : "saved to"} your profile`,
-            }));
-
-            // Update local state
+        await saveItem(external_id, isSaved, () => {
             setIsSaved(!isSaved);
-
-            // Notify parent component to refresh suggestions
             if (onSaveSuccess) {
                 onSaveSuccess();
             }
-        } catch (error) {
-            // Log error
-            console.error("Failed to save item to your profile", error);
-
-            // Show error snackbar
-            setSnackBar((prev) => ({
-                ...prev,
-                severity: "error",
-                open: true,
-                message:
-                    "Failed to save item to your profile: " + error.message,
-            }));
-        }
+        });
     };
 
     const handleShare = async () => {
-        try {
-            // Copy link to clipboard
-            await navigator.clipboard.writeText(
-                location.href + `item/${external_id}`
-            );
-
-            // Show success snackbar
-            setSnackBar((prev) => ({
-                ...prev,
-                open: true,
-                severity: "success",
-                message: "Link copied to clipboard",
-            }));
-        } catch (error) {
-            // Log error
-            console.error("Failed to copy link to clipboard", error);
-
-            // Show error snackbar
-            setSnackBar((prev) => ({
-                ...prev,
-                severity: "error",
-                open: true,
-                message: "Failed to copy link to clipboard: " + error.message,
-            }));
-        }
-    };
-
-    // Truncate string to max length
-    const truncateString = (string, maxLength) => {
-        if (string.length > maxLength) {
-            return string.slice(0, maxLength) + "...";
-        }
-        return string;
+        await shareItem(location.href + `item/${external_id}`);
     };
 
     return (

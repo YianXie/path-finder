@@ -7,14 +7,12 @@ import LinkIcon from "@mui/icons-material/Link";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ShareIcon from "@mui/icons-material/Share";
 import Alert from "@mui/material/Alert";
-import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Chip from "@mui/material/Chip";
-import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
@@ -27,8 +25,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api";
+import { LoadingBackdrop } from "../components/common";
 import { useAuth } from "../contexts/AuthContext";
-import { useSnackBar } from "../contexts/SnackBarContext";
+import { useItemActions } from "../hooks";
 import usePageTitle from "../hooks/usePageTitle";
 
 function ItemDetail() {
@@ -38,7 +37,7 @@ function ItemDetail() {
 
     const { external_id } = useParams();
     const { access } = useAuth();
-    const { snackBar, setSnackBar } = useSnackBar();
+    const { handleSave, handleShare } = useItemActions();
 
     const [itemInfo, setItemInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -70,59 +69,14 @@ function ItemDetail() {
         getItemInfo();
     }, [external_id, access]);
 
-    const handleSave = async () => {
-        if (!access) {
-            setSnackBar({
-                ...snackBar,
-                open: true,
-                severity: "error",
-                message: "Please login to save items",
-            });
-            return;
-        }
-
-        try {
-            await api.post("/accounts/save-item/", {
-                external_id: external_id,
-            });
-
-            setSnackBar({
-                ...snackBar,
-                open: true,
-                severity: "success",
-                message: `Item ${isSaved ? "removed from" : "saved to"} your profile`,
-            });
-
+    const onSave = async () => {
+        await handleSave(external_id, isSaved, () => {
             setIsSaved(!isSaved);
-        } catch (error) {
-            console.error("Failed to save item:", error);
-            setSnackBar({
-                ...snackBar,
-                severity: "error",
-                open: true,
-                message: "Failed to save item: " + error.message,
-            });
-        }
+        });
     };
 
-    const handleShare = async () => {
-        try {
-            await navigator.clipboard.writeText(window.location.href);
-            setSnackBar({
-                ...snackBar,
-                open: true,
-                severity: "success",
-                message: "Link copied to clipboard",
-            });
-        } catch (error) {
-            console.error("Failed to copy link:", error);
-            setSnackBar({
-                ...snackBar,
-                severity: "error",
-                open: true,
-                message: "Failed to copy link: " + error.message,
-            });
-        }
+    const onShare = async () => {
+        await handleShare(window.location.href);
     };
 
     const handleExternalLink = () => {
@@ -133,15 +87,7 @@ function ItemDetail() {
 
     return (
         <Container maxWidth="lg" sx={{ paddingBlock: 4 }}>
-            <Backdrop
-                open={isLoading}
-                sx={(theme) => ({
-                    zIndex: theme.zIndex.drawer + 1,
-                    color: "#fff",
-                })}
-            >
-                <CircularProgress color="inherit" />
-            </Backdrop>
+            <LoadingBackdrop open={isLoading} />
 
             {/* Navigation */}
             <Box sx={{ marginBottom: 3 }}>
@@ -239,7 +185,7 @@ function ItemDetail() {
                                             placement="bottom"
                                         >
                                             <IconButton
-                                                onClick={handleSave}
+                                                onClick={onSave}
                                                 color="primary"
                                                 aria-label={
                                                     isSaved
@@ -260,7 +206,7 @@ function ItemDetail() {
                                             placement="bottom"
                                         >
                                             <IconButton
-                                                onClick={handleShare}
+                                                onClick={onShare}
                                                 color="primary"
                                                 aria-label="Share"
                                             >

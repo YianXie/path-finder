@@ -32,6 +32,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
+import { useMenu } from "../../hooks";
+import { stringAvatar } from "../../utils";
 import HeaderLink from "./HeaderLink";
 
 function HideOnScroll({ children }) {
@@ -72,60 +74,15 @@ function Header() {
     const { access, user, logout } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
     const { mode, setMode } = useColorScheme();
-    const [mainMenuAnchorEl, setMainMenuAnchorEl] = useState(null);
-    const [themeMenuAnchorEl, setThemeMenuAnchorEl] = useState(null);
+    const mainMenu = useMenu();
+    const themeMenu = useMenu();
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const mainMenuOpen = Boolean(mainMenuAnchorEl);
-    const themeMenuOpen = Boolean(themeMenuAnchorEl);
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width: 600px)");
-
-    const handleMenuClick = (event) => {
-        setMainMenuAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setMainMenuAnchorEl(null);
-    };
-
-    const handleThemeMenuClick = (event) => {
-        setThemeMenuAnchorEl(event.currentTarget);
-    };
-
-    const handleThemeMenuClose = () => {
-        setThemeMenuAnchorEl(null);
-    };
 
     const toggleDrawer = (newOpen) => {
         setDrawerOpen(newOpen);
     };
-
-    function stringToColor(string) {
-        let hash = 0;
-        let i;
-
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = "#";
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.slice(-2);
-        }
-
-        return color;
-    }
-
-    function stringAvatar(name) {
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
-        };
-    }
 
     const drawerList = (
         <Box onClick={() => toggleDrawer(false)}>
@@ -223,9 +180,7 @@ function Header() {
                                         >
                                             <IconButton
                                                 size="small"
-                                                onClick={(event) => {
-                                                    handleMenuClick(event);
-                                                }}
+                                                onClick={mainMenu.handleClick}
                                             >
                                                 <Avatar
                                                     {...stringAvatar(user.name)}
@@ -237,9 +192,9 @@ function Header() {
                                             </IconButton>
                                         </Tooltip>
                                         <Menu
-                                            anchorEl={mainMenuAnchorEl}
-                                            open={mainMenuOpen}
-                                            onClose={handleMenuClose}
+                                            anchorEl={mainMenu.anchorEl}
+                                            open={mainMenu.open}
+                                            onClose={mainMenu.handleClose}
                                             slotProps={{
                                                 paper: {
                                                     elevation: 0,
@@ -283,7 +238,7 @@ function Header() {
                                             <MenuItem
                                                 onClick={() => {
                                                     navigate("/saved");
-                                                    handleMenuClose();
+                                                    mainMenu.handleClose();
                                                 }}
                                             >
                                                 <ListItemIcon>
@@ -292,7 +247,7 @@ function Header() {
                                                 Saved items
                                             </MenuItem>
                                             <MenuItem
-                                                onClick={handleThemeMenuClick}
+                                                onClick={themeMenu.handleClick}
                                             >
                                                 <ListItemIcon>
                                                     <ContrastIcon fontSize="small" />
@@ -303,7 +258,7 @@ function Header() {
                                             <MenuItem
                                                 onClick={() => {
                                                     logout();
-                                                    handleMenuClose();
+                                                    mainMenu.handleClose();
                                                     setSnackBar({
                                                         ...snackBar,
                                                         open: true,
@@ -321,9 +276,9 @@ function Header() {
                                             </MenuItem>
                                         </Menu>
                                         <Menu
-                                            anchorEl={themeMenuAnchorEl}
-                                            open={themeMenuOpen}
-                                            onClose={handleThemeMenuClose}
+                                            anchorEl={themeMenu.anchorEl}
+                                            open={themeMenu.open}
+                                            onClose={themeMenu.handleClose}
                                             slotProps={{
                                                 paper: {
                                                     elevation: 0,
@@ -352,7 +307,7 @@ function Header() {
                                             <MenuItem
                                                 onClick={() => {
                                                     setMode("system");
-                                                    handleThemeMenuClose();
+                                                    themeMenu.handleClose();
                                                 }}
                                             >
                                                 <ListItemIcon>
@@ -370,7 +325,7 @@ function Header() {
                                             <MenuItem
                                                 onClick={() => {
                                                     setMode("light");
-                                                    handleThemeMenuClose();
+                                                    themeMenu.handleClose();
                                                 }}
                                             >
                                                 <ListItemIcon>
@@ -388,7 +343,7 @@ function Header() {
                                             <MenuItem
                                                 onClick={() => {
                                                     setMode("dark");
-                                                    handleThemeMenuClose();
+                                                    themeMenu.handleClose();
                                                 }}
                                             >
                                                 <ListItemIcon>
