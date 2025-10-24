@@ -13,12 +13,26 @@ import api from "../api";
 // Create context for authentication
 const AuthContext = createContext();
 
+/**
+ * Authentication context provider
+ *
+ * Manages user authentication state including tokens, user data, and authentication methods.
+ * Handles JWT token validation, refresh logic, and automatic token renewal.
+ * Provides login, logout, and token management functionality to child components.
+ *
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap
+ */
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [access, setAccess] = useState(null);
     const [refresh, setRefresh] = useState(null);
 
-    // Check if token is expired
+    /**
+     * Checks if a JWT token is expired
+     * @param {string} token - The JWT token to check
+     * @returns {boolean} True if token is expired or invalid, false otherwise
+     */
     const isTokenExpired = (token) => {
         try {
             const payload = jwtDecode(token);
@@ -29,7 +43,10 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // Function to fetch user profile from backend
+    /**
+     * Fetches user profile data from the backend
+     * @param {string} accessToken - The access token for authentication
+     */
     const fetchUserProfile = useCallback(async (accessToken) => {
         try {
             const response = await api.get("/accounts/profile/", {
@@ -47,42 +64,66 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    // Function to refresh access token using refresh token
-    const refreshToken = useCallback(async (refreshTokenValue) => {
+    /**
+     * Logs out the current user and clears all stored data
+     */
+    const logout = useCallback(() => {
         try {
-            const response = await api.post("/api/token/refresh/", {
-                refresh: refreshTokenValue,
-            });
-
-            if (response.status === 200) {
-                const data = response.data;
-                const newAccessToken = data.access;
-
-                // Update stored tokens
-                localStorage.setItem("access", newAccessToken);
-                setAccess(newAccessToken);
-
-                // Extract user info from new token
-                const payload = jwtDecode(newAccessToken);
-
-                // Check if email and name are in the token, otherwise keep existing user data
-                if (payload.email && payload.name) {
-                    setUser({ email: payload.email, name: payload.name });
-                } else {
-                    console.warn(
-                        "Email or name not found in refreshed token payload"
-                    );
-                }
-            } else {
-                logout();
-            }
+            localStorage.removeItem("access");
+            localStorage.removeItem("refresh");
+            setAccess(null);
+            setRefresh(null);
+            setUser(null);
         } catch (error) {
-            console.error("Error refreshing token:", error);
-            logout();
+            console.error("Error logging out:", error);
         }
     }, []);
 
-    // Initialize auth state from localStorage on app startup
+    /**
+     * Refreshes the access token using the refresh token
+     * @param {string} refreshTokenValue - The refresh token to use for renewal
+     */
+    const refreshToken = useCallback(
+        async (refreshTokenValue) => {
+            try {
+                const response = await api.post("/api/token/refresh/", {
+                    refresh: refreshTokenValue,
+                });
+
+                if (response.status === 200) {
+                    const data = response.data;
+                    const newAccessToken = data.access;
+
+                    // Update stored tokens
+                    localStorage.setItem("access", newAccessToken);
+                    setAccess(newAccessToken);
+
+                    // Extract user info from new token
+                    const payload = jwtDecode(newAccessToken);
+
+                    // Check if email and name are in the token, otherwise keep existing user data
+                    if (payload.email && payload.name) {
+                        setUser({ email: payload.email, name: payload.name });
+                    } else {
+                        console.warn(
+                            "Email or name not found in refreshed token payload"
+                        );
+                    }
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error("Error refreshing token:", error);
+                logout();
+            }
+        },
+        [logout]
+    );
+
+    /**
+     * Initialize authentication state from localStorage on app startup
+     * Checks for valid tokens and refreshes if needed
+     */
     useEffect(() => {
         const initializeAuth = () => {
             const storedAccess = localStorage.getItem("access");
@@ -145,6 +186,11 @@ export const AuthProvider = ({ children }) => {
         }
     }, [access]);
 
+    /**
+     * Logs in a user with tokens and user data
+     * @param {Object} tokens - Object containing access and refresh tokens
+     * @param {Object} userData - User information (email, name, etc.)
+     */
     const login = useCallback((tokens, userData) => {
         localStorage.setItem("access", tokens.access);
         localStorage.setItem("refresh", tokens.refresh);
@@ -153,19 +199,10 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
     }, []);
 
-    const logout = useCallback(() => {
-        try {
-            localStorage.removeItem("access");
-            localStorage.removeItem("refresh");
-            setAccess(null);
-            setRefresh(null);
-            setUser(null);
-        } catch (error) {
-            console.error("Error logging out:", error);
-        }
-    }, []);
-
-    // Function to get a valid access token (refreshes if needed)
+    /**
+     * Gets a valid access token, refreshing if it expires within 5 minutes
+     * @returns {Promise<string|null>} Valid access token or null if refresh fails
+     */
     const getValidAccessToken = useCallback(async () => {
         const currentAccess = localStorage.getItem("access");
 
@@ -212,5 +249,15 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
+/**
+ * Hook to access authentication context
+ * @returns {Object} Authentication context value
+ * @returns {Object|null} returns.user - Current user data
+ * @returns {string|null} returns.access - Current access token
+ * @returns {string|null} returns.refresh - Current refresh token
+ * @returns {Function} returns.login - Function to log in a user
+ * @returns {Function} returns.logout - Function to log out current user
+ * @returns {Function} returns.getValidAccessToken - Function to get valid access token
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

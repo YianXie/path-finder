@@ -10,6 +10,15 @@ import {
 
 const SnackBarContext = createContext();
 
+/**
+ * Snackbar context provider for global notifications
+ *
+ * Manages snackbar state and provides functions to show success, error, info, and warning messages.
+ * Uses Material-UI Snackbar and Alert components for consistent UI notifications.
+ *
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap
+ */
 export const SnackBarProvider = ({ children }) => {
     const [snackBar, setSnackBar] = useState({
         open: false,
@@ -19,6 +28,11 @@ export const SnackBarProvider = ({ children }) => {
         action: null,
     });
 
+    /**
+     * Handles closing the snackbar
+     * @param {Event} event - The close event
+     * @param {string} reason - Reason for closing ('clickaway' is ignored)
+     */
     const handleClose = useCallback((event, reason) => {
         if (reason === "clickaway") return;
         setSnackBar((prev) => ({ ...prev, open: false }));
@@ -53,5 +67,11 @@ export const SnackBarProvider = ({ children }) => {
     );
 };
 
+/**
+ * Hook to access snackbar context
+ * @returns {Object} Snackbar context value
+ * @returns {Object} returns.snackBar - Current snackbar state
+ * @returns {Function} returns.setSnackBar - Function to update snackbar state
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSnackBar = () => useContext(SnackBarContext);

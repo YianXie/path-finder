@@ -30,6 +30,13 @@ import { useAuth } from "../contexts/AuthContext";
 import { useItemActions } from "../hooks";
 import usePageTitle from "../hooks/usePageTitle";
 
+/**
+ * ItemDetail component for displaying detailed information about a specific item
+ *
+ * Shows comprehensive item information including image, description, categories,
+ * and external links. Provides save/unsave and share functionality.
+ * Handles loading states and error conditions gracefully.
+ */
 function ItemDetail() {
     usePageTitle("PathFinder | Item Detail");
 
@@ -44,13 +51,18 @@ function ItemDetail() {
     const [isSaved, setIsSaved] = useState(false);
     const [error, setError] = useState(null);
 
+    /**
+     * Fetches item information from the API
+     * Uses different endpoints based on authentication status
+     */
     useEffect(() => {
         async function getItemInfo() {
             try {
                 setIsLoading(true);
                 setError(null);
 
-                // Try to get item with saved status for authenticated users
+                // Use different endpoints based on authentication status
+                // Authenticated users get saved status, anonymous users don't
                 const endpoint = access
                     ? `/api/suggestions-with-saved-status/${external_id}/`
                     : `/api/suggestions/${external_id}`;
@@ -69,16 +81,25 @@ function ItemDetail() {
         getItemInfo();
     }, [external_id, access]);
 
+    /**
+     * Handles saving/unsaving the item
+     */
     const onSave = async () => {
         await handleSave(external_id, isSaved, () => {
             setIsSaved(!isSaved);
         });
     };
 
+    /**
+     * Handles sharing the current page URL
+     */
     const onShare = async () => {
         await handleShare(window.location.href);
     };
 
+    /**
+     * Opens the external link in a new tab
+     */
     const handleExternalLink = () => {
         if (itemInfo?.url) {
             window.open(itemInfo.url, "_blank", "noopener,noreferrer");
@@ -89,7 +110,7 @@ function ItemDetail() {
         <Container maxWidth="lg" sx={{ paddingBlock: 4 }}>
             <LoadingBackdrop open={isLoading} />
 
-            {/* Navigation */}
+            {/* Back navigation button */}
             <Box sx={{ marginBottom: 3 }}>
                 <Button
                     startIcon={<ArrowBackIcon />}
@@ -100,16 +121,18 @@ function ItemDetail() {
                 </Button>
             </Box>
 
+            {/* Error display */}
             {error && (
                 <Alert severity="error" sx={{ marginBottom: 3 }}>
                     {error}
                 </Alert>
             )}
 
+            {/* Main item content */}
             {itemInfo && (
                 <Card elevation={2}>
                     <Grid container spacing={0}>
-                        {/* Image Section */}
+                        {/* Item image section */}
                         <Grid padding={2}>
                             <CardMedia
                                 component="img"
@@ -126,7 +149,7 @@ function ItemDetail() {
                             />
                         </Grid>
 
-                        {/* Content Section */}
+                        {/* Item content section */}
                         <Grid>
                             <CardContent
                                 sx={{
@@ -135,7 +158,7 @@ function ItemDetail() {
                                     flexDirection: "column",
                                 }}
                             >
-                                {/* Header with title and actions */}
+                                {/* Item header with title, categories, and action buttons */}
                                 <Box sx={{ marginBottom: 3 }}>
                                     <Typography
                                         variant="h3"

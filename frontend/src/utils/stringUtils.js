@@ -1,4 +1,9 @@
-// Utility function to truncate strings
+/**
+ * Truncates a string to a specified maximum length
+ * @param {string} string - The string to truncate
+ * @param {number} maxLength - Maximum length before truncation
+ * @returns {string} Truncated string with "..." if needed
+ */
 export const truncateString = (string, maxLength) => {
     if (string.length > maxLength) {
         return string.slice(0, maxLength) + "...";
@@ -6,17 +11,24 @@ export const truncateString = (string, maxLength) => {
     return string;
 };
 
-// Utility function to generate avatar colors
+/**
+ * Generates a consistent color from a string using a simple hash algorithm
+ * Useful for creating avatar background colors that are consistent for the same input
+ * @param {string} string - The string to generate a color from
+ * @returns {string} Hex color code (e.g., "#ff5733")
+ */
 export const stringToColor = (string) => {
     let hash = 0;
     let i;
 
+    // Simple hash function - creates a numeric hash from the string
     for (i = 0; i < string.length; i += 1) {
         hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
 
     let color = "#";
 
+    // Convert hash to RGB values
     for (i = 0; i < 3; i += 1) {
         const value = (hash >> (i * 8)) & 0xff;
         color += `00${value.toString(16)}`.slice(-2);
@@ -25,7 +37,12 @@ export const stringToColor = (string) => {
     return color;
 };
 
-// Utility function to generate avatar props
+/**
+ * Generates Material-UI Avatar props from a name string
+ * Creates initials from first and last name, and a consistent background color
+ * @param {string} name - Full name (e.g., "John Doe")
+ * @returns {Object} Avatar props object with sx styling and children initials
+ */
 export const stringAvatar = (name) => {
     return {
         sx: {

@@ -36,6 +36,12 @@ import { useMenu } from "../../hooks";
 import { stringAvatar } from "../../utils";
 import HeaderLink from "./HeaderLink";
 
+/**
+ * Component that hides its children when scrolling down
+ * Used to hide the header when user scrolls down the page
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to hide/show
+ */
 function HideOnScroll({ children }) {
     const trigger = useScrollTrigger({
         threshold: 100,
@@ -48,7 +54,15 @@ function HideOnScroll({ children }) {
     );
 }
 
+/**
+ * Main header component with navigation and user menu
+ *
+ * Provides responsive navigation with mobile drawer and desktop menu.
+ * Includes theme switching, user authentication, and navigation links.
+ * Automatically hides on scroll for better user experience.
+ */
 function Header() {
+    // Navigation items for the mobile drawer
     const drawerListItems = [
         {
             label: "Clubs",
@@ -80,6 +94,10 @@ function Header() {
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width: 600px)");
 
+    /**
+     * Toggles the mobile drawer open/closed state
+     * @param {boolean} newOpen - Whether the drawer should be open
+     */
     const toggleDrawer = (newOpen) => {
         setDrawerOpen(newOpen);
     };

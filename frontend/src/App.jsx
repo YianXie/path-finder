@@ -17,6 +17,13 @@ import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
 
+/**
+ * Main App component that sets up routing and layout
+ *
+ * Defines all application routes with lazy-loaded components for better performance.
+ * Uses ProtectedRoute for authenticated pages and Layout for consistent page structure.
+ * Includes public routes (Home, Login) and protected routes (Saved, OnBoarding, etc.).
+ */
 function App() {
     return (
         <Router>

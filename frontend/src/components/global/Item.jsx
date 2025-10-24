@@ -17,6 +17,22 @@ import { useNavigate } from "react-router-dom";
 import { useItemActions } from "../../hooks";
 import { truncateString } from "../../utils";
 
+/**
+ * Item component for displaying suggestion cards
+ *
+ * Displays a card with item information including image, name, description, and category.
+ * Provides save/unsave functionality and a menu with additional actions like share.
+ * Uses Material-UI components for consistent styling and user interactions.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.external_id - Unique identifier for the item
+ * @param {string} props.name - Item name/title
+ * @param {Array<string>} props.category - Array of category strings
+ * @param {string} props.description - Item description
+ * @param {string} props.image - URL of the item image
+ * @param {boolean} props.is_saved - Whether the item is currently saved by the user
+ * @param {Function} props.onSaveSuccess - Callback function called after successful save/unsave
+ */
 function Item({
     external_id,
     name,
@@ -33,19 +49,30 @@ function Item({
     const [anchorEl, setAnchorEl] = useState(null);
     const openMenu = Boolean(anchorEl);
 
-    // Update isSaved when initialIsSaved prop changes
+    // Sync local state with prop changes (useful when item is saved from elsewhere)
     useEffect(() => {
         setIsSaved(initialIsSaved);
     }, [initialIsSaved]);
 
+    /**
+     * Opens the menu by setting the anchor element
+     * @param {Event} event - The click event
+     */
     const handleMenuClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
 
+    /**
+     * Closes the menu by clearing the anchor element
+     */
     const handleCloseMenu = () => {
         setAnchorEl(null);
     };
 
+    /**
+     * Handles saving/unsaving the item
+     * Updates local state and calls success callback
+     */
     const handleSave = async () => {
         await saveItem(external_id, isSaved, () => {
             setIsSaved(!isSaved);
@@ -55,13 +82,16 @@ function Item({
         });
     };
 
+    /**
+     * Handles sharing the item by copying its URL to clipboard
+     */
     const handleShare = async () => {
         await shareItem(location.href + `item/${external_id}`);
     };
 
     return (
         <Card sx={{ width: 300, maxHeight: 400 }}>
-            {/* Card action area to navigate to item detail page */}
+            {/* Clickable area that navigates to item detail page */}
             <CardActionArea onClick={() => navigate(`/item/${external_id}`)}>
                 <CardMedia
                     component="img"
@@ -70,7 +100,7 @@ function Item({
                     alt={name}
                     sx={{ objectFit: "cover", maxHeight: 200 }}
                 />
-                {/* Card content to display item details */}
+                {/* Item information display */}
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {truncateString(name, 20)}
@@ -89,7 +119,7 @@ function Item({
                     </Typography>
                 </CardContent>
             </CardActionArea>
-            {/* Card actions to display save and share buttons */}
+            {/* Action buttons for save and menu */}
             <CardActions className="flex items-center justify-end">
                 <Tooltip title="Save item" placement="bottom" arrow>
                     <IconButton
@@ -109,6 +139,7 @@ function Item({
                         <MenuIcon />
                     </IconButton>
                 </Tooltip>
+                {/* Dropdown menu with additional actions */}
                 <Menu
                     id="basic-menu"
                     anchorEl={anchorEl}
