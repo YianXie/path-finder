@@ -397,3 +397,71 @@ class TokenRefreshTestCase(APITestCase):
         """Test refreshing access token with missing refresh token"""
         response = self.client.post("/api/token/refresh/", {})
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateUserInformationViewTestCase(APITestCase):
+    """Tests for the update user information endpoint"""
+
+    BASIC_INFORMATION = {
+        "role": "test123",
+        "grade": "test123",
+        "subject": "test123",
+    }
+    INTERESTS = ["test123"]
+    GOALS = ["test123"]
+    OTHER_GOALS = "test123"
+
+    def setUp(self):
+        """Set up test user and UserModel"""
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
+        self.access = AccessToken.for_user(self.user)
+        self.user_model = UserModel.objects.create(
+            email="test@example.com",
+            name="Test User",
+            finished_onboarding=False,
+        )
+
+    def test_update_user_information_with_auth(self):
+        """Test that update user information returns 200 when user is authenticated"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_update_user_information_without_auth(self):
+        """Test that update user information returns 401 when not authenticated"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_update_user_information_missing_basic_information(self):
+        """Test that update user information returns 400 when basic_information is missing"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

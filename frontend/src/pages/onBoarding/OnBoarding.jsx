@@ -129,7 +129,14 @@ function OnBoarding() {
                     setOtherGoals={setOtherGoals}
                 />
             )}
-            {activeStep === 3 && <OnBoardingFinished />}
+            {activeStep === 3 && (
+                <OnBoardingFinished
+                    basicInformation={basicInformation}
+                    interests={interests}
+                    goals={goals}
+                    otherGoals={otherGoals}
+                />
+            )}
             <Box
                 display="flex"
                 justifyContent="space-between"

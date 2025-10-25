@@ -11,4 +11,9 @@ urlpatterns = [
         "check-item-saved/", views.CheckItemSavedView.as_view(), name="check_item_saved"
     ),
     path("saved-items/", views.SavedItemsView.as_view(), name="saved_items"),
+    path(
+        "update-user-information/",
+        views.UpdateUserInformationView.as_view(),
+        name="update_user_information",
+    ),
 ]

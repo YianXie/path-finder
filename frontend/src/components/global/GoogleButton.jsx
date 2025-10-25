@@ -19,20 +19,16 @@ export default function GoogleButton() {
                         const { data } = await api.post("accounts/google/", {
                             credential: response.credential,
                         });
-                        login(data.tokens, data.user);
+                        await login(data.tokens, data.user); // ensure login is complete before redirecting
                         setSnackBar({
                             ...snackBar,
                             open: true,
                             severity: "success",
                             message: "Logged in successfully",
                         });
-                        if (!data.user.finished_onboarding) {
-                            console.log("redirecting to onboarding");
-                            navigate("/onboarding");
-                        } else {
-                            console.log("redirecting to home");
-                            navigate("/");
-                        }
+                        data.user.finished_onboarding
+                            ? navigate("/")
+                            : navigate("/onboarding");
                     } catch (error) {
                         setSnackBar({
                             ...snackBar,

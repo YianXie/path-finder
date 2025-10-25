@@ -55,7 +55,11 @@ export const AuthProvider = ({ children }) => {
 
             if (response.status === 200) {
                 const userData = response.data;
-                setUser({ email: userData.email, name: userData.name });
+                setUser({
+                    email: userData.email,
+                    name: userData.name,
+                    finished_onboarding: userData.finished_onboarding,
+                });
             } else {
                 console.error("Failed to fetch user profile:", response.status);
             }
@@ -190,13 +194,22 @@ export const AuthProvider = ({ children }) => {
      * Logs in a user with tokens and user data
      * @param {Object} tokens - Object containing access and refresh tokens
      * @param {Object} userData - User information (email, name, etc.)
+     * @returns {Promise} Promise that resolves when login is complete
      */
     const login = useCallback((tokens, userData) => {
-        localStorage.setItem("access", tokens.access);
-        localStorage.setItem("refresh", tokens.refresh);
-        setAccess(tokens.access);
-        setRefresh(tokens.refresh);
-        setUser(userData);
+        return new Promise((resolve) => {
+            localStorage.setItem("access", tokens.access);
+            localStorage.setItem("refresh", tokens.refresh);
+            setAccess(tokens.access);
+            setRefresh(tokens.refresh);
+            setUser(userData);
+
+            // Use setTimeout to ensure state updates are processed
+            // TODO: this is not a good solution, we should use a better way to ensure state updates are processed
+            setTimeout(() => {
+                resolve();
+            }, 500);
+        });
     }, []);
 
     /**

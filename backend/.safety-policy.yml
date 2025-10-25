@@ -1,0 +1,10 @@
+version: "3.0"
+
+scanning-settings:
+    exclude:
+        - "node_modules"
+        - "dist"
+        - "build"
+        - "docs"
+        - "tests"
+        - "tests/*"

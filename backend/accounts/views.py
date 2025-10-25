@@ -94,10 +94,10 @@ class GoogleLoginView(APIView):
 
             tokens = issue_tokens_for_user(user)
 
-            user_model = UserModel.objects.get(email=email)
-            if user_model:
+            try:
+                user_model = UserModel.objects.get(email=email)
                 finished_onboarding = user_model.finished_onboarding
-            else:
+            except UserModel.DoesNotExist:
                 finished_onboarding = False
             UserModel.objects.update_or_create(
                 email=email,
@@ -179,6 +179,7 @@ class UserProfileView(APIView):
                     "email": user.email,
                     "name": user_model.name,
                     "google_sub": user_model.google_sub,
+                    "finished_onboarding": user_model.finished_onboarding,
                 }
             )
         except UserModel.DoesNotExist:
@@ -188,6 +189,7 @@ class UserProfileView(APIView):
                     "email": user.email,
                     "name": getattr(user, "first_name", "") or user.username,
                     "google_sub": getattr(user, "google_sub", None),
+                    "finished_onboarding": False,
                 }
             )
 
@@ -339,6 +341,73 @@ class SavedItemsView(APIView):
                 {
                     "status": "error",
                     "message": "Failed to retrieve saved items: " + str(e),
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class UpdateUserInformationView(APIView):
+    """Update user information view
+
+    Args:
+        APIView: APIView
+
+    Returns:
+        Response: Response
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {"status": "error", "message": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            basic_information = request.data.get("basic_information")
+            interests = request.data.get("interests")
+            goals = request.data.get("goals")
+            other_goals = request.data.get("other_goals")
+
+            if not basic_information:
+                return Response(
+                    {"status": "error", "message": "Basic information is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not interests:
+                return Response(
+                    {"status": "error", "message": "Interests are required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not goals:
+                return Response(
+                    {"status": "error", "message": "Goals are required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if not other_goals:
+                return Response(
+                    {"status": "error", "message": "Other goals are required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user_model = UserModel.objects.get(email=user.email)
+            user_model.basic_information = basic_information
+            user_model.interests = interests
+            user_model.goals = goals
+            user_model.other_goals = other_goals
+            user_model.finished_onboarding = True
+            user_model.save()
+            return Response(
+                {"status": "ok", "message": "User information updated successfully"},
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Failed to update user information: " + str(e),
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )

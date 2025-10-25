@@ -5,6 +5,7 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import GroupsIcon from "@mui/icons-material/Groups";
+import InterestsIcon from "@mui/icons-material/Interests";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -126,8 +127,11 @@ function Header() {
                     position: "sticky",
                     top: 0,
                     zIndex: 1000,
-                    backdropFilter: "blur(4px)",
-                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    backdropFilter: "blur(6px)",
+                    boxShadow:
+                        mode === "dark"
+                            ? "0 2px 8px rgba(255, 255, 255, 0.1)"
+                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
                     willChange: "transform",
                 }}
             >
@@ -263,6 +267,19 @@ function Header() {
                                                     <FavoriteIcon fontSize="small" />
                                                 </ListItemIcon>
                                                 Saved items
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    navigate("/onboarding");
+                                                    mainMenu.handleClose();
+                                                }}
+                                            >
+                                                <ListItemIcon>
+                                                    <InterestsIcon fontSize="small" />
+                                                </ListItemIcon>
+                                                {user.finished_onboarding
+                                                    ? "Update your information"
+                                                    : "Finish onboarding"}
                                             </MenuItem>
                                             <MenuItem
                                                 onClick={themeMenu.handleClick}

@@ -2,7 +2,6 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
-import ProtectedRoute from "./ProtectedRoute";
 import {
     LazyClubs,
     LazyCompetitions,
@@ -12,6 +11,7 @@ import {
     LazySaved,
     LazyTutoring,
 } from "./components/LazyWrapper";
+import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
