@@ -13,6 +13,7 @@ import {
 } from "./components/LazyWrapper";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
+import About from "./pages/About";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
@@ -30,6 +31,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
+                    <Route path="/about" element={<About />} />
                     <Route
                         path="/saved"
                         element={

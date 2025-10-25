@@ -140,7 +140,7 @@ function Header() {
                     justifyContent={isMobile ? "space-between" : "center"}
                     alignItems="center"
                     gap={3}
-                    paddingBlock={2}
+                    paddingBlock={1.5}
                     paddingInline={isMobile ? 2 : 4}
                     borderBottom={1}
                     borderColor="divider"
@@ -193,6 +193,9 @@ function Header() {
                                 gap={2}
                                 ml="auto"
                             >
+                                <HeaderLink to="/about">
+                                    About this site
+                                </HeaderLink>
                                 <Divider orientation="vertical" flexItem />
                                 {access && user ? (
                                     <>
