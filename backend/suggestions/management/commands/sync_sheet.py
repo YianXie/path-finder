@@ -1,4 +1,6 @@
+import logging
 import os
+from datetime import datetime
 
 import requests
 
@@ -6,6 +8,23 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from suggestions.models import SuggestionModel
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+log_dirs = "./var/log"
+if not os.path.exists(log_dirs):
+    os.makedirs(log_dirs)
+log_file_path = os.path.join(
+    log_dirs, f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
+)
+
+file_handler = logging.FileHandler(log_file_path)
+file_handler.setLevel(logging.INFO)
+file_handler.setFormatter(
+    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+)
+logger.addHandler(file_handler)
 
 sheet_id = os.getenv("SHEET_ID")
 SHEET_CSV_URL = f"https://opensheet.elk.sh/{sheet_id}/1"
@@ -33,6 +52,7 @@ class Command(BaseCommand):
             csv_url = SHEET_CSV_URL
 
         self.stdout.write(self.style.NOTICE(f"Syncing suggestions from {csv_url}"))
+        logger.info(f"Syncing suggestions from {csv_url}")
         response = requests.get(csv_url, timeout=30)
         response.raise_for_status()
 
@@ -64,5 +84,6 @@ class Command(BaseCommand):
                 incoming_ext_ids.add(external_id)
                 upserts += 1
                 self.stdout.write(self.style.SUCCESS(f"Synced {external_id}"))
+                logger.info(f"Synced {external_id}")
 
         self.stdout.write(self.style.SUCCESS(f"Synced {upserts}"))
