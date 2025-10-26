@@ -9,14 +9,15 @@
 -   [Project Structure](#project-structure)
 -   [Getting Started](#getting-started)
     -   [Prerequisites](#prerequisites)
+    -   [Cloning Repository](#cloning-the-repository)
     -   [Backend setup](#backend-setup)
     -   [Frontend setup](#frontend-setup)
+    -   [Environment Variables](#environment-variables-important)
+    -   [Encountered Issues](#encountered-any-issues)
 -   [API endpoints](#api-endpoints)
 -   [Development](#development)
     -   [Backend development](#backend-development)
-        -   [Running tests](#running-tests)
     -   [Frontend development](#frontend-development)
-    -   [Environment variables](#environment-variables)
 -   [Current available features](#current-available-features)
 -   [Future features](#future-features)
 -   [License](#license)
@@ -83,6 +84,13 @@ path-finder/
 -   Node.js 18 or higher
 -   npm
 
+### Cloning the repository
+
+```bash
+cd /path/to/the/folder/you/want/to/put/your/code/
+git clone https://github.com/YianXie/path-finder.git
+```
+
 ### Backend Setup
 
 1. Navigate to the repo directory:
@@ -146,6 +154,14 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
+### Environment Variables (important)
+
+Refer to .env.example file located in the backend and frontend directory for more details
+
+### Encountered any issues?
+
+Please contact us through Emails ([yianxie52@gmail.com](mailto:yianxie52@gmail.com)), or describe the issue in GitHub Issues under our repository page
+
 ## API Endpoints
 
 ### `/api`
@@ -175,23 +191,8 @@ The application will be available at `http://localhost:5173`
 ### Backend Development
 
 -   The backend uses Django REST Framework to create RESTful APIs
--   API endpoints are defined in the `suggestions` app
+-   API endpoints are defined in the `suggestions` and `accounts` app
 -   CORS is configured to allow requests from the React frontend
-
-#### Running Tests
-
-To run the backend tests:
-
-```bash
-cd backend
-python manage.py test
-```
-
-The test suite includes comprehensive tests for:
-
--   Health check endpoint
--   Token generation and refresh
--   Protected endpoint access control
 
 ### Frontend Development
 
@@ -199,9 +200,9 @@ The test suite includes comprehensive tests for:
 -   Tailwind CSS is used for styling instead of CSS modules
 -   Components are located in the `src` directory
 
-### Environment Variables
+### CI/CD Checks
 
-Refer to .env.example file located in the backend and frontend directory for more details
+Please refer to [GitHub Actions README](/.github/README_TEMPLATE.md)
 
 ## Current Available Features
 
@@ -209,6 +210,7 @@ Refer to .env.example file located in the backend and frontend directory for mor
 -   Email authentication to ensure only SAS students, teachers, and staff members have access to the website
 -   Fetching Google Spreadsheet data
 -   Create database rows with user data
+-   Remember user's interests, roles, and goals in the database
 -   Remember users' saved items
 -   Toggle between light/dark mode
 
@@ -217,7 +219,7 @@ Refer to .env.example file located in the backend and frontend directory for mor
 -   Advanced search and filtering
 -   Personalized recommendation algorithm
 -   User reviews and ratings
--   User settings
+-   User settings (optional)
 
 ## License
 

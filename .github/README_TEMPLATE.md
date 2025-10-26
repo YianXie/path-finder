@@ -70,7 +70,7 @@ The CI workflows use the following environment variables for testing:
 -   `GOOGLE_CLIENT_ID`: Google OAuth client ID (test value)
 -   `ALLOWED_GOOGLE_HD`: Google hosted domain (test value)
 
-Or check the .env.example for more details
+Or check .env.example file for more details
 
 ## Adding New Checks
 
