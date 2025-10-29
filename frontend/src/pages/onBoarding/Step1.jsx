@@ -2,10 +2,12 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
+import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Select from "@mui/material/Select";
+import { useEffect } from "react";
 
 function Step1({ basicInformation, setBasicInformation }) {
     const subjectOptions = [
@@ -61,6 +63,10 @@ function Step1({ basicInformation, setBasicInformation }) {
         },
     ];
 
+    useEffect(() => {
+        console.log(basicInformation);
+    }, [basicInformation]);
+
     const handleChange = (event) => {
         setBasicInformation({ ...basicInformation, role: event.target.value });
     };
@@ -111,11 +117,13 @@ function Step1({ basicInformation, setBasicInformation }) {
                 </RadioGroup>
             </FormControl>
             {basicInformation.role === "student" && (
-                <FormControl sx={{ display: "flex", gap: 2 }}>
-                    <FormLabel>What is your grade level?</FormLabel>
+                <FormControl sx={{ display: "flex", gap: 2, minWidth: 150 }}>
+                    <InputLabel id="basic-grade-label">Grade level</InputLabel>
                     <Select
+                        labelId="basic-grade-label"
                         value={basicInformation.grade}
                         onChange={handleGradeChange}
+                        label="Grade level"
                     >
                         {gradeOptions.map((grade) => (
                             <MenuItem key={grade.value} value={grade.value}>
@@ -126,11 +134,13 @@ function Step1({ basicInformation, setBasicInformation }) {
                 </FormControl>
             )}
             {basicInformation.role === "teacher" && (
-                <FormControl sx={{ display: "flex", gap: 2 }}>
-                    <FormLabel>What is your subject?</FormLabel>
+                <FormControl sx={{ display: "flex", gap: 2, minWidth: 150 }}>
+                    <InputLabel id="basic-subject-label">Subject</InputLabel>
                     <Select
+                        labelId="basic-subject-label"
                         value={basicInformation.subject}
                         onChange={handleSubjectChange}
+                        label="Subject"
                     >
                         {subjectOptions.map((subject) => (
                             <MenuItem key={subject.value} value={subject.value}>

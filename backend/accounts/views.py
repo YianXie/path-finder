@@ -180,6 +180,11 @@ class UserProfileView(APIView):
                     "name": user_model.name,
                     "google_sub": user_model.google_sub,
                     "finished_onboarding": user_model.finished_onboarding,
+                    "basic_information": user_model.basic_information,
+                    "interests": user_model.interests,
+                    "goals": user_model.goals,
+                    "other_goals": user_model.other_goals,
+                    "saved_items": user_model.saved_items,
                 }
             )
         except UserModel.DoesNotExist:
@@ -190,6 +195,11 @@ class UserProfileView(APIView):
                     "name": getattr(user, "first_name", "") or user.username,
                     "google_sub": getattr(user, "google_sub", None),
                     "finished_onboarding": False,
+                    "basic_information": None,
+                    "interests": None,
+                    "goals": None,
+                    "other_goals": None,
+                    "saved_items": [],
                 }
             )
 

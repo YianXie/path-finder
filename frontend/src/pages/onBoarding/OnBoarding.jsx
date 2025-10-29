@@ -6,8 +6,9 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import usePageTitle from "../../hooks/usePageTitle";
 import OnBoardingFinished from "./OnBoardingFinished";
@@ -18,18 +19,33 @@ import Step3 from "./Step3";
 function OnBoarding() {
     usePageTitle("PathFinder | Onboarding");
 
+    const { user } = useAuth();
     const steps = ["Basic Information", "Interests", "Goals"];
-    const [basicInformation, setBasicInformation] = useState({
-        role: "student",
-        grade: "9",
-        subject: "math",
-    });
-    const [interests, setInterests] = useState([]);
-    const [goals, setGoals] = useState([]);
-    const [otherGoals, setOtherGoals] = useState("");
+    const [basicInformation, setBasicInformation] = useState(
+        user.basic_information
+            ? user.basic_information
+            : {
+                  role: "student",
+                  grade: "",
+                  subject: "",
+              }
+    );
+    const [interests, setInterests] = useState(
+        user.interests && user.interests.length > 0 ? user.interests : []
+    );
+    const [goals, setGoals] = useState(
+        user.goals && user.goals.length > 0 ? user.goals : []
+    );
+    const [otherGoals, setOtherGoals] = useState(
+        user.other_goals && user.other_goals.length > 0 ? user.other_goals : ""
+    );
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
     const { setSnackBar } = useSnackBar();
+
+    useEffect(() => {
+        console.log(user);
+    }, [user]);
 
     const isStepOptional = (step) => {
         return step === 2;

@@ -26,6 +26,7 @@ import Slide from "@mui/material/Slide";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useColorScheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { useState } from "react";
@@ -94,6 +95,7 @@ function Header() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width: 600px)");
+    const theme = useTheme();
 
     /**
      * Toggles the mobile drawer open/closed state
@@ -128,10 +130,8 @@ function Header() {
                     top: 0,
                     zIndex: 1000,
                     backdropFilter: "blur(6px)",
-                    boxShadow:
-                        mode === "dark"
-                            ? "0 2px 8px rgba(255, 255, 255, 0.1)"
-                            : "0 2px 8px rgba(0, 0, 0, 0.1)",
+                    opacity: 0.9,
+                    backgroundColor: theme.palette.background.paper,
                     willChange: "transform",
                 }}
             >

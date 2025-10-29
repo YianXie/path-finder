@@ -136,7 +136,13 @@ class SuggestionDetailView(APIView):
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
             serializer = SuggestionSerializer(suggestion)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "suggestion": serializer.data,
+                    "is_saved": False,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         # Handle suggestion not found
         except SuggestionModel.DoesNotExist:
