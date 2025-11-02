@@ -1,7 +1,9 @@
+adrf==0.1.11
 amqp==5.3.1
 annotated-types==0.7.0
 anyio==4.11.0
 asgiref==3.10.0
+async-property==0.2.2
 Authlib==1.6.5
 bandit==1.7.10
 billiard==4.2.2
@@ -16,6 +18,7 @@ click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.3.0
 cryptography==46.0.3
+distro==1.9.0
 dj-database-url==2.2.0
 Django==5.2.7
 django-cors-headers==4.9.0
@@ -33,6 +36,7 @@ httpx==0.28.1
 idna==3.11
 isort==5.13.2
 Jinja2==3.1.6
+jiter==0.11.1
 joblib==1.5.2
 kombu==5.5.4
 markdown-it-py==4.0.0
@@ -42,6 +46,7 @@ mccabe==0.7.0
 mdurl==0.1.2
 mypy_extensions==1.1.0
 nltk==3.9.2
+openai==2.6.1
 packaging==25.0
 pathspec==0.12.1
 platformdirs==4.5.0
