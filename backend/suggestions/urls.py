@@ -10,9 +10,9 @@ urlpatterns = [
         name="suggestions",
     ),
     path(
-        "suggestions-with-saved-status/",
-        views.SuggestionListWithSavedStatusView.as_view(),
-        name="suggestions_with_saved_status",
+        "personalized-suggestions/",
+        views.PersonalizedSuggestionsView.as_view(),
+        name="personalized_suggestions",
     ),
     path(
         "suggestions/<str:external_id>/",

@@ -7,7 +7,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Select from "@mui/material/Select";
-import { useEffect } from "react";
 
 function Step1({ basicInformation, setBasicInformation }) {
     const subjectOptions = [
@@ -62,10 +61,6 @@ function Step1({ basicInformation, setBasicInformation }) {
             value: "12",
         },
     ];
-
-    useEffect(() => {
-        console.log(basicInformation);
-    }, [basicInformation]);
 
     const handleChange = (event) => {
         setBasicInformation({ ...basicInformation, role: event.target.value });

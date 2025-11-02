@@ -27,7 +27,7 @@ function Home() {
     const { access } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
-    const [sortBy, setSortBy] = useState("alphabetical");
+    const [sortBy, setSortBy] = useState("default");
     const [sortDirection, setSortDirection] = useState(1); // 1 for ascending, -1 for descending
     const [pagination, setPagination] = useState({
         page: 1,
@@ -43,11 +43,13 @@ function Home() {
             try {
                 setIsLoading(true);
                 const endpoint = access
-                    ? "/api/suggestions-with-saved-status/"
+                    ? "/api/personalized-suggestions/"
                     : "/api/suggestions/";
 
                 const params = { page, page_size: 50 };
                 const res = await api.get(endpoint, { params });
+
+                console.log("res", res.data);
 
                 setSuggestions(res.data.results);
                 setPagination(res.data.pagination);
@@ -79,6 +81,9 @@ function Home() {
         const suggestionsCopy = [...suggestions];
 
         switch (sortBy.toLowerCase()) {
+            case "default":
+                return suggestionsCopy;
+
             case "alphabetical":
                 return suggestionsCopy.sort(
                     (a, b) => a.name.localeCompare(b.name) * sortDirection
@@ -130,6 +135,7 @@ function Home() {
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                     >
+                        <MenuItem value="default">Default</MenuItem>
                         <MenuItem value="alphabetical">Alphabetical</MenuItem>
                         <MenuItem value="newest">Newest</MenuItem>
                         <MenuItem value="oldest">Oldest</MenuItem>

@@ -6,7 +6,7 @@ import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import Stepper from "@mui/material/Stepper";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
@@ -42,10 +42,6 @@ function OnBoarding() {
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
     const { setSnackBar } = useSnackBar();
-
-    useEffect(() => {
-        console.log(user);
-    }, [user]);
 
     const isStepOptional = (step) => {
         return step === 2;

@@ -5,7 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormGroup from "@mui/material/FormGroup";
 import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useSnackBar } from "../../contexts/SnackBarContext";
 
@@ -86,10 +86,6 @@ function Step2({ interests, setInterests }) {
             }));
         }
     };
-
-    useEffect(() => {
-        console.log(interests);
-    }, [interests]);
 
     return (
         <Box

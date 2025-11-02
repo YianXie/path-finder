@@ -114,14 +114,14 @@ class SuggestionListWithSavedStatusViewTestCase(APITestCase):
     def test_suggestion_list_with_saved_status_view_returns_ok(self):
         """Test that the suggestion list with saved status view endpoint returns status ok"""
         response = self.client.get(
-            "/api/suggestions-with-saved-status/",
+            "/api/personalized-suggestions/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_suggestion_list_with_saved_status_view_returns_401(self):
         """Test that the suggestion list with saved status view endpoint returns 401 if not authenticated"""
-        response = self.client.get("/api/suggestions-with-saved-status/")
+        response = self.client.get("/api/personalized-suggestions/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 

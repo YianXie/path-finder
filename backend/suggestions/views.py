@@ -1,4 +1,10 @@
-from rest_framework.exceptions import status
+import json
+import os
+
+from adrf.views import APIView as ADRFAPIView
+from asgiref.sync import sync_to_async
+from openai import AsyncOpenAI
+from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -7,6 +13,7 @@ from django.core.paginator import Paginator
 
 from accounts.models import UserModel
 from suggestions.models import SuggestionModel
+from suggestions.reco_schema import RANKING_SCHEMA, SYSTEM_RULES
 from suggestions.serializers import SuggestionSerializer
 
 
@@ -39,6 +46,7 @@ class SuggestionListView(APIView):
 
             serializer = SuggestionSerializer(page_obj, many=True)
             suggestions_data = serializer.data
+
             return Response(
                 {
                     "results": suggestions_data,
@@ -63,12 +71,47 @@ class SuggestionListView(APIView):
             )
 
 
-class SuggestionListWithSavedStatusView(APIView):
-    """Suggestion List View with saved status for authenticated users"""
+@sync_to_async
+def get_suggestions_page(page, page_size):
+    suggestions = SuggestionModel.objects.all().order_by("name")
+    paginator = Paginator(suggestions, page_size)
+    page_obj = paginator.get_page(page)
+    serializer = SuggestionSerializer(page_obj, many=True)
+    return serializer.data, paginator, page_obj
 
+
+@sync_to_async
+def get_user_model(email):
+    user_model, created = UserModel.objects.get_or_create(
+        email=email,
+        defaults={
+            "name": email.split("@")[0],
+            "basic_information": {},
+            "interests": [],
+            "goals": [],
+            "saved_items": [],
+            "finished_onboarding": False,
+        },
+    )
+    return user_model
+
+
+@sync_to_async
+def get_saved_items(email):
+    try:
+        user_model = UserModel.objects.get(email=email)
+        return set(user_model.saved_items)
+    except UserModel.DoesNotExist:
+        return set()
+
+
+class PersonalizedSuggestionsView(ADRFAPIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def _sort_suggestions(self, s):
+        return s["score"]
+
+    async def get(self, request, *args, **kwargs):
         user = request.user
         if not user.is_authenticated:
             return Response(
@@ -77,34 +120,58 @@ class SuggestionListWithSavedStatusView(APIView):
             )
 
         try:
-            # Get pagination parameters
             page = int(request.GET.get("page", 1))
-            page_size = int(
-                request.GET.get("page_size", 50)
-            )  # Default 50 items per page
+            page_size = int(request.GET.get("page_size", 50))
+            suggestions_data, paginator, page_obj = await get_suggestions_page(
+                page, page_size
+            )
 
-            # Get all suggestions with pagination
-            suggestions = SuggestionModel.objects.all().order_by("name")
-            paginator = Paginator(suggestions, page_size)
-            page_obj = paginator.get_page(page)
+            suggestions_data = list(suggestions_data)
+            user_model = await get_user_model(user.email)
 
-            serializer = SuggestionSerializer(page_obj, many=True)
-            suggestions_data = serializer.data
+            api_key = os.environ.get("OPENAI_API_KEY")
+            client = AsyncOpenAI(api_key=api_key)
 
-            # Get user's saved items in a single query
-            try:
-                user_model = UserModel.objects.get(email=user.email)
-                saved_items = set(user_model.saved_items)
-            except UserModel.DoesNotExist:
-                saved_items = set()
+            completion = await client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": SYSTEM_RULES},
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "basic_info": user_model.basic_information,
+                                "interests": user_model.interests,
+                                "goals": user_model.goals,
+                                "additional_info": user_model.other_goals,
+                                "suggestions": suggestions_data,
+                            }
+                        ),
+                    },
+                ],
+                response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
+                timeout=20_000,
+            )
+            content = completion.choices[0].message.content
+            content = json.loads(content)
+            content["suggestions"] = sorted(
+                content["suggestions"], key=self._sort_suggestions, reverse=True
+            )
+            ranked_suggestions = []
+            for suggestion in content["suggestions"]:
+                print("suggestion:", suggestion)
+                for s in suggestions_data:
+                    if s["external_id"] == suggestion["id"]:
+                        ranked_suggestions.append(s)
+                        break
 
-            # Add saved status to each suggestion
-            for suggestion in suggestions_data:
+            saved_items = await get_saved_items(user.email)
+            for suggestion in ranked_suggestions:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
 
             return Response(
                 {
-                    "results": suggestions_data,
+                    "results": ranked_suggestions,
                     "pagination": {
                         "page": page,
                         "page_size": page_size,
@@ -116,13 +183,9 @@ class SuggestionListWithSavedStatusView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-
         except Exception as e:
             return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to retrieve suggestions: " + str(e),
-                },
+                {"status": "error", "message": f"Failed to retrieve suggestions: {e}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
