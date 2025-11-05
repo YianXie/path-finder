@@ -49,9 +49,15 @@ function Home() {
                 const params = { page, page_size: 50 };
                 const res = await api.get(endpoint, { params });
 
-                console.log("res", res.data);
+                const uniqueSuggestions = res.data.results.filter(
+                    (suggestion, index, self) =>
+                        index ===
+                        self.findIndex(
+                            (s) => s.external_id === suggestion.external_id
+                        )
+                );
 
-                setSuggestions(res.data.results);
+                setSuggestions(uniqueSuggestions);
                 setPagination(res.data.pagination);
             } catch (error) {
                 handleError(
@@ -88,6 +94,7 @@ function Home() {
                 return suggestionsCopy.sort(
                     (a, b) => a.name.localeCompare(b.name) * sortDirection
                 );
+
             case "newest":
                 // Sort by created_at if available, otherwise by name
                 return suggestionsCopy.sort((a, b) => {
@@ -99,6 +106,7 @@ function Home() {
                     }
                     return a.name.localeCompare(b.name) * sortDirection;
                 });
+
             case "oldest":
                 // Sort by created_at if available, otherwise by name
                 return suggestionsCopy.sort((a, b) => {
@@ -110,6 +118,7 @@ function Home() {
                     }
                     return a.name.localeCompare(b.name) * sortDirection;
                 });
+
             default:
                 return suggestionsCopy;
         }
@@ -174,9 +183,9 @@ function Home() {
                 justifyContent="center"
                 alignItems="center"
             >
-                {sortedSuggestions.map((suggestion) => (
+                {sortedSuggestions.map((suggestion, index) => (
                     <Item
-                        key={suggestion.external_id}
+                        key={`${suggestion.external_id}-${index}`}
                         {...suggestion}
                         onSaveSuccess={refreshSuggestions}
                     />

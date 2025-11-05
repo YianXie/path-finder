@@ -158,11 +158,15 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 content["suggestions"], key=self._sort_suggestions, reverse=True
             )
             ranked_suggestions = []
+            added_external_ids = set()  # Track which external_ids have been added
             for suggestion in content["suggestions"]:
-                print("suggestion:", suggestion)
+                # Skip if we've already added this suggestion
+                if suggestion["id"] in added_external_ids:
+                    continue
                 for s in suggestions_data:
                     if s["external_id"] == suggestion["id"]:
                         ranked_suggestions.append(s)
+                        added_external_ids.add(suggestion["id"])
                         break
 
             saved_items = await get_saved_items(user.email)
