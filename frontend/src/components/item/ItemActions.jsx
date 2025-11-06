@@ -8,16 +8,15 @@ import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import { useContext } from "react";
+import { useParams } from "react-router-dom";
 
 import { ItemDetailContext } from "../../contexts/ItemDetailContext";
 import { useItemActions } from "../../hooks";
 
-import { useParams } from "react-router-dom";
-
 export function ItemActions() {
     const { state, setters } = useContext(ItemDetailContext);
 
-    const { handleShare, handleRating, handleSave } = useItemActions();
+    const { handleShare, handleSave } = useItemActions();
 
     const { external_id } = useParams();
 
@@ -50,19 +49,19 @@ export function ItemActions() {
     const onRating = async (e, newRating) => {
         setters.setRating(newRating);
         // // To be implemented
-        if (1 + 1 == 3) {
-            await handleRating(external_id, newRating, () => {
-                setters.setRating(newRating);
-            });
-        }
+        // if (1 + 1 == 3) {
+        //     await handleRating(external_id, newRating, () => {
+        //         setters.setRating(newRating);
+        //     });
+        // }
     };
 
     /**
      * Opens the external link in a new tab
      */
     const handleExternalLink = () => {
-        if (itemInfo?.url) {
-            window.open(itemInfo.url, "_blank", "noopener,noreferrer");
+        if (state.itemInfo?.url) {
+            window.open(state.itemInfo.url, "_blank", "noopener,noreferrer");
         }
     };
 
