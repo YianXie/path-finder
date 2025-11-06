@@ -196,6 +196,30 @@ function ItemDetail() {
                                         {itemInfo.name}
                                     </Typography>
 
+                                    <Stack 
+                                        direction="row" 
+                                        alignItems="center" 
+                                        spacing={1}
+                                        sx={{ marginBottom: 3 }}
+                                    >
+                                        <Rating
+                                            name="simple-controlled"
+                                            value={itemInfo.groupRating ? itemInfo.groupRating : 2.3}
+                                            precision={0.25}
+                                            readOnly
+                                        />
+                                        <Typography
+                                            component="p"
+                                            color="textDisabled"
+                                            sx={{
+                                                fontWeight: 500,
+                                                marginBottom: 2,
+                                            }}
+                                        >
+                                            {itemInfo.groupRating ? itemInfo.groupRating : 2.3} · {itemInfo.numRating ? itemInfo.numRating : 73} ratings 
+                                        </Typography>
+                                    </Stack>
+
                                     <Stack
                                         direction="row"
                                         spacing={1}
