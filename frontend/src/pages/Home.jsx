@@ -43,8 +43,8 @@ function Home() {
             try {
                 setIsLoading(true);
                 const endpoint = access
-                    ? "/api/personalized-suggestions/"
-                    : "/api/suggestions/";
+                    ? "/api/suggestions/personalized-suggestions/"
+                    : "/api/suggestions/suggestions/";
 
                 const params = { page, page_size: 50 };
                 const res = await api.get(endpoint, { params });
