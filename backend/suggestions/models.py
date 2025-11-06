@@ -21,6 +21,9 @@ class SuggestionModel(models.Model):
     url = models.URLField(max_length=255, default=DEFAULT_URL)
     image = models.URLField(max_length=255, default=DEFAULT_IMAGE)
     created_at = models.DateTimeField(auto_now=True)
+    
+    total_rating_score = models.IntegerField(default=0)
+    total_ratings = models.IntegerField(default=0)
 
     @classmethod
     def external_id_from_row(cls, row):
