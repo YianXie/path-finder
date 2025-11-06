@@ -13,6 +13,7 @@ import {
 } from "./components/LazyWrapper";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
+import { ItemDetailProvider } from "./contexts/ItemDetailContext";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";
@@ -83,7 +84,11 @@ function App() {
                     />
                     <Route
                         path="/item/:external_id"
-                        element={<LazyItemDetail />}
+                        element={
+                            <ItemDetailProvider>
+                                <LazyItemDetail />
+                            </ItemDetailProvider>
+                        }
                     />
                     <Route path="*" element={<LazyNotFoundPage />} />
                 </Route>
