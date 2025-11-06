@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import { useContext, useEffect } from "react";
-import { navigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop } from "../components/common";
@@ -32,6 +32,8 @@ function ItemDetail() {
 
     const { external_id } = useParams();
     const { access } = useAuth();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function getItemInfo() {
