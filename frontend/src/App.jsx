@@ -13,7 +13,7 @@ import {
 } from "./components/LazyWrapper";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
-import { ItemDetailProvider } from "./contexts/ItemDetailContext";
+import { ItemDetailProvider } from "./contexts/ItemDetailProvider";
 import About from "./pages/About";
 import Home from "./pages/Home";
 import Login from "./pages/auth/Login";

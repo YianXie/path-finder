@@ -4,7 +4,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
 import { useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { navigate, useParams } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop } from "../components/common";
@@ -61,7 +61,7 @@ function ItemDetail() {
             }
         }
         getItemInfo();
-    }, [external_id, access]);
+    }, [external_id, access, setters]);
 
     if (state.error) {
         return (

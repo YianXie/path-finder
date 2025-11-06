@@ -19,6 +19,15 @@ import { ItemImage } from "./ItemImage";
 export function ItemDetailCard() {
     const { state } = useContext(ItemDetailContext);
 
+    /**
+     * Opens the external link in a new tab
+     */
+    const handleExternalLink = () => {
+        if (state.itemInfo?.url) {
+            window.open(state.itemInfo.url, "_blank", "noopener,noreferrer");
+        }
+    };
+
     return (
         <Card elevation={2}>
             <Grid container spacing={0}>
