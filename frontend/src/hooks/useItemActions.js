@@ -66,7 +66,40 @@ function useItemActions() {
         [handleError, handleSuccess]
     );
 
-    return { handleSave, handleShare };
+    /**
+     * Rates an item that the user rates
+     * @param {string} externalId - The external ID of the item to rate
+     * @param {boolean} rating - Current rating state of the item
+     * @param {Function} onSuccess - Callback function to execute on successful save/unsave
+     */
+    const handleRating = useCallback(
+        async (externalId, rating, onSuccess) => {
+            if (!access) {
+                handleError(null, "Please login to save items");
+                return;
+            }
+
+            try {
+                await api.post("/accounts/ratings/", {
+                    external_id: externalId,
+                    rating: rating
+                });
+
+                handleSuccess(
+                    `Item rating updated to ${rating}`
+                );
+
+                if (onSuccess) {
+                    onSuccess();
+                }
+            } catch (error) {
+                handleError(error, "Failed to update item rating");
+            }
+        },
+        [access, handleError, handleSuccess]
+    );
+
+    return { handleSave, handleShare, handleRating};
 }
 
 export default useItemActions;
