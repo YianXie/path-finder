@@ -118,7 +118,7 @@ class SuggestionListWithSavedStatusViewTestCase(APITestCase):
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
     def test_double_suggestion_list_with_saved_status_view_returns_same_request(self):
         """Test that the suggestion list with saved status view endpoint returns status ok"""
         response1 = self.client.get(

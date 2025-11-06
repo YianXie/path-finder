@@ -82,12 +82,10 @@ function useItemActions() {
             try {
                 await api.post("/accounts/ratings/", {
                     external_id: externalId,
-                    rating: rating
+                    rating: rating,
                 });
 
-                handleSuccess(
-                    `Item rating updated to ${rating}`
-                );
+                handleSuccess(`Item rating updated to ${rating}`);
 
                 if (onSuccess) {
                     onSuccess();
@@ -99,7 +97,7 @@ function useItemActions() {
         [access, handleError, handleSuccess]
     );
 
-    return { handleSave, handleShare, handleRating};
+    return { handleSave, handleShare, handleRating };
 }
 
 export default useItemActions;
