@@ -30,3 +30,14 @@ class SuggestionModel(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SuggestionsCacheModel(models.Model):
+    basic_information = models.JSONField(default=dict)
+    interests = models.JSONField(default=list)
+    goals = models.JSONField(default=list)
+    other_goals = models.TextField(blank=True, null=True)
+    suggestions_ids = models.JSONField(default=list)
+
+    def __str__(self):
+        return f"Interests: {self.interests} Goals: {self.goals} Other Goals: {self.other_goals}"

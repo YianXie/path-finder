@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 from django.core.paginator import Paginator
 
 from accounts.models import UserModel
-from suggestions.models import SuggestionModel
+from suggestions.models import SuggestionModel, SuggestionsCacheModel
 from suggestions.reco_schema import RANKING_SCHEMA, SYSTEM_RULES
 from suggestions.serializers import SuggestionSerializer
 
@@ -97,6 +97,23 @@ def get_user_model(email):
 
 
 @sync_to_async
+def get_all_suggestions_cache():
+    return list(SuggestionsCacheModel.objects.all().values())
+
+
+@sync_to_async
+def add_suggestion_cache(user_model, suggestions_ids):
+    print("added a cache")
+    SuggestionsCacheModel.objects.create(
+        basic_information=user_model.basic_information,
+        interests=user_model.interests,
+        goals=user_model.goals,
+        other_goals=user_model.other_goals,
+        suggestions_ids=suggestions_ids,
+    )
+
+
+@sync_to_async
 def get_saved_items(email):
     try:
         user_model = UserModel.objects.get(email=email)
@@ -129,6 +146,42 @@ class PersonalizedSuggestionsView(ADRFAPIView):
             suggestions_data = list(suggestions_data)
             user_model = await get_user_model(user.email)
 
+            suggestionsCache = await get_all_suggestions_cache()
+            suggestionCache = list(
+                filter(
+                    lambda cache: cache["interests"] == user_model.interests
+                    and cache["basic_information"] == user_model.basic_information
+                    and cache["goals"] == user_model.goals
+                    and cache["other_goals"] == user_model.other_goals,
+                    suggestionsCache,
+                )
+            )
+            # print(suggestionCache)
+            if len(suggestionCache) > 0:
+                suggestionCache = suggestionCache[0]
+
+                ranked_suggestions = []
+                for suggestion_id in suggestionCache["suggestions_ids"]:
+                    for s in suggestions_data:
+                        if s["external_id"] == suggestion_id:
+                            ranked_suggestions.append(s)
+                            break
+                print("time saved")
+                return Response(
+                    {
+                        "results": ranked_suggestions,
+                        "pagination": {
+                            "page": page,
+                            "page_size": page_size,
+                            "total_pages": paginator.num_pages,
+                            "total_count": paginator.count,
+                            "has_next": page_obj.has_next(),
+                            "has_previous": page_obj.has_previous(),
+                        },
+                    },
+                    status=status.HTTP_200_OK,
+                )
+
             api_key = os.environ.get("OPENAI_API_KEY")
             client = AsyncOpenAI(api_key=api_key)
 
@@ -151,6 +204,7 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 ],
                 response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
                 timeout=20_000,
+                temperature=0,
             )
             content = completion.choices[0].message.content
             content = json.loads(content)
@@ -158,7 +212,7 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 content["suggestions"], key=self._sort_suggestions, reverse=True
             )
             ranked_suggestions = []
-            added_external_ids = set()  # Track which external_ids have been added
+            added_external_ids = []  # Track which external_ids have been added
             for suggestion in content["suggestions"]:
                 # Skip if we've already added this suggestion
                 if suggestion["id"] in added_external_ids:
@@ -166,13 +220,13 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 for s in suggestions_data:
                     if s["external_id"] == suggestion["id"]:
                         ranked_suggestions.append(s)
-                        added_external_ids.add(suggestion["id"])
+                        added_external_ids.append(suggestion["id"])
                         break
 
             saved_items = await get_saved_items(user.email)
             for suggestion in ranked_suggestions:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
-
+            await add_suggestion_cache(user_model, added_external_ids)
             return Response(
                 {
                     "results": ranked_suggestions,
