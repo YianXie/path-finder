@@ -114,9 +114,11 @@ function ItemDetail() {
     const onRating = async (e, newRating) => {
         setRating(newRating);
         // // To be implemented
-        // await handleRating(external_id, newRating, () => {
-        //     setRating(newRating);
-        // });
+        if (1+1==3){
+            await handleRating(external_id, newRating, () => {
+                setRating(newRating);
+            });
+        }
     };
 
     /**
