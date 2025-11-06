@@ -21,6 +21,7 @@ import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import Rating from "@mui/material/Rating";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -44,11 +45,12 @@ function ItemDetail() {
 
     const { external_id } = useParams();
     const { access } = useAuth();
-    const { handleSave, handleShare } = useItemActions();
+    const { handleSave, handleShare, handleRating} = useItemActions();
 
     const [itemInfo, setItemInfo] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaved, setIsSaved] = useState(false);
+    const [rating, setRating] = useState(0);
     const [error, setError] = useState(null);
 
     /**
@@ -71,6 +73,8 @@ function ItemDetail() {
 
                 setItemInfo(response.data.suggestion);
                 setIsSaved(response.data.is_saved);
+                // Removed untl backend is implemented
+                // setIsSaved(response.data.rating);
             } catch (error) {
                 console.error("Failed to fetch item info:", error);
                 setError("Failed to load item details. Please try again.");
@@ -82,12 +86,18 @@ function ItemDetail() {
     }, [external_id, access]);
 
     /**
-     * Handles saving/unsaving the item
+     * Handles saving/unsaving the item with optimistic UI design
      */
     const onSave = async () => {
-        await handleSave(external_id, isSaved, () => {
-            setIsSaved(!isSaved);
-        });
+        // I change the UI before I send the requests
+        setIsSaved(!isSaved);
+        try{
+            // If the requests succeeds than nothing happens
+            await handleSave(external_id, isSaved, () => {});
+        } catch{
+            // But if it fails we toggle back the current value to make sure we have the correct value
+            setIsSaved(prev => !prev);
+        }
     };
 
     /**
@@ -95,6 +105,18 @@ function ItemDetail() {
      */
     const onShare = async () => {
         await handleShare(window.location.href);
+    };
+
+    /**
+     * Handles User Rating changes
+     */
+
+    const onRating = async (e, newRating) => {
+        setRating(newRating);
+        // // To be implemented
+        // await handleRating(external_id, newRating, () => {
+        //     setRating(newRating);
+        // });
     };
 
     /**
@@ -251,6 +273,24 @@ function ItemDetail() {
                                                 </IconButton>
                                             </Tooltip>
                                         )}
+                                        <Box
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                        >
+                                        <Tooltip
+                                            title="Rate this item"
+                                            placement="bottom"
+                                        >
+                                            <Rating
+                                                name="simple-controlled"
+                                                value={rating}
+                                                onChange={onRating}
+                                            />
+                                        </Tooltip>
+                                        </Box>
                                     </Stack>
                                 </Box>
 
