@@ -23,6 +23,9 @@ class SuggestionModel(models.Model):
     created_at = models.DateTimeField(auto_now=True)
         
 
+    total_rating_score = models.IntegerField(default=0)
+    total_ratings = models.IntegerField(default=0)
+
     @classmethod
     def external_id_from_row(cls, row):
         if row.get("external_id"):
