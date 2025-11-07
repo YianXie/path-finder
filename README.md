@@ -65,7 +65,7 @@ path-finder/
 │   ├── pathfinder_api/     # Main Django project
 │   ├── suggestions/        # Django app for handling suggestions
 │   ├── manage.py           # Django management script
-│   ├── render-build.py     # automatically runs when deploy to Render
+│   ├── render-build.sh     # automatically runs when deploy to Render
 │   └── requirements.txt    # Python dependencies
 ├── frontend/              # React frontend
 │   ├── src/                # Source files
