@@ -79,6 +79,8 @@ class Command(BaseCommand):
 
                 SuggestionModel.objects.update_or_create(
                     external_id=external_id,
+                    total_rating_score=0,
+                    total_ratings=0,
                     defaults=payload,
                 )
                 incoming_ext_ids.add(external_id)
