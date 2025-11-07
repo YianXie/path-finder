@@ -40,7 +40,7 @@ class SuggestionsCacheModel(models.Model):
     interests = models.JSONField(default=list)
     goals = models.JSONField(default=list)
     other_goals = models.TextField(blank=True, null=True)
-    suggestions_ids = models.JSONField(default=list)
+    suggestion_ids = models.JSONField(default=list)
 
     def __str__(self):
-        return f"Interests: {self.interests} Goals: {self.goals} Other Goals: {self.other_goals}"
+        return f"Interests: {self.interests} Goals: {self.goals} Other Goals: {self.other_goals} Suggestions: {self.suggestion_ids}"

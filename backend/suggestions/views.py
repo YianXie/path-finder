@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 
 from adrf.views import APIView as ADRFAPIView
 from asgiref.sync import sync_to_async
@@ -102,14 +103,13 @@ def get_all_suggestions_cache():
 
 
 @sync_to_async
-def add_suggestion_cache(user_model, suggestions_ids):
-    print("added a cache")
-    SuggestionsCacheModel.objects.create(
+def add_suggestion_cache(user_model, suggestion_ids):
+    SuggestionsCacheModel.objects.update_or_create(
         basic_information=user_model.basic_information,
         interests=user_model.interests,
         goals=user_model.goals,
         other_goals=user_model.other_goals,
-        suggestions_ids=suggestions_ids,
+        defaults={"suggestion_ids": suggestion_ids},
     )
 
 
@@ -143,11 +143,11 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 page, page_size
             )
 
-            suggestions_data = list(suggestions_data)
+            suggestions_data = list[Any](suggestions_data)
             user_model = await get_user_model(user.email)
 
             suggestionsCache = await get_all_suggestions_cache()
-            suggestionCache = list(
+            suggestionCache = list[Any](
                 filter(
                     lambda cache: cache["interests"] == user_model.interests
                     and cache["basic_information"] == user_model.basic_information
@@ -156,17 +156,16 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                     suggestionsCache,
                 )
             )
-            # print(suggestionCache)
-            if len(suggestionCache) > 0:
-                suggestionCache = suggestionCache[0]
 
+            if suggestionCache and len(suggestionCache) > 0:
+                suggestionCache = suggestionCache[0]
                 ranked_suggestions = []
-                for suggestion_id in suggestionCache["suggestions_ids"]:
+                for suggestion_id in suggestionCache["suggestion_ids"]:
                     for s in suggestions_data:
                         if s["external_id"] == suggestion_id:
                             ranked_suggestions.append(s)
                             break
-                print("time saved")
+
                 return Response(
                     {
                         "results": ranked_suggestions,
@@ -204,7 +203,7 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 ],
                 response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
                 timeout=20_000,
-                temperature=0,
+                temperature=0.2,
             )
             content = completion.choices[0].message.content
             content = json.loads(content)
@@ -212,21 +211,26 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 content["suggestions"], key=self._sort_suggestions, reverse=True
             )
             ranked_suggestions = []
-            added_external_ids = []  # Track which external_ids have been added
+            added_external_ids = []
             for suggestion in content["suggestions"]:
                 # Skip if we've already added this suggestion
-                if suggestion["id"] in added_external_ids:
+                if suggestion["external_id"] in added_external_ids:
                     continue
+
                 for s in suggestions_data:
-                    if s["external_id"] == suggestion["id"]:
+                    if s["external_id"] == suggestion["external_id"]:
                         ranked_suggestions.append(s)
-                        added_external_ids.append(suggestion["id"])
+                        added_external_ids.append(suggestion["external_id"])
                         break
 
             saved_items = await get_saved_items(user.email)
             for suggestion in ranked_suggestions:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
-            await add_suggestion_cache(user_model, added_external_ids)
+
+            # Add the data to the cache
+            if len(added_external_ids) > 0:
+                await add_suggestion_cache(user_model, added_external_ids)
+
             return Response(
                 {
                     "results": ranked_suggestions,

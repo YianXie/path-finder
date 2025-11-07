@@ -11,14 +11,14 @@ RANKING_SCHEMA = JSONSchema(
                 "items": {
                     "type": "object",
                     "properties": {
-                        "id": {
+                        "external_id": {
                             "type": "string",
                         },
                         "score": {
                             "type": "number",
                         },
                     },
-                    "required": ["id", "score"],
+                    "required": ["external_id", "score"],
                     "additionalProperties": False,
                 },
             },
@@ -29,7 +29,7 @@ RANKING_SCHEMA = JSONSchema(
     strict=True,
 )
 
-SYSTEM_RULES = """You are a ranking engine for school clubs/tutoring/competitions. You are given a list of suggestions and a user's basic information, interests, goals, and additional information.
+SYSTEM_RULES = """You are a ranking engine for school clubs/tutoring/competitions. You are given a list of suggestions and a user's basic information, interests, goals, and additional information. Output the item's external_id with their score.
 
 Tasks:
 - Score each item in [0, 1] based on the user's basic information, interests, goals, and additional information.
@@ -42,6 +42,6 @@ Sorting:
 - +0.30 if tags are related (or similar) to user's additional information.
 - -0.20 if tags are not related (or similar) to user's interests, goals, or additional information.
 
-Do not give all items the same score. Sort all items.
+Do not give all items the same score. Sort all items. Output the exact external_id.
 
 Output: JSON only."""

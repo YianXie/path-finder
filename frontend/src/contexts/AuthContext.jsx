@@ -55,7 +55,6 @@ export const AuthProvider = ({ children }) => {
 
             if (response.status === 200) {
                 const userData = response.data;
-                console.log("fetchUserProfile userData", userData);
                 setUser(userData);
             } else {
                 console.error("Failed to fetch user profile:", response.status);
