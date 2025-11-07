@@ -63,15 +63,52 @@ function ItemDetail() {
             }
         }
         getItemInfo();
-    }, [external_id, access, setters]);
+    }, [external_id, access]);
 
-    if (state.error) {
-        return (
-            <Alert severity="error" sx={{ marginBottom: 3 }}>
-                {state.error}
-            </Alert>
-        );
-    }
+    /**
+     * Handles saving/unsaving the item with optimistic UI design
+     */
+    const onSave = async () => {
+        // I change the UI before I send the requests
+        setIsSaved(!isSaved);
+        try {
+            // If the requests succeeds than nothing happens
+            await handleSave(external_id, isSaved, () => {});
+        } catch {
+            // But if it fails we toggle back the current value to make sure we have the correct value
+            setIsSaved((prev) => !prev);
+        }
+    };
+
+    /**
+     * Handles sharing the current page URL
+     */
+    const onShare = async () => {
+        await handleShare(window.location.href);
+    };
+
+    /**
+     * Handles User Rating changes
+     */
+
+    const onRating = async (e, newRating) => {
+        setRating(newRating);
+        // // To be implemented
+        if (1 + 1 == 3) {
+            await handleRating(external_id, newRating, () => {
+                setRating(newRating);
+            });
+        }
+    };
+
+    /**
+     * Opens the external link in a new tab
+     */
+    const handleExternalLink = () => {
+        if (itemInfo?.url) {
+            window.open(itemInfo.url, "_blank", "noopener,noreferrer");
+        }
+    };
 
     return (
         <Container maxWidth="lg" sx={{ paddingBlock: 4 }}>
@@ -89,7 +126,257 @@ function ItemDetail() {
             </Box>
 
             {/* Main item content */}
-            {state.itemInfo && <ItemDetailCard />}
+            {itemInfo && (
+                <Card elevation={2}>
+                    <Grid container spacing={0}>
+                        {/* Item image section */}
+                        <Grid padding={2}>
+                            <CardMedia
+                                component="img"
+                                image={itemInfo.image}
+                                alt={itemInfo.name}
+                                sx={{
+                                    height: { xs: 250, md: 400 },
+                                    objectFit: "cover",
+                                    backgroundColor: "grey.100",
+                                }}
+                                onError={(e) => {
+                                    e.target.style.display = "none";
+                                }}
+                            />
+                        </Grid>
+
+                        {/* Item content section */}
+                        <Grid>
+                            <CardContent
+                                sx={{
+                                    height: "100%",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                }}
+                            >
+                                {/* Item header with title, categories, and action buttons */}
+                                <Box sx={{ marginBottom: 3 }}>
+                                    <Typography
+                                        variant="h3"
+                                        component="h1"
+                                        gutterBottom
+                                        sx={{
+                                            fontWeight: 500,
+                                            marginBottom: 2,
+                                        }}
+                                    >
+                                        {itemInfo.name}
+                                    </Typography>
+
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        spacing={1}
+                                        sx={{ marginBottom: 3 }}
+                                    >
+                                        <Rating
+                                            name="simple-controlled"
+                                            value={
+                                                itemInfo.groupRating
+                                                    ? itemInfo.groupRating
+                                                    : 2.3
+                                            }
+                                            precision={0.25}
+                                            readOnly
+                                        />
+                                        <Typography
+                                            component="p"
+                                            color="textDisabled"
+                                            sx={{
+                                                fontWeight: 500,
+                                                marginBottom: 2,
+                                            }}
+                                        >
+                                            {itemInfo.groupRating
+                                                ? itemInfo.groupRating
+                                                : 2.3}{" "}
+                                            ·{" "}
+                                            {itemInfo.numRating
+                                                ? itemInfo.numRating
+                                                : 73}{" "}
+                                            ratings
+                                        </Typography>
+                                    </Stack>
+
+                                    <Stack
+                                        direction="row"
+                                        spacing={1}
+                                        sx={{ marginBottom: 2 }}
+                                    >
+                                        {itemInfo.category?.map(
+                                            (cat, index) => (
+                                                <Chip
+                                                    key={index}
+                                                    icon={<CategoryIcon />}
+                                                    label={cat}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    sx={{
+                                                        padding: 1,
+                                                    }}
+                                                />
+                                            )
+                                        )}
+                                    </Stack>
+
+                                    {/* Action buttons */}
+                                    <Stack
+                                        direction="row"
+                                        spacing={1}
+                                        sx={{ marginBottom: 2 }}
+                                    >
+                                        <Tooltip
+                                            title={
+                                                isSaved
+                                                    ? "Remove from saved"
+                                                    : "Save item"
+                                            }
+                                            placement="bottom"
+                                        >
+                                            <IconButton
+                                                onClick={onSave}
+                                                color="primary"
+                                                aria-label={
+                                                    isSaved
+                                                        ? "Remove from saved"
+                                                        : "Save item"
+                                                }
+                                            >
+                                                {isSaved ? (
+                                                    <FavoriteIcon />
+                                                ) : (
+                                                    <FavoriteBorderIcon />
+                                                )}
+                                            </IconButton>
+                                        </Tooltip>
+
+                                        <Tooltip
+                                            title="Share"
+                                            placement="bottom"
+                                        >
+                                            <IconButton
+                                                onClick={onShare}
+                                                color="primary"
+                                                aria-label="Share"
+                                            >
+                                                <ShareIcon />
+                                            </IconButton>
+                                        </Tooltip>
+
+                                        {itemInfo.url && (
+                                            <Tooltip
+                                                title="Open external link"
+                                                placement="bottom"
+                                            >
+                                                <IconButton
+                                                    onClick={handleExternalLink}
+                                                    color="primary"
+                                                    aria-label="Open external link"
+                                                >
+                                                    <OpenInNewIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                        )}
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                            }}
+                                        >
+                                            <Tooltip
+                                                title="Rate this item"
+                                                placement="bottom"
+                                            >
+                                                <Rating
+                                                    name="simple-controlled"
+                                                    value={rating}
+                                                    onChange={onRating}
+                                                />
+                                            </Tooltip>
+                                        </Box>
+                                    </Stack>
+                                </Box>
+
+                                <Divider sx={{ marginY: 2 }} />
+
+                                {/* Description */}
+                                {itemInfo.description && (
+                                    <Box sx={{ marginBottom: 3 }}>
+                                        <Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            spacing={1}
+                                            sx={{ marginBottom: 1 }}
+                                        >
+                                            <DescriptionIcon color="primary" />
+                                            <Typography
+                                                variant="h6"
+                                                component="h2"
+                                            >
+                                                Description
+                                            </Typography>
+                                        </Stack>
+                                        <Typography
+                                            variant="body1"
+                                            color="text.secondary"
+                                            sx={{ lineHeight: 1.6 }}
+                                        >
+                                            {itemInfo.description}
+                                        </Typography>
+                                    </Box>
+                                )}
+
+                                {/* External Link */}
+                                {itemInfo.url && (
+                                    <Box sx={{ marginBottom: 3 }}>
+                                        <Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            spacing={1}
+                                            sx={{ marginBottom: 1 }}
+                                        >
+                                            <LinkIcon color="primary" />
+                                            <Typography
+                                                variant="h6"
+                                                component="h2"
+                                            >
+                                                External Link
+                                            </Typography>
+                                        </Stack>
+                                        <Link
+                                            href={itemInfo.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            sx={{
+                                                wordBreak: "break-all",
+                                                display: "block",
+                                                marginBottom: 1,
+                                            }}
+                                        >
+                                            {itemInfo.url}
+                                        </Link>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<OpenInNewIcon />}
+                                            onClick={handleExternalLink}
+                                            sx={{ marginTop: 1 }}
+                                        >
+                                            Visit Website
+                                        </Button>
+                                    </Box>
+                                )}
+                            </CardContent>
+                        </Grid>
+                    </Grid>
+                </Card>
+            )}
         </Container>
     );
 }

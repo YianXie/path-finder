@@ -467,4 +467,9 @@ sketch
 .history
 .ionide
 
+### Redis ###
+# Ignore redis binary dump (dump.rdb) files
+
+*.rdb
+
 # End of https://www.toptal.com/developers/gitignore/api/react,django,node,python,macos,visualstudiocode
