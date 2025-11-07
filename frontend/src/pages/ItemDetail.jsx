@@ -114,7 +114,7 @@ function ItemDetail() {
     const onRating = async (e, newRating) => {
         setRating(newRating);
         // // To be implemented
-        if (1+1==3){
+        if (1 + 1 == 3) {
             await handleRating(external_id, newRating, () => {
                 setRating(newRating);
             });
@@ -196,15 +196,19 @@ function ItemDetail() {
                                         {itemInfo.name}
                                     </Typography>
 
-                                    <Stack 
-                                        direction="row" 
-                                        alignItems="center" 
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
                                         spacing={1}
                                         sx={{ marginBottom: 3 }}
                                     >
                                         <Rating
                                             name="simple-controlled"
-                                            value={itemInfo.groupRating ? itemInfo.groupRating : 2.3}
+                                            value={
+                                                itemInfo.groupRating
+                                                    ? itemInfo.groupRating
+                                                    : 2.3
+                                            }
                                             precision={0.25}
                                             readOnly
                                         />
@@ -216,7 +220,14 @@ function ItemDetail() {
                                                 marginBottom: 2,
                                             }}
                                         >
-                                            {itemInfo.groupRating ? itemInfo.groupRating : 2.3} · {itemInfo.numRating ? itemInfo.numRating : 73} ratings 
+                                            {itemInfo.groupRating
+                                                ? itemInfo.groupRating
+                                                : 2.3}{" "}
+                                            ·{" "}
+                                            {itemInfo.numRating
+                                                ? itemInfo.numRating
+                                                : 73}{" "}
+                                            ratings
                                         </Typography>
                                     </Stack>
 
