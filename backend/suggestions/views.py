@@ -1,6 +1,5 @@
 import json
 import os
-from typing import Any
 
 from adrf.views import APIView as ADRFAPIView
 from asgiref.sync import sync_to_async
@@ -73,12 +72,21 @@ class SuggestionListView(APIView):
 
 
 @sync_to_async
-def get_suggestions_page(page, page_size):
+def get_suggestions():
     suggestions = SuggestionModel.objects.all().order_by("name")
-    paginator = Paginator(suggestions, page_size)
-    page_obj = paginator.get_page(page)
-    serializer = SuggestionSerializer(page_obj, many=True)
-    return serializer.data, paginator, page_obj
+    serializer = SuggestionSerializer(suggestions, many=True)
+    return serializer.data
+
+
+@sync_to_async
+def get_pagination_data(data, page, page_size):
+    try:
+        paginator = Paginator(data, page_size)
+        page_obj = paginator.get_page(page)
+        pagination_data = SuggestionSerializer(page_obj, many=True).data
+        return pagination_data, paginator, page_obj
+    except Exception as e:
+        raise Exception("Failed to retrieve pagination data: " + str(e))
 
 
 @sync_to_async
@@ -103,14 +111,19 @@ def get_all_suggestions_cache():
 
 
 @sync_to_async
-def add_suggestion_cache(user_model, suggestion_ids):
+def add_suggestion_cache(user_model, suggestions):
     SuggestionsCacheModel.objects.update_or_create(
         basic_information=user_model.basic_information,
         interests=user_model.interests,
         goals=user_model.goals,
         other_goals=user_model.other_goals,
-        defaults={"suggestion_ids": suggestion_ids},
+        defaults={"suggestions": suggestions},
     )
+
+
+@sync_to_async
+def update_suggestion_score(external_id, score):
+    SuggestionModel.objects.filter(external_id=external_id).update(score=score)
 
 
 @sync_to_async
@@ -125,10 +138,7 @@ def get_saved_items(email):
 class PersonalizedSuggestionsView(ADRFAPIView):
     permission_classes = [IsAuthenticated]
 
-    def _sort_suggestions(self, s):
-        return s["score"]
-
-    async def get(self, request, *args, **kwargs):
+    async def get(self, request):
         user = request.user
         if not user.is_authenticated:
             return Response(
@@ -139,15 +149,12 @@ class PersonalizedSuggestionsView(ADRFAPIView):
         try:
             page = int(request.GET.get("page", 1))
             page_size = int(request.GET.get("page_size", 50))
-            suggestions_data, paginator, page_obj = await get_suggestions_page(
-                page, page_size
-            )
-
-            suggestions_data = list[Any](suggestions_data)
+            suggestions_data = await get_suggestions()
             user_model = await get_user_model(user.email)
+            saved_items = await get_saved_items(user.email)
 
             suggestionsCache = await get_all_suggestions_cache()
-            suggestionCache = list[Any](
+            suggestionCache = list(
                 filter(
                     lambda cache: cache["interests"] == user_model.interests
                     and cache["basic_information"] == user_model.basic_information
@@ -158,17 +165,17 @@ class PersonalizedSuggestionsView(ADRFAPIView):
             )
 
             if suggestionCache and len(suggestionCache) > 0:
-                suggestionCache = suggestionCache[0]
-                ranked_suggestions = []
-                for suggestion_id in suggestionCache["suggestion_ids"]:
-                    for s in suggestions_data:
-                        if s["external_id"] == suggestion_id:
-                            ranked_suggestions.append(s)
-                            break
+                ranked_suggestions = suggestionCache[0]["suggestions"]
+                for suggestion in ranked_suggestions:
+                    suggestion["is_saved"] = suggestion["external_id"] in saved_items
+
+                pagination_data, paginator, page_obj = await get_pagination_data(
+                    ranked_suggestions, page, page_size
+                )
 
                 return Response(
                     {
-                        "results": ranked_suggestions,
+                        "results": pagination_data,
                         "pagination": {
                             "page": page,
                             "page_size": page_size,
@@ -205,35 +212,29 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 timeout=20_000,
                 temperature=0.2,
             )
-            content = completion.choices[0].message.content
-            content = json.loads(content)
-            content["suggestions"] = sorted(
-                content["suggestions"], key=self._sort_suggestions, reverse=True
-            )
+            content = json.loads(completion.choices[0].message.content)
+
             ranked_suggestions = []
-            added_external_ids = []
-            for suggestion in content["suggestions"]:
-                # Skip if we've already added this suggestion
-                if suggestion["external_id"] in added_external_ids:
-                    continue
-
-                for s in suggestions_data:
+            for s in suggestions_data:
+                for suggestion in content["suggestions"][:20]:
                     if s["external_id"] == suggestion["external_id"]:
-                        ranked_suggestions.append(s)
-                        added_external_ids.append(suggestion["external_id"])
+                        s["score"] = suggestion["score"]
                         break
+                ranked_suggestions.append(s)
 
-            saved_items = await get_saved_items(user.email)
+            # Add the data to the cache
+            await add_suggestion_cache(user_model, ranked_suggestions)
+
             for suggestion in ranked_suggestions:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
 
-            # Add the data to the cache
-            if len(added_external_ids) > 0:
-                await add_suggestion_cache(user_model, added_external_ids)
+            pagination_data, paginator, page_obj = await get_pagination_data(
+                ranked_suggestions, page, page_size
+            )
 
             return Response(
                 {
-                    "results": ranked_suggestions,
+                    "results": pagination_data,
                     "pagination": {
                         "page": page,
                         "page_size": page_size,

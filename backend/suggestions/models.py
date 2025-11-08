@@ -22,6 +22,7 @@ class SuggestionModel(models.Model):
     url = models.URLField(max_length=255, default=DEFAULT_URL)
     image = models.URLField(max_length=255, default=DEFAULT_IMAGE)
     created_at = models.DateTimeField(auto_now=True)
+    score = models.IntegerField(default=0)
 
     total_rating_score = models.IntegerField(default=0)
     total_ratings = models.IntegerField(default=0)
@@ -41,7 +42,7 @@ class SuggestionsCacheModel(models.Model):
     interests = models.JSONField(default=list)
     goals = models.JSONField(default=list)
     other_goals = models.TextField(blank=True, null=True)
-    suggestion_ids = models.JSONField(default=list)
+    suggestions = models.JSONField(default=list)
 
     def __str__(self):
-        return f"Interests: {self.interests} Goals: {self.goals} Other Goals: {self.other_goals} Suggestions: {self.suggestion_ids}"
+        return f"Interests: {self.interests} Goals: {self.goals} Other Goals: {self.other_goals}"

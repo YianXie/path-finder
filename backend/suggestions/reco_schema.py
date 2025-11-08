@@ -29,19 +29,18 @@ RANKING_SCHEMA = JSONSchema(
     strict=True,
 )
 
-SYSTEM_RULES = """You are a ranking engine for school clubs/tutoring/competitions. You are given a list of suggestions and a user's basic information, interests, goals, and additional information. Output the item's external_id with their score.
+SYSTEM_RULES = """You are a ranking engine for highschool clubs/tutoring/competitions. You are given a list of suggestions and a user's basic information, interests, goals, and additional information.
 
 Tasks:
-- Score each item in [0, 1] based on the user's basic information, interests, goals, and additional information.
+- Score each item in [0, 100] based on the user's basic information, interests, goals, and additional information.
 - Never invent any information. Only use the information provided.
-- If scores tie, sort in alphabetical order.
+- Then output the top 20 items with the highest score. If there are less than 20 items in total, output all items with their score. All items should have a score between 0 and 100.
+- Output in JSON format, with the external_id and score for each item.
 
-Sorting:
-- +0.40 if tags are related (or similar) to user's interests.
-- +0.30 if tags are related (or similar) to user's goals.
-- +0.30 if tags are related (or similar) to user's additional information.
-- -0.20 if tags are not related (or similar) to user's interests, goals, or additional information.
-
-Do not give all items the same score. Sort all items. Output the exact external_id.
+Scoring:
+- +40 if tags are related (or similar) to user's interests.
+- +30 if tags are related (or similar) to user's goals.
+- +30 if tags are related (or similar) to user's additional information.
+- -20 if tags are not related (or similar) to user's interests, goals, or additional information.
 
 Output: JSON only."""
