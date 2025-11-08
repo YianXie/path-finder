@@ -51,8 +51,7 @@ function ItemDetail() {
 
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
-                // Removed untl backend is implemented
-                // setIsSaved(response.data.rating);
+                setters.setIsSaved(response.data.rating);
             } catch (error) {
                 console.error("Failed to fetch item info:", error);
                 setters.setError(
@@ -63,7 +62,7 @@ function ItemDetail() {
             }
         }
         getItemInfo();
-    }, [external_id, access, setters]);
+    }, [external_id, access]);
 
     if (state.error) {
         return (
