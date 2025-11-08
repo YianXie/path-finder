@@ -44,8 +44,8 @@ function ItemDetail() {
                 // Use different endpoints based on authentication status
                 // Authenticated users get saved status, anonymous users don't
                 const endpoint = access
-                    ? `/api/suggestions-with-saved-status/${external_id}/`
-                    : `/api/suggestions/${external_id}`;
+                    ? `/api/suggestions/suggestions-with-saved-status/${external_id}/`
+                    : `/api/suggestions/suggestions/${external_id}`;
 
                 const response = await api.get(endpoint);
 
