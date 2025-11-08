@@ -88,7 +88,9 @@ function Home() {
 
         switch (sortBy.toLowerCase()) {
             case "default":
-                return suggestionsCopy;
+                return suggestionsCopy.sort(
+                    (a, b) => (b.score - a.score) * sortDirection
+                );
 
             case "alphabetical":
                 return suggestionsCopy.sort(
@@ -125,7 +127,7 @@ function Home() {
     }, [suggestions, sortBy, sortDirection]);
 
     return (
-        <Container maxWidth="xl">
+        <Container maxWidth="xl" sx={{ paddingBottom: 4 }}>
             <LoadingBackdrop open={isLoading} />
             <PageHeader
                 title="Welcome to PathFinder"
@@ -133,10 +135,7 @@ function Home() {
                 className="mt-6 mb-4"
             />
             <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-                <FormControl
-                    sx={{ marginBottom: 4, marginTop: 2 }}
-                    size="small"
-                >
+                <FormControl sx={{ marginBlock: 2 }} size="small">
                     <InputLabel id="sort-by-label">Sort by</InputLabel>
                     <Select
                         labelId="sort-by-label"
