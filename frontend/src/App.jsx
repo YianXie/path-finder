@@ -16,6 +16,7 @@ import Layout from "./components/layout/Layout";
 import { ItemDetailProvider } from "./contexts/ItemDetailProvider";
 import About from "./pages/About";
 import Home from "./pages/Home";
+import HomeRedesign from "./pages/HomeRedesign";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
 
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
                     <Route path="/about" element={<About />} />
+                    <Route path="/home-redesign" element={<HomeRedesign />} />
                     <Route
                         path="/saved"
                         element={
