@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "suggestions",
     "accounts",
-    "social"
+    "social",
 ]
 
 MIDDLEWARE = [

@@ -7,13 +7,19 @@ from .models import UserRating
 
 User = get_user_model()
 
+
 class UpdateOrModifySuggestionRating(APIView):
     """Suggestion List View"""
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        suggestion_id = int(request.data.get("id"))
+        external_id = request.data.get("external_id")
         rating_id = int(request.data.get("rating"))
 
-        obj = UserRating.objects.get_or_create(user=request.user, suggestion=SuggestionModel.objects.get(id=suggestion_id), rating=rating)
-        return Response()
+        obj = UserRating.objects.get_or_create(
+            user=request.user,
+            suggestion=SuggestionModel.objects.get(external_id=external_id),
+            rating=rating_id,
+        )
+        return Response({"status": "success"})

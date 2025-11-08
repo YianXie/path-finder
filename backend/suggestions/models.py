@@ -14,6 +14,9 @@ EXAMPLE_EXTERNAL_ID = "example-example-this-is-an-example-item"
 
 
 class SuggestionModel(models.Model):
+    # The average rating field is not stored here, as it is computed in the
+    # serializer.
+    
     external_id = models.CharField(max_length=64, unique=True)
     name = models.CharField(max_length=255)
     category = models.JSONField(default=list)
@@ -21,11 +24,7 @@ class SuggestionModel(models.Model):
     url = models.URLField(max_length=255, default=DEFAULT_URL)
     image = models.URLField(max_length=255, default=DEFAULT_IMAGE)
     created_at = models.DateTimeField(auto_now=True)
-        
-
-    total_rating_score = models.IntegerField(default=0)
-    total_ratings = models.IntegerField(default=0)
-
+    
     @classmethod
     def external_id_from_row(cls, row):
         if row.get("external_id"):
