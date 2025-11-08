@@ -1,8 +1,10 @@
-from adrf.views import APIView as ADRFAPIView
-from rest_framework.views import APIView, Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView, Response
+
 from django.contrib.auth import get_user_model
+
 from suggestions.models import SuggestionModel
+
 from .models import UserRating
 
 User = get_user_model()
@@ -17,7 +19,7 @@ class UpdateOrModifySuggestionRating(APIView):
         external_id = request.data.get("external_id")
         rating_id = int(request.data.get("rating"))
 
-        obj = UserRating.objects.get_or_create(
+        UserRating.objects.get_or_create(
             user=request.user,
             suggestion=SuggestionModel.objects.get(external_id=external_id),
             rating=rating_id,

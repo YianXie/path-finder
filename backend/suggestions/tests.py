@@ -8,22 +8,7 @@ from accounts.models import UserModel
 from suggestions.models import EXAMPLE_EXTERNAL_ID, SuggestionModel
 
 
-class HealthCheckTestCase(APITestCase):
-    """Tests for the health check endpoint"""
-
-    def test_health_check_returns_ok(self):
-        """Test that the health check endpoint returns status ok"""
-        response = self.client.get("/api/health/")
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["status"], "ok")
-        self.assertEqual(response.data["message"], "PathFinder API is running")
-
-    def test_health_check_allows_any_method(self):
-        """Test that health check only accepts GET requests"""
-        response = self.client.post("/api/health/")
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
+# The token obtain endpoint are located at the root level of the API
 class TokenObtainTestCase(APITestCase):
     """Tests for JWT token obtain endpoint"""
 
@@ -36,7 +21,8 @@ class TokenObtainTestCase(APITestCase):
     def test_obtain_token_with_valid_credentials(self):
         """Test obtaining JWT token with valid credentials"""
         response = self.client.post(
-            "/api/token/", {"username": "testuser", "password": "testpassword123"}
+            "/api/token/",
+            {"username": "testuser", "password": "testpassword123"},
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
@@ -45,7 +31,8 @@ class TokenObtainTestCase(APITestCase):
     def test_obtain_token_with_invalid_credentials(self):
         """Test obtaining JWT token with invalid credentials"""
         response = self.client.post(
-            "/api/token/", {"username": "testuser", "password": "wrongpassword"}
+            "/api/token/",
+            {"username": "testuser", "password": "wrongpassword"},
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
@@ -86,6 +73,22 @@ class TokenRefreshTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
 
+class HealthCheckTestCase(APITestCase):
+    """Tests for the health check endpoint"""
+
+    def test_health_check_returns_ok(self):
+        """Test that the health check endpoint returns status ok"""
+        response = self.client.get("/api/suggestions/health/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], "ok")
+        self.assertEqual(response.data["message"], "PathFinder API is running")
+
+    def test_health_check_allows_any_method(self):
+        """Test that health check only accepts GET requests"""
+        response = self.client.post("/api/suggestions/health/")
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
 class SuggestionListViewTestCase(APITestCase):
     """Tests for the suggestion list view endpoint"""
 
@@ -97,7 +100,7 @@ class SuggestionListViewTestCase(APITestCase):
 
     def test_suggestion_list_view_returns_ok(self):
         """Test that the suggestion list view endpoint returns status ok"""
-        response = self.client.get("/api/suggestions/")
+        response = self.client.get("/api/suggestions/suggestions/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
@@ -114,7 +117,7 @@ class SuggestionListWithSavedStatusViewTestCase(APITestCase):
     def test_suggestion_list_with_saved_status_view_returns_ok(self):
         """Test that the suggestion list with saved status view endpoint returns status ok"""
         response = self.client.get(
-            "/api/personalized-suggestions/",
+            "/api/suggestions/personalized-suggestions/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -122,12 +125,12 @@ class SuggestionListWithSavedStatusViewTestCase(APITestCase):
     def test_double_suggestion_list_with_saved_status_view_returns_same_request(self):
         """Test that the suggestion list with saved status view endpoint returns status ok"""
         response1 = self.client.get(
-            "/api/personalized-suggestions/",
+            "/api/suggestions/personalized-suggestions/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
 
         response2 = self.client.get(
-            "/api/personalized-suggestions/",
+            "/api/suggestions/personalized-suggestions/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
 
@@ -135,7 +138,7 @@ class SuggestionListWithSavedStatusViewTestCase(APITestCase):
 
     def test_suggestion_list_with_saved_status_view_returns_401(self):
         """Test that the suggestion list with saved status view endpoint returns 401 if not authenticated"""
-        response = self.client.get("/api/personalized-suggestions/")
+        response = self.client.get("/api/suggestions/personalized-suggestions/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -158,12 +161,14 @@ class SuggestionDetailViewTestCase(APITestCase):
 
     def test_suggestion_detail_view_returns_ok(self):
         """Test that the suggestion detail view endpoint returns status ok"""
-        response = self.client.get(f"/api/suggestions/{EXAMPLE_EXTERNAL_ID}/")
+        response = self.client.get(
+            f"/api/suggestions/suggestions/{EXAMPLE_EXTERNAL_ID}/"
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_suggestion_detail_view_returns_404(self):
         """Test that the suggestion detail view endpoint returns 404 if the suggestion does not exist"""
-        response = self.client.get("/api/suggestions/1234567890/")
+        response = self.client.get("/api/suggestions/suggestions/1234567890/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -194,7 +199,7 @@ class SuggestionDetailWithSavedStatusViewTestCase(APITestCase):
     def test_suggestion_detail_with_saved_status_view_returns_ok(self):
         """Test that the suggestion detail with saved status view endpoint returns status ok"""
         response = self.client.get(
-            f"/api/suggestions-with-saved-status/{EXAMPLE_EXTERNAL_ID}/",
+            f"/api/suggestions/suggestions-with-saved-status/{EXAMPLE_EXTERNAL_ID}/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -202,14 +207,14 @@ class SuggestionDetailWithSavedStatusViewTestCase(APITestCase):
     def test_suggestion_detail_with_saved_status_view_returns_401(self):
         """Test that the suggestion detail with saved status view endpoint returns 401 if not authenticated"""
         response = self.client.get(
-            f"/api/suggestions-with-saved-status/{EXAMPLE_EXTERNAL_ID}/"
+            f"/api/suggestions/suggestions-with-saved-status/{EXAMPLE_EXTERNAL_ID}/"
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_suggestion_detail_with_saved_status_view_returns_404(self):
         """Test that the suggestion detail with saved status view endpoint returns 404 if the suggestion does not exist"""
         response = self.client.get(
-            "/api/suggestions-with-saved-status/1234567890/",
+            "/api/suggestions/suggestions-with-saved-status/1234567890/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

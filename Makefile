@@ -49,7 +49,7 @@ format:
 # Run security checks
 security:
 	@echo "Running backend security checks..."
-	cd backend && safety scan --no-prompt && bandit -r . -x ./env,./__pycache__ -s B106
+	cd backend && safety scan --no-prompt && bandit -r . -x ./env,./__pycache__
 	@echo "Running frontend security checks..."
 	cd frontend && npm audit
 
