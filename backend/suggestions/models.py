@@ -17,6 +17,7 @@ class SuggestionModel(models.Model):
     external_id = models.CharField(max_length=64, unique=True)
     name = models.CharField(max_length=255)
     category = models.JSONField(default=list)
+    tags = models.JSONField(default=list)
     description = models.TextField(default=DEFAULT_DESCRIPTION)
     url = models.URLField(max_length=255, default=DEFAULT_URL)
     image = models.URLField(max_length=255, default=DEFAULT_IMAGE)
