@@ -397,16 +397,11 @@ class UpdateUserInformationView(APIView):
                     {"status": "error", "message": "Goals are required"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            if not other_goals:
-                return Response(
-                    {"status": "error", "message": "Other goals are required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
             user_model = UserModel.objects.get(email=user.email)
             user_model.basic_information = basic_information
             user_model.interests = interests
             user_model.goals = goals
-            user_model.other_goals = other_goals
+            user_model.other_goals = other_goals if other_goals else None
             user_model.finished_onboarding = True
             user_model.save()
             return Response(
