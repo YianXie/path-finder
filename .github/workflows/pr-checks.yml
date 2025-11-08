@@ -52,7 +52,7 @@ jobs:
                   ALLOWED_GOOGLE_HD: test-hd
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
               run: |
-                  python manage.py migrate
+                  python manage.py makemigrations && python manage.py migrate
                   coverage run --source='.' manage.py test
                   coverage report
                   coverage xml
