@@ -8,6 +8,8 @@ from suggestions.models import SuggestionModel
 
 from .models import UserRating
 
+from .serializers import UserRatingSerializer
+
 User = get_user_model()
 
 
@@ -70,7 +72,7 @@ class GetSuggestionRating(APIView):
     def get(self, request):
         try:
             external_id = request.GET.get("external_id", "")
-            print("external Id", external_id)
+
             suggestion = SuggestionModel.objects.get(external_id=external_id)
 
             reviews = UserRating.objects.filter(suggestion=suggestion)
@@ -84,6 +86,32 @@ class GetSuggestionRating(APIView):
 
             return Response(
                 {"average_rating": average_rating, "num_ratings": len(reviews)},
+                status=status.HTTP_200_OK,
+            )
+        except SuggestionModel.DoesNotExist:
+            return Response(
+                {"status": "Failed due to external ID not existing"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            return Response(
+                {"status": f"Failed to fetch rating due to error: {e}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+
+class GetSuggestionReviews(APIView):
+    """Check average rating and amount of ratings"""
+
+    def get(self, request):
+        try:
+            external_id = request.GET.get("external_id", "")
+
+            suggestion = SuggestionModel.objects.get(external_id=external_id)
+
+            reviews = UserRating.objects.filter(suggestion=suggestion)
+            return Response(
+                UserRatingSerializer(reviews, many=True).data,
                 status=status.HTTP_200_OK,
             )
         except SuggestionModel.DoesNotExist:
