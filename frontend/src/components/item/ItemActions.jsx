@@ -47,7 +47,6 @@ export function ItemActions() {
     /**
      * Handles User Rating changes with Optimistc UI design
      */
-
     const onRating = async (e, newRating) => {
         // I change the UI before I send the requests
         setters.setRating(newRating);

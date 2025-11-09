@@ -3,13 +3,10 @@ import "@fontsource/roboto/500.css";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 import {
-    LazyClubs,
-    LazyCompetitions,
     LazyItemDetail,
     LazyNotFoundPage,
     LazyOnBoarding,
     LazySaved,
-    LazyTutoring,
 } from "./components/LazyWrapper";
 import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
@@ -57,30 +54,6 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <Logout />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/competitions"
-                        element={
-                            <ProtectedRoute>
-                                <LazyCompetitions />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/clubs"
-                        element={
-                            <ProtectedRoute>
-                                <LazyClubs />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/tutoring"
-                        element={
-                            <ProtectedRoute>
-                                <LazyTutoring />
                             </ProtectedRoute>
                         }
                     />

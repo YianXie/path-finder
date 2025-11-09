@@ -1,15 +1,13 @@
-import CalculateIcon from "@mui/icons-material/Calculate";
 import CheckIcon from "@mui/icons-material/Check";
 import ComputerIcon from "@mui/icons-material/Computer";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import GroupsIcon from "@mui/icons-material/Groups";
+import InfoIcon from "@mui/icons-material/Info";
 import InterestsIcon from "@mui/icons-material/Interests";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
-import SchoolIcon from "@mui/icons-material/School";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
@@ -64,29 +62,6 @@ function HideOnScroll({ children }) {
  * Automatically hides on scroll for better user experience.
  */
 function Header() {
-    // Navigation items for the mobile drawer
-    const drawerListItems = [
-        {
-            label: "Clubs",
-            icon: <GroupsIcon />,
-            path: "/clubs",
-        },
-        {
-            label: "Competitions",
-            icon: <CalculateIcon />,
-            path: "/competitions",
-        },
-        {
-            label: "Tutoring",
-            icon: <SchoolIcon />,
-            path: "/tutoring",
-        },
-        {
-            label: "Saved",
-            icon: <FavoriteIcon />,
-            path: "/saved",
-        },
-    ];
     const { access, user, logout } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
     const { mode, setMode } = useColorScheme();
@@ -96,6 +71,33 @@ function Header() {
     const navigate = useNavigate();
     const isMobile = useMediaQuery("(max-width: 600px)");
     const theme = useTheme();
+
+    // Navigation items for the mobile drawer
+    const drawerListItems = [
+        {
+            label: "Saved",
+            icon: <FavoriteIcon />,
+            path: "/saved",
+        },
+        {
+            label:
+                access && user && user.finished_onboarding
+                    ? "Update your information"
+                    : "Finish onboarding",
+            icon: <InterestsIcon />,
+            path: "/onboarding",
+        },
+        {
+            label: "About this site",
+            icon: <InfoIcon />,
+            path: "/about",
+        },
+        {
+            label: "Logout",
+            icon: <Logout />,
+            path: "/logout",
+        },
+    ];
 
     /**
      * Toggles the mobile drawer open/closed state
@@ -181,11 +183,6 @@ function Header() {
                     ) : (
                         <>
                             <Divider orientation="vertical" flexItem />
-                            <HeaderLink to="/clubs">Clubs</HeaderLink>
-                            <HeaderLink to="/competitions">
-                                Competitions
-                            </HeaderLink>
-                            <HeaderLink to="/tutoring">Tutoring</HeaderLink>
                             <Box
                                 display="flex"
                                 alignItems="center"
