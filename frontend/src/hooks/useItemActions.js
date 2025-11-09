@@ -80,7 +80,7 @@ function useItemActions() {
             }
 
             try {
-                await api.post("/accounts/ratings/", {
+                await api.post("/api/social/rate", {
                     external_id: externalId,
                     rating: rating,
                 });

@@ -10,13 +10,15 @@ import Tooltip from "@mui/material/Tooltip";
 import { useContext } from "react";
 import { useParams } from "react-router-dom";
 
+import { useAuth } from "../../contexts/AuthContext";
 import { ItemDetailContext } from "../../contexts/ItemDetailContext";
 import { useItemActions } from "../../hooks";
 
 export function ItemActions() {
+    const { access } = useAuth();
     const { state, setters } = useContext(ItemDetailContext);
 
-    const { handleShare, handleSave } = useItemActions();
+    const { handleShare, handleSave, handleRating } = useItemActions();
 
     const { external_id } = useParams();
 
@@ -43,17 +45,18 @@ export function ItemActions() {
     };
 
     /**
-     * Handles User Rating changes
+     * Handles User Rating changes with Optimistc UI design
      */
 
     const onRating = async (e, newRating) => {
+        // I change the UI before I send the requests
         setters.setRating(newRating);
-        // // To be implemented
-        // if (1 + 1 == 3) {
-        //     await handleRating(external_id, newRating, () => {
-        //         setters.setRating(newRating);
-        //     });
-        // }
+        try {
+            await handleRating(external_id, newRating, () => {});
+        } catch {
+            // But if it fails we toggle back the current value to make sure we have the correct value
+            setters.setIsSaved((prev) => !prev);
+        }
     };
 
     /**
@@ -68,20 +71,27 @@ export function ItemActions() {
     return (
         <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
             {/* Save Button */}
-            <Tooltip
-                title={state.isSaved ? "Remove from saved" : "Save item"}
-                placement="bottom"
-            >
-                <IconButton
-                    onClick={onSave}
-                    color="primary"
-                    aria-label={
-                        state.isSaved ? "Remove from saved" : "Save item"
-                    }
+            {/* Show Item actions buttons if logged in */}
+            {access && (
+                <Tooltip
+                    title={state.isSaved ? "Remove from saved" : "Save item"}
+                    placement="bottom"
                 >
-                    {state.isSaved ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                </IconButton>
-            </Tooltip>
+                    <IconButton
+                        onClick={onSave}
+                        color="primary"
+                        aria-label={
+                            state.isSaved ? "Remove from saved" : "Save item"
+                        }
+                    >
+                        {state.isSaved ? (
+                            <FavoriteIcon />
+                        ) : (
+                            <FavoriteBorderIcon />
+                        )}
+                    </IconButton>
+                </Tooltip>
+            )}
 
             {/* Share Button */}
 
@@ -96,7 +106,6 @@ export function ItemActions() {
             </Tooltip>
 
             {/* External Link */}
-
             {state.itemInfo.url && (
                 <Tooltip title="Open external link" placement="bottom">
                     <IconButton
@@ -110,21 +119,24 @@ export function ItemActions() {
             )}
 
             {/* Rating Bar */}
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <Tooltip title="Rate this item" placement="bottom">
-                    <Rating
-                        name="simple-controlled"
-                        value={state.rating}
-                        onChange={onRating}
-                    />
-                </Tooltip>
-            </Box>
+            {/* Show Item actions buttons if logged in */}
+            {access && (
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    <Tooltip title="Rate this item" placement="bottom">
+                        <Rating
+                            name="simple-controlled"
+                            value={state.rating}
+                            onChange={onRating}
+                        />
+                    </Tooltip>
+                </Box>
+            )}
         </Stack>
     );
 }
