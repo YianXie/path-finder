@@ -2,9 +2,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import ShareIcon from "@mui/icons-material/Share";
-import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import { useContext } from "react";
@@ -18,7 +16,7 @@ export function ItemActions() {
     const { access } = useAuth();
     const { state, setters } = useContext(ItemDetailContext);
 
-    const { handleShare, handleSave, handleRating } = useItemActions();
+    const { handleShare, handleSave } = useItemActions();
 
     const { external_id } = useParams();
 
@@ -47,16 +45,16 @@ export function ItemActions() {
     /**
      * Handles User Rating changes with Optimistc UI design
      */
-    const onRating = async (e, newRating) => {
-        // I change the UI before I send the requests
-        setters.setRating(newRating);
-        try {
-            await handleRating(external_id, newRating, () => {});
-        } catch {
-            // But if it fails we toggle back the current value to make sure we have the correct value
-            setters.setIsSaved((prev) => !prev);
-        }
-    };
+    // const onRating = async (e, newRating) => {
+    //     // I change the UI before I send the requests
+    //     setters.setRating(newRating);
+    //     try {
+    //         await handleRating(external_id, newRating, () => {});
+    //     } catch {
+    //         // But if it fails we toggle back the current value to make sure we have the correct value
+    //         setters.setIsSaved((prev) => !prev);
+    //     }
+    // };
 
     /**
      * Opens the external link in a new tab
@@ -68,7 +66,7 @@ export function ItemActions() {
     };
 
     return (
-        <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
+        <Stack direction="row" spacing={1}>
             {/* Save Button */}
             {/* Show Item actions buttons if logged in */}
             {access && (
@@ -115,26 +113,6 @@ export function ItemActions() {
                         <OpenInNewIcon />
                     </IconButton>
                 </Tooltip>
-            )}
-
-            {/* Rating Bar */}
-            {/* Show Item actions buttons if logged in */}
-            {access && (
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <Tooltip title="Rate this item" placement="bottom">
-                        <Rating
-                            name="simple-controlled"
-                            value={state.rating}
-                            onChange={onRating}
-                        />
-                    </Tooltip>
-                </Box>
             )}
         </Stack>
     );

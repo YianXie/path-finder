@@ -1,5 +1,6 @@
 import LinkIcon from "@mui/icons-material/Link";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -8,16 +9,18 @@ import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import { ItemDetailContext } from "../../contexts/ItemDetailContext";
 import { ItemActions } from "./ItemActions";
 import { ItemDescription } from "./ItemDescription";
 import { ItemHeader } from "./ItemHeader";
 import { ItemImage } from "./ItemImage";
+import RateItem from "./RateItem";
 
 export function ItemDetailCard() {
     const { state } = useContext(ItemDetailContext);
+    const [isRateItemOpen, setIsRateItemOpen] = useState(false);
 
     /**
      * Opens the external link in a new tab
@@ -26,6 +29,10 @@ export function ItemDetailCard() {
         if (state.itemInfo?.url) {
             window.open(state.itemInfo.url, "_blank", "noopener,noreferrer");
         }
+    };
+
+    const handleRateItem = () => {
+        setIsRateItemOpen(true);
     };
 
     return (
@@ -48,6 +55,23 @@ export function ItemDetailCard() {
                             <ItemHeader />
                             <ItemActions />
                         </Box>
+
+                        <Button
+                            color="primary"
+                            sx={{ width: "fit-content" }}
+                            onClick={handleRateItem}
+                        >
+                            <Stack
+                                direction="row"
+                                alignItems="center"
+                                spacing={1}
+                            >
+                                <RateReviewIcon color="primary" />
+                                <Typography variant="body1" fontWeight={500}>
+                                    Leave a review
+                                </Typography>
+                            </Stack>
+                        </Button>
 
                         <Divider sx={{ marginY: 2 }} />
 
@@ -93,6 +117,10 @@ export function ItemDetailCard() {
                     </CardContent>
                 </Grid>
             </Grid>
+            <RateItem
+                open={isRateItemOpen}
+                onClose={() => setIsRateItemOpen(false)}
+            />
         </Card>
     );
 }
