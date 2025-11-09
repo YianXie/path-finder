@@ -74,7 +74,8 @@ class GetSuggestionRating(APIView):
             for review in reviews:
                 average_rating += review.rating
 
-            average_rating /= len(reviews)
+            if len(reviews) > 0:
+                average_rating /= len(reviews)
 
             return Response(
                 {"average_rating": average_rating, "num_ratings": len(reviews)},
