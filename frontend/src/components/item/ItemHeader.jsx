@@ -35,11 +35,7 @@ export function ItemHeader() {
                 {/* Rating stars */}
                 <Rating
                     name="simple-controlled"
-                    value={
-                        state.itemInfo.groupRating
-                            ? state.itemInfo.groupRating
-                            : 2.3
-                    }
+                    value={state.averageRating}
                     precision={0.25}
                     readOnly
                 />
@@ -53,10 +49,7 @@ export function ItemHeader() {
                         marginBottom: 2,
                     }}
                 >
-                    {state.itemInfo.groupRating
-                        ? state.itemInfo.groupRating
-                        : 2.3}{" "}
-                    · {state.itemInfo.numRating ? state.itemInfo.numRating : 73}{" "}
+                    {state.averageRating.toFixed(1)} · {state.numRatings}{" "}
                     ratings
                 </Typography>
             </Stack>

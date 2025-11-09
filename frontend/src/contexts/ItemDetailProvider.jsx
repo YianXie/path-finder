@@ -13,11 +13,29 @@ export function ItemDetailProvider({ children }) {
     const [isLoading, setIsLoading] = useState(true);
     const [isSaved, setIsSaved] = useState(false);
     const [rating, setRating] = useState(0);
+    const [averageRating, setAverageRating] = useState(0);
+    const [numRatings, setNumRatings] = useState(0);
     const [error, setError] = useState(null);
 
     const contextValue = {
-        state: { itemInfo, isSaved, rating, isLoading, error },
-        setters: { setItemInfo, setIsSaved, setRating, setIsLoading, setError },
+        state: {
+            itemInfo,
+            isSaved,
+            rating,
+            isLoading,
+            error,
+            averageRating,
+            numRatings,
+        },
+        setters: {
+            setItemInfo,
+            setIsSaved,
+            setRating,
+            setIsLoading,
+            setError,
+            setAverageRating,
+            setNumRatings,
+        },
     };
 
     return (

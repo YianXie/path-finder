@@ -49,10 +49,17 @@ function ItemDetail() {
 
                 const response = await api.get(endpoint);
 
+                const params = { external_id: external_id };
+                const reponseRating = await api.get(
+                    "/api/social/average-rating/",
+                    { params }
+                );
+
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
-                console.log(response.data);
                 setters.setRating(response.data.rating);
+                setters.setAverageRating(reponseRating.data.average_rating);
+                setters.setNumRatings(reponseRating.data.num_ratings);
             } catch (error) {
                 console.error("Failed to fetch item info:", error);
                 setters.setError(
