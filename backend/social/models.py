@@ -15,3 +15,4 @@ class UserRating(models.Model):
     rating = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)]
     )
+    comment = models.TextField(blank=True, null=True)
