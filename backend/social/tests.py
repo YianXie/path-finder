@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from accounts.models import UserModel
 from suggestions.models import EXAMPLE_EXTERNAL_ID, SuggestionModel
 
+
 class UpdateOrModifySuggestionRatingTestCase(APITestCase):
     """Tests for the suggestion detail with saved status view endpoint"""
 
@@ -34,11 +35,8 @@ class UpdateOrModifySuggestionRatingTestCase(APITestCase):
     def test_update_or_modify_suggestion_rating_returns_ok(self):
         """Test that the update or modify suggestion rating endpoint returns status ok"""
         response = self.client.post(
-            f"/api/social/rate/",
-            {
-                "external_id": EXAMPLE_EXTERNAL_ID,
-                "rating": 3
-            },
+            "/api/social/rate/",
+            {"external_id": EXAMPLE_EXTERNAL_ID, "rating": 3},
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -46,34 +44,25 @@ class UpdateOrModifySuggestionRatingTestCase(APITestCase):
     def test_update_or_modify_suggestion_rating_returns_401_unauthorized(self):
         """Test that the update or modify suggestion rating endpoint returns status 401 unauthorized"""
         response = self.client.post(
-            f"/api/social/rate/",
-            {
-                "external_id": EXAMPLE_EXTERNAL_ID,
-                "rating": 3
-            },
+            "/api/social/rate/",
+            {"external_id": EXAMPLE_EXTERNAL_ID, "rating": 3},
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-    
+
     def test_update_or_modify_suggestion_rating_returns_400_non_integer_rating(self):
         """Test that the update or modify suggestion rating endpoint returns status 400 non-integer rating"""
         response = self.client.post(
-            f"/api/social/rate/",
-            {
-                "external_id": EXAMPLE_EXTERNAL_ID,
-                "rating": "a"
-            },
+            "/api/social/rate/",
+            {"external_id": EXAMPLE_EXTERNAL_ID, "rating": "a"},
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-    
+
     def test_update_or_modify_suggestion_rating_returns_400_intger_out_of_range(self):
         """Test that the update or modify suggestion rating endpoint returns status 400 integer out of range"""
         response = self.client.post(
-            f"/api/social/rate/",
-            {
-                "external_id": EXAMPLE_EXTERNAL_ID,
-                "rating": -1
-            },
+            "/api/social/rate/",
+            {"external_id": EXAMPLE_EXTERNAL_ID, "rating": -1},
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
