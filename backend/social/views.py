@@ -1,4 +1,3 @@
-from adrf.views import APIView as ADRFAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
 
@@ -37,5 +36,7 @@ class UpdateOrModifySuggestionRating(APIView):
                     rating=rating_id,
                 )
             return Response({"status": "success"})
-        except:
-            return Response({"status": "failure"}, status=400)
+        except SuggestionModel as e:
+            return Response({"status": "Failed due to external ID not existing"}, status=400)
+        except Exception as e:
+            return Response({"status": f"Failed to update rating due to error: {e}"}, status=500)
