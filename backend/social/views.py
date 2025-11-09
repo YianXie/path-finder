@@ -19,7 +19,18 @@ class UpdateOrModifySuggestionRating(APIView):
     def post(self, request):
         try:
             external_id = request.data.get("external_id")
-            rating_id = int(request.data.get("rating"))
+            try:
+                rating_id = int(request.data.get("rating"))
+            except ValueError:
+                return Response(
+                    {"status": "Failed due to non-integer rating value"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if rating_id < 1 or rating_id > 5:
+                return Response(
+                    {"status": "Failed due to rating outside of 1-5 range"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             suggestion = SuggestionModel.objects.get(external_id=external_id)
 
