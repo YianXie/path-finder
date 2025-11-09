@@ -1,12 +1,12 @@
 import { Container, Divider } from "@mui/material";
 import { Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
+import { Fragment } from "react";
 
 import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
 import ItemList from "../components/global/ItemList";
 import { useApiError } from "../hooks";
-import { Fragment } from "react";
 
 function HomeRedesign() {
     const { handleError } = useApiError();
@@ -60,15 +60,9 @@ function HomeRedesign() {
             <LoadingBackdrop open={isLoading} />
             <PageHeader title="Welcome to PathFinder" className="mt-6 mb-4" />
             {tagsList.map((tag, index) => (
-                <Fragment key={tag+index}>
-                    <ItemList
-                        name={tag}
-                        tag={tag}
-                        suggestions={suggestions}
-                    />
-                    <Divider
-                        sx={{ marginY: 2 }}
-                    />
+                <Fragment key={tag + index}>
+                    <ItemList name={tag} tag={tag} suggestions={suggestions} />
+                    <Divider sx={{ marginY: 2 }} />
                 </Fragment>
             ))}
         </Container>
