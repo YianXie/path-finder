@@ -63,6 +63,7 @@ function ItemDetail() {
             }
         }
         getItemInfo();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [external_id, access]);
 
     if (state.error) {
