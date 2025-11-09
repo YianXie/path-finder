@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_celery_beat",
     "rest_framework",
     "rest_framework_simplejwt",
     "adrf",
@@ -182,46 +181,4 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "SIGNING_KEY": SECRET_KEY,
     "TOKEN_OBTAIN_SERIALIZER": "accounts.serializers.CustomTokenObtainPairSerializer",
-}
-
-REDIS_URL = env("REDIS_URL", default="redis://localhost:6379/1")
-
-CELERY_BROKER_URL = REDIS_URL
-
-CELERY_RESULT_BACKEND = REDIS_URL
-
-CELERY_ACCEPT_CONTENT = ["application/json"]
-
-CELERY_TASK_TIME_LIMIT = 60 * 10
-
-CELERY_TASK_SOFT_TIME_LIMIT = 60 * 8
-
-CELERY_RESULT_SERIALIZER = "json"
-
-CELERY_TASK_SERIALIZER = "json"
-
-CELERY_TIMEZONE = "Asia/Singapore"
-
-CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers.DatabaseScheduler"
-
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": REDIS_URL,
-#         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-#         "KEY_PREFIX": "pathfinder",
-#     }
-# }
-
-CELERY_BEAT_SCHEDULE = {
-    "sync_sheet": {
-        "task": "suggestions.tasks.sync_sheet_task",
-        "schedule": crontab(hour=0, minute=0),  # sync sheet every day at midnight (UTC)
-    },
-    "clear_sessions": {
-        "task": "suggestions.tasks.clear_sessions",
-        "schedule": crontab(
-            hour=0, minute=0
-        ),  # clear sessions every day at midnight (UTC)
-    },
 }

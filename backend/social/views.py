@@ -29,7 +29,6 @@ class UpdateOrModifySuggestionRating(APIView):
                 review.rating = rating_id
                 review.save()
             else:
-
                 UserRating.objects.get_or_create(
                     user=request.user,
                     suggestion=suggestion,
