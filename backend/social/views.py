@@ -48,7 +48,7 @@ class UpdateOrModifySuggestionRating(APIView):
                     rating=rating_id,
                 )
             return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except SuggestionModel:
+        except SuggestionModel.DoesNotExist:
             return Response(
                 {"status": "Failed due to external ID not existing"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -65,8 +65,8 @@ class GetSuggestionRating(APIView):
 
     def get(self, request):
         try:
-            external_id = request.data.get("external_id")
-
+            external_id = request.GET.get("external_id", "")
+            print("external Id", external_id)
             suggestion = SuggestionModel.objects.get(external_id=external_id)
 
             reviews = UserRating.objects.filter(suggestion=suggestion)
@@ -81,7 +81,7 @@ class GetSuggestionRating(APIView):
                 {"average_rating": average_rating, "num_ratings": len(reviews)},
                 status=status.HTTP_200_OK,
             )
-        except SuggestionModel:
+        except SuggestionModel.DoesNotExist:
             return Response(
                 {"status": "Failed due to external ID not existing"},
                 status=status.HTTP_400_BAD_REQUEST,
