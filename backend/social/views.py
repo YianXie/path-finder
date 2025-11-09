@@ -17,12 +17,25 @@ class UpdateOrModifySuggestionRating(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        external_id = request.data.get("external_id")
-        rating_id = int(request.data.get("rating"))
+        try:
+            external_id = request.data.get("external_id")
+            rating_id = int(request.data.get("rating"))
 
-        UserRating.objects.get_or_create(
-            user=request.user,
-            suggestion=SuggestionModel.objects.get(external_id=external_id),
-            rating=rating_id,
-        )
-        return Response({"status": "success"})
+            suggestion = SuggestionModel.objects.get(external_id=external_id)
+
+            review = UserRating.objects.filter(user=request.user, suggestion=suggestion)
+
+            if len(review) > 0:
+                review = review[0]
+                review.rating = rating_id
+                review.save()
+            else:
+
+                UserRating.objects.get_or_create(
+                    user=request.user,
+                    suggestion=suggestion,
+                    rating=rating_id,
+                )
+            return Response({"status": "success"})
+        except:
+            return Response({"status": "failure"}, status=400)

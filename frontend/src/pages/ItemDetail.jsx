@@ -51,7 +51,8 @@ function ItemDetail() {
 
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
-                setters.setIsSaved(response.data.rating);
+                console.log(response.data);
+                setters.setRating(response.data.rating);
             } catch (error) {
                 console.error("Failed to fetch item info:", error);
                 setters.setError(

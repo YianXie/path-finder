@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from django.core.paginator import Paginator
 
 from accounts.models import UserModel
+from social.models import UserRating
 from suggestions.models import SuggestionModel, SuggestionsCacheModel
 from suggestions.reco_schema import RANKING_SCHEMA, SYSTEM_RULES
 from suggestions.serializers import SuggestionSerializer
@@ -266,6 +267,7 @@ class SuggestionDetailView(APIView):
                 {
                     "suggestion": serializer.data,
                     "is_saved": False,
+                    "rating": 0,
                 },
                 status=status.HTTP_200_OK,
             )
@@ -306,17 +308,24 @@ class SuggestionDetailWithSavedStatusView(APIView):
             user_model = UserModel.objects.get(email=user.email)
             saved_items = set(user_model.saved_items)
             is_saved = external_id in saved_items
+            external_id = request.data.get("external_id")
+            review = UserRating.objects.filter(user=request.user, suggestion=suggestion)
+            rating = 0
+            if len(review) > 0:
+                rating = review[0].rating
             serializer = SuggestionSerializer(suggestion)
 
             return Response(
                 {
                     "suggestion": serializer.data,
                     "is_saved": is_saved,
+                    "rating": rating,
                 },
                 status=status.HTTP_200_OK,
             )
 
-        except SuggestionModel.DoesNotExist:
+        except SuggestionModel.DoesNotExist as e:
+            print(e)
             return Response(
                 {"status": "error", "message": "Suggestion not found"},
                 status=status.HTTP_404_NOT_FOUND,
