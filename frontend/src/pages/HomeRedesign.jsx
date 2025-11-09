@@ -6,6 +6,7 @@ import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
 import ItemList from "../components/global/ItemList";
 import { useApiError } from "../hooks";
+import { Fragment } from "react";
 
 function HomeRedesign() {
     const { handleError } = useApiError();
@@ -24,7 +25,7 @@ function HomeRedesign() {
         async (page = 1) => {
             try {
                 setIsLoading(true);
-                const endpoint = "/api/suggestions/";
+                const endpoint = "/api/suggestions/suggestions";
 
                 const params = { page, page_size: 50 };
                 const res = await api.get(endpoint, { params });
@@ -59,18 +60,16 @@ function HomeRedesign() {
             <LoadingBackdrop open={isLoading} />
             <PageHeader title="Welcome to PathFinder" className="mt-6 mb-4" />
             {tagsList.map((tag, index) => (
-                <>
+                <Fragment key={tag+index}>
                     <ItemList
                         name={tag}
                         tag={tag}
                         suggestions={suggestions}
-                        key={tag + index + "ItemList"}
                     />
                     <Divider
                         sx={{ marginY: 2 }}
-                        key={tag + index + "divider"}
                     />
-                </>
+                </Fragment>
             ))}
         </Container>
     );
