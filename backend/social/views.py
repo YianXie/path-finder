@@ -7,7 +7,6 @@ from django.contrib.auth import get_user_model
 from suggestions.models import SuggestionModel
 
 from .models import UserRating
-
 from .serializers import UserRatingSerializer
 
 User = get_user_model()
@@ -34,7 +33,7 @@ class UpdateOrModifySuggestionRating(APIView):
                     {"status": "Failed due to rating outside of 1-5 range"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            
+
             comment = request.data.get("comment")
 
             suggestion = SuggestionModel.objects.get(external_id=external_id)
@@ -51,7 +50,7 @@ class UpdateOrModifySuggestionRating(APIView):
                     user=request.user,
                     suggestion=suggestion,
                     rating=rating_id,
-                    comment=comment
+                    comment=comment,
                 )
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except SuggestionModel.DoesNotExist:
