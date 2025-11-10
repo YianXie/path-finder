@@ -4,8 +4,6 @@ from django.db import models
 
 from suggestions.models import SuggestionModel
 
-# Create your models here.
-
 User = get_user_model()
 
 

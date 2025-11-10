@@ -11,6 +11,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useContext, useState } from "react";
 
+import { useAuth } from "../../contexts/AuthContext";
 import { ItemDetailContext } from "../../contexts/ItemDetailContext";
 import { ItemActions } from "./ItemActions";
 import { ItemDescription } from "./ItemDescription";
@@ -18,9 +19,10 @@ import { ItemHeader } from "./ItemHeader";
 import { ItemImage } from "./ItemImage";
 import RateItem from "./RateItem";
 
-export function ItemDetailCard() {
+export function ItemDetailCard({ external_id }) {
     const { state } = useContext(ItemDetailContext);
     const [isRateItemOpen, setIsRateItemOpen] = useState(false);
+    const { access } = useAuth();
 
     /**
      * Opens the external link in a new tab
@@ -56,22 +58,27 @@ export function ItemDetailCard() {
                             <ItemActions />
                         </Box>
 
-                        <Button
-                            color="primary"
-                            sx={{ width: "fit-content" }}
-                            onClick={handleRateItem}
-                        >
-                            <Stack
-                                direction="row"
-                                alignItems="center"
-                                spacing={1}
+                        {access && (
+                            <Button
+                                color="primary"
+                                sx={{ width: "fit-content" }}
+                                onClick={handleRateItem}
                             >
-                                <RateReviewIcon color="primary" />
-                                <Typography variant="body1" fontWeight={500}>
-                                    Leave a review
-                                </Typography>
-                            </Stack>
-                        </Button>
+                                <Stack
+                                    direction="row"
+                                    alignItems="center"
+                                    spacing={1}
+                                >
+                                    <RateReviewIcon color="primary" />
+                                    <Typography
+                                        variant="body1"
+                                        fontWeight={500}
+                                    >
+                                        Leave a review
+                                    </Typography>
+                                </Stack>
+                            </Button>
+                        )}
 
                         <Divider sx={{ marginY: 2 }} />
 
@@ -120,6 +127,7 @@ export function ItemDetailCard() {
             <RateItem
                 open={isRateItemOpen}
                 onClose={() => setIsRateItemOpen(false)}
+                external_id={external_id}
             />
         </Card>
     );

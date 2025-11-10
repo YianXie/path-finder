@@ -21,20 +21,20 @@ class UpdateOrModifySuggestionRating(APIView):
         try:
             external_id = request.data.get("external_id")
             try:
-                rating_id = int(request.data.get("rating"))
+                rating = int(request.data.get("rating"))
             except ValueError:
                 return Response(
                     {"status": "Failed due to non-integer rating value"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            if rating_id < 1 or rating_id > 5:
+            if rating < 1 or rating > 5:
                 return Response(
                     {"status": "Failed due to rating outside of 1-5 range"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            comment = request.data.get("comment")
+            comment: str = request.data.get("comment")
 
             suggestion = SuggestionModel.objects.get(external_id=external_id)
 
@@ -42,14 +42,14 @@ class UpdateOrModifySuggestionRating(APIView):
 
             if len(review) > 0:
                 review = review[0]
-                review.rating = rating_id
+                review.rating = rating
                 review.comment = comment
                 review.save()
             else:
                 UserRating.objects.get_or_create(
                     user=request.user,
                     suggestion=suggestion,
-                    rating=rating_id,
+                    rating=rating,
                     comment=comment,
                 )
             return Response({"status": "success"}, status=status.HTTP_200_OK)

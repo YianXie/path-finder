@@ -97,7 +97,7 @@ function ItemDetail() {
             </Box>
 
             {/* Main item content */}
-            {state.itemInfo && <ItemDetailCard />}
+            {state.itemInfo && <ItemDetailCard external_id={external_id} />}
         </Container>
     );
 }
