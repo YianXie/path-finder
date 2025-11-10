@@ -84,7 +84,7 @@ def get_pagination_data(data, page, page_size):
     try:
         paginator = Paginator(data, page_size)
         page_obj = paginator.get_page(page)
-        pagination_data = SuggestionSerializer(page_obj, many=True).data
+        pagination_data = SuggestionSerializer(page_obj.object_list, many=True).data
         return pagination_data, paginator, page_obj
     except Exception as e:
         raise Exception("Failed to retrieve pagination data: " + str(e))
@@ -131,6 +131,7 @@ def update_suggestion_score(external_id, score):
 def get_saved_items(email):
     try:
         user_model = UserModel.objects.get(email=email)
+        print(user_model.saved_items)
         return set(user_model.saved_items)
     except UserModel.DoesNotExist:
         return set()
@@ -167,12 +168,13 @@ class PersonalizedSuggestionsView(ADRFAPIView):
 
             if suggestionCache and len(suggestionCache) > 0:
                 ranked_suggestions = suggestionCache[0]["suggestions"]
-                for suggestion in ranked_suggestions:
-                    suggestion["is_saved"] = suggestion["external_id"] in saved_items
 
                 pagination_data, paginator, page_obj = await get_pagination_data(
                     ranked_suggestions, page, page_size
                 )
+
+                for suggestion in pagination_data:
+                    suggestion["is_saved"] = suggestion["external_id"] in saved_items
 
                 return Response(
                     {
@@ -226,12 +228,12 @@ class PersonalizedSuggestionsView(ADRFAPIView):
             # Add the data to the cache
             await add_suggestion_cache(user_model, ranked_suggestions)
 
-            for suggestion in ranked_suggestions:
-                suggestion["is_saved"] = suggestion["external_id"] in saved_items
-
             pagination_data, paginator, page_obj = await get_pagination_data(
                 ranked_suggestions, page, page_size
             )
+
+            for suggestion in pagination_data:
+                suggestion["is_saved"] = suggestion["external_id"] in saved_items
 
             return Response(
                 {
@@ -325,7 +327,6 @@ class SuggestionDetailWithSavedStatusView(APIView):
             )
 
         except SuggestionModel.DoesNotExist as e:
-            print(e)
             return Response(
                 {"status": "error", "message": "Suggestion not found"},
                 status=status.HTTP_404_NOT_FOUND,

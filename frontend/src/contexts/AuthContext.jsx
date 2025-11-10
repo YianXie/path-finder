@@ -90,8 +90,6 @@ export const AuthProvider = ({ children }) => {
                     refresh: refreshTokenValue,
                 });
 
-                console.log("refreshToken response", response);
-
                 if (response.status === 200) {
                     const data = response.data;
                     const newAccessToken = data.access;
@@ -102,8 +100,6 @@ export const AuthProvider = ({ children }) => {
 
                     // Extract user info from new token
                     const payload = jwtDecode(newAccessToken);
-
-                    console.log("refreshToken payload", payload);
 
                     // Check if email and name are in the token, otherwise keep existing user data
                     if (payload.email && payload.name) {

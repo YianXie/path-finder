@@ -338,11 +338,14 @@ class SavedItemsView(APIView):
             user_model = UserModel.objects.get(email=user.email)
             saved_items = user_model.saved_items
             suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
+            suggestions_data = SuggestionSerializer(suggestions, many=True).data
+            for suggestion in suggestions_data:
+                suggestion["is_saved"] = True
             return Response(
                 {
                     "status": "ok",
                     "message": "Saved items retrieved successfully",
-                    "suggestions": SuggestionSerializer(suggestions, many=True).data,
+                    "suggestions": suggestions_data,
                 },
                 status=status.HTTP_200_OK,
             )

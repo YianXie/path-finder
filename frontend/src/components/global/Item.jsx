@@ -90,7 +90,12 @@ function Item({
     };
 
     return (
-        <Card sx={{ width: 300, maxHeight: 400 }}>
+        <Card
+            sx={{
+                width: 300,
+                maxHeight: 400,
+            }}
+        >
             {/* Clickable area that navigates to item detail page */}
             <CardActionArea onClick={() => navigate(`/item/${external_id}`)}>
                 <CardMedia

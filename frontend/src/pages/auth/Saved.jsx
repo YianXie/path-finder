@@ -40,7 +40,7 @@ function Saved() {
                         <Item
                             key={item.external_id}
                             {...item}
-                            is_saved={true}
+                            is_saved={item.is_saved}
                         />
                     ))}
                 </Grid>
