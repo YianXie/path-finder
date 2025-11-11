@@ -99,7 +99,7 @@ export function ItemDetailCard({ external_id }) {
                                         External Link
                                     </Typography>
                                 </Stack>
-                                <Link
+                                <LinkIcon
                                     href={state.itemInfo.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
@@ -110,7 +110,7 @@ export function ItemDetailCard({ external_id }) {
                                     }}
                                 >
                                     {state.itemInfo.url}
-                                </Link>
+                                </LinkIcon>
                                 <Button
                                     variant="contained"
                                     startIcon={<OpenInNewIcon />}
