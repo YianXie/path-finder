@@ -52,7 +52,9 @@ function ItemDetail() {
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
                 setters.setRating(response.data.rating);
-                setters.setAverageRating(response.data.suggestion.average_rating);
+                setters.setAverageRating(
+                    response.data.suggestion.average_rating
+                );
                 setters.setNumRatings(response.data.suggestion.total_ratings);
             } catch (error) {
                 console.error("Failed to fetch item info:", error);
