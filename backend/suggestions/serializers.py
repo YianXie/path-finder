@@ -19,4 +19,4 @@ class SuggestionSerializer(serializers.ModelSerializer):
         )  # 0 if no ratings
 
     def get_total_ratings(self, obj):
-        return obj.userrating_set.count() # let database do the work
+        return obj.userrating_set.count()  # let database do the work
