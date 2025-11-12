@@ -2,6 +2,6 @@ from django.contrib import admin
 
 from pathfinder_api.utils import IDAdminModel
 
-from .models import UserModel
+from .models import UserProfile
 
-admin.site.register(UserModel, IDAdminModel)
+admin.site.register(UserProfile, IDAdminModel)

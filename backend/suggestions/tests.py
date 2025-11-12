@@ -4,7 +4,7 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from django.contrib.auth.models import User
 
-from accounts.models import UserModel
+from accounts.models import UserProfile
 from suggestions.models import EXAMPLE_EXTERNAL_ID, SuggestionModel
 
 
@@ -180,7 +180,7 @@ class SuggestionDetailWithSavedStatusViewTestCase(APITestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpassword123"
         )
-        UserModel.objects.update_or_create(
+        UserProfile.objects.update_or_create(
             email=self.user.email,
             defaults={
                 "saved_items": [EXAMPLE_EXTERNAL_ID],

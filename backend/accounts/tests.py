@@ -4,7 +4,7 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from django.contrib.auth.models import User
 
-from accounts.models import UserModel
+from accounts.models import UserProfile
 from suggestions.models import EXAMPLE_EXTERNAL_ID, SuggestionModel
 
 
@@ -84,7 +84,7 @@ class UserProfileViewTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_user_profile_with_auth_no_usermodel(self):
-        """Test that user profile returns fallback data when UserModel doesn't exist"""
+        """Test that user profile returns fallback data when UserProfile doesn't exist"""
         response = self.client.get(
             "/accounts/profile/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
@@ -95,8 +95,8 @@ class UserProfileViewTestCase(APITestCase):
         self.assertIsNone(response.data["google_sub"])
 
     def test_user_profile_with_auth_with_usermodel(self):
-        """Test that user profile returns UserModel data when it exists"""
-        UserModel.objects.create(
+        """Test that user profile returns UserProfile data when it exists"""
+        UserProfile.objects.create(
             email="test@example.com",
             name="Test User",
             google_sub="google_sub_123",
@@ -116,12 +116,12 @@ class SaveItemViewTestCase(APITestCase):
     """Tests for the save item endpoint"""
 
     def setUp(self):
-        """Set up test user and UserModel"""
+        """Set up test user and UserProfile"""
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpassword123"
         )
         self.access = AccessToken.for_user(self.user)
-        self.user_model = UserModel.objects.create(
+        self.user_model = UserProfile.objects.create(
             email="test@example.com",
             name="Test User",
             saved_items=[],
@@ -178,8 +178,8 @@ class SaveItemViewTestCase(APITestCase):
         self.assertNotIn("test123", self.user_model.saved_items)
 
     def test_save_item_user_model_not_found(self):
-        """Test that save item returns 400 when UserModel doesn't exist"""
-        # Delete the UserModel
+        """Test that save item returns 400 when UserProfile doesn't exist"""
+        # Delete the UserProfile
         self.user_model.delete()
 
         response = self.client.post(
@@ -196,12 +196,12 @@ class CheckItemSavedViewTestCase(APITestCase):
     """Tests for the check item saved endpoint"""
 
     def setUp(self):
-        """Set up test user and UserModel"""
+        """Set up test user and UserProfile"""
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpassword123"
         )
         self.access = AccessToken.for_user(self.user)
-        self.user_model = UserModel.objects.create(
+        self.user_model = UserProfile.objects.create(
             email="test@example.com",
             name="Test User",
             saved_items=["saved_item_123"],
@@ -250,8 +250,8 @@ class CheckItemSavedViewTestCase(APITestCase):
         self.assertFalse(response.data["is_saved"])
 
     def test_check_item_saved_user_model_not_found(self):
-        """Test that check item saved returns 500 when UserModel doesn't exist"""
-        # Delete the UserModel
+        """Test that check item saved returns 500 when UserProfile doesn't exist"""
+        # Delete the UserProfile
         self.user_model.delete()
 
         response = self.client.post(
@@ -268,12 +268,12 @@ class SavedItemsViewTestCase(APITestCase):
     """Tests for the saved items endpoint"""
 
     def setUp(self):
-        """Set up test user, UserModel, and suggestions"""
+        """Set up test user, UserProfile, and suggestions"""
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpassword123"
         )
         self.access = AccessToken.for_user(self.user)
-        self.user_model = UserModel.objects.create(
+        self.user_model = UserProfile.objects.create(
             email="test@example.com",
             name="Test User",
             saved_items=[EXAMPLE_EXTERNAL_ID],
@@ -324,8 +324,8 @@ class SavedItemsViewTestCase(APITestCase):
         self.assertEqual(len(response.data["suggestions"]), 0)
 
     def test_saved_items_user_model_not_found(self):
-        """Test that saved items returns 400 when UserModel doesn't exist"""
-        # Delete the UserModel
+        """Test that saved items returns 400 when UserProfile doesn't exist"""
+        # Delete the UserProfile
         self.user_model.delete()
 
         response = self.client.post(
@@ -412,12 +412,12 @@ class UpdateUserInformationViewTestCase(APITestCase):
     OTHER_GOALS = "test123"
 
     def setUp(self):
-        """Set up test user and UserModel"""
+        """Set up test user and UserProfile"""
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="testpassword123"
         )
         self.access = AccessToken.for_user(self.user)
-        self.user_model = UserModel.objects.create(
+        self.user_model = UserProfile.objects.create(
             email="test@example.com",
             name="Test User",
             finished_onboarding=False,

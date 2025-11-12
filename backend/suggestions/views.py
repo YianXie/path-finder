@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from django.core.paginator import Paginator
 
-from accounts.models import UserModel
+from accounts.models import UserProfile
 from social.models import UserRating
 from suggestions.models import SuggestionModel, SuggestionsCacheModel
 from suggestions.reco_schema import RANKING_SCHEMA, SYSTEM_RULES
@@ -92,7 +92,7 @@ def get_pagination_data(data, page, page_size):
 
 @sync_to_async
 def get_user_model(email):
-    user_model, created = UserModel.objects.get_or_create(
+    user_model, created = UserProfile.objects.get_or_create(
         email=email,
         defaults={
             "name": email.split("@")[0],
@@ -130,10 +130,10 @@ def update_suggestion_score(external_id, score):
 @sync_to_async
 def get_saved_items(email):
     try:
-        user_model = UserModel.objects.get(email=email)
+        user_model = UserProfile.objects.get(email=email)
         print(user_model.saved_items)
         return set(user_model.saved_items)
-    except UserModel.DoesNotExist:
+    except UserProfile.DoesNotExist:
         return set()
 
 
@@ -307,7 +307,7 @@ class SuggestionDetailWithSavedStatusView(APIView):
 
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
-            user_model = UserModel.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(email=user.email)
             saved_items = set(user_model.saved_items)
             is_saved = external_id in saved_items
             external_id = request.data.get("external_id")

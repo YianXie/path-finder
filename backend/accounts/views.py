@@ -14,7 +14,7 @@ from django.utils import timezone
 from suggestions.models import SuggestionModel
 from suggestions.serializers import SuggestionSerializer
 
-from .models import UserModel
+from .models import UserProfile
 from .serializers import CustomRefreshToken
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -95,11 +95,11 @@ class GoogleLoginView(APIView):
             tokens = issue_tokens_for_user(user)
 
             try:
-                user_model = UserModel.objects.get(email=email)
+                user_model = UserProfile.objects.get(email=email)
                 finished_onboarding = user_model.finished_onboarding
-            except UserModel.DoesNotExist:
+            except UserProfile.DoesNotExist:
                 finished_onboarding = False
-            UserModel.objects.update_or_create(
+            UserProfile.objects.update_or_create(
                 email=email,
                 name=name,
                 google_sub=sub,
@@ -172,8 +172,8 @@ class UserProfileView(APIView):
             )
 
         try:
-            # Try to get user data from UserModel first
-            user_model = UserModel.objects.get(email=user.email)
+            # Try to get user data from UserProfile first
+            user_model = UserProfile.objects.get(email=user.email)
             return Response(
                 {
                     "email": user.email,
@@ -187,7 +187,7 @@ class UserProfileView(APIView):
                     "saved_items": user_model.saved_items,
                 }
             )
-        except UserModel.DoesNotExist:
+        except UserProfile.DoesNotExist:
             # Fallback to Django user data
             return Response(
                 {
@@ -232,9 +232,9 @@ class SaveItemView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            user_model = UserModel.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(email=user.email)
             if external_id in user_model.saved_items:
-                UserModel.objects.update_or_create(
+                UserProfile.objects.update_or_create(
                     email=user.email,
                     defaults={
                         "saved_items": [
@@ -249,7 +249,7 @@ class SaveItemView(APIView):
                     status=status.HTTP_200_OK,
                 )
             else:
-                UserModel.objects.update_or_create(
+                UserProfile.objects.update_or_create(
                     email=user.email,
                     defaults={"saved_items": [*user_model.saved_items, external_id]},
                 )
@@ -292,7 +292,7 @@ class CheckItemSavedView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            user_model = UserModel.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(email=user.email)
             if external_id in user_model.saved_items:
                 return Response(
                     {"status": "ok", "message": "Item is saved", "is_saved": True},
@@ -335,7 +335,7 @@ class SavedItemsView(APIView):
             )
 
         try:
-            user_model = UserModel.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(email=user.email)
             saved_items = user_model.saved_items
             suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
             suggestions_data = SuggestionSerializer(suggestions, many=True).data
@@ -400,7 +400,7 @@ class UpdateUserInformationView(APIView):
                     {"status": "error", "message": "Goals are required"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            user_model = UserModel.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(email=user.email)
             user_model.basic_information = basic_information
             user_model.interests = interests
             user_model.goals = goals

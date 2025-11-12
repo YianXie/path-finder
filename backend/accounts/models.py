@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class UserModel(models.Model):
+class UserProfile(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     google_sub = models.CharField(max_length=255, unique=True, null=True, blank=True)
