@@ -224,44 +224,39 @@ class SaveItemView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        try:
-            external_id = request.data.get("external_id")
-            if not external_id:
-                return Response(
-                    {"status": "error", "message": "External ID is required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            user_model = UserProfile.objects.get(email=user.email)
-            if external_id in user_model.saved_items:
-                UserProfile.objects.update_or_create(
-                    email=user.email,
-                    defaults={
-                        "saved_items": [
-                            item
-                            for item in user_model.saved_items
-                            if item != external_id
-                        ]
-                    },
-                )
-                return Response(
-                    {"status": "ok", "message": "Item removed from saved items"},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                UserProfile.objects.update_or_create(
-                    email=user.email,
-                    defaults={"saved_items": [*user_model.saved_items, external_id]},
-                )
-                return Response(
-                    {"status": "ok", "message": "Item added to saved items"},
-                    status=status.HTTP_200_OK,
-                )
-        except Exception as e:
+        external_id = request.data.get("external_id")
+        if not external_id:
             return Response(
-                {"status": "error", "message": "Failed to save item: " + str(e)},
+                {"status": "error", "message": "External ID is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        user_model = UserProfile.objects.get(email=user.email)
+        if external_id in user_model.saved_items:
+            UserProfile.objects.update_or_create(
+                email=user.email,
+                defaults={
+                    "saved_items": [
+                        item
+                        for item in user_model.saved_items
+                        if item != external_id
+                    ]
+                },
+            )
+            return Response(
+                {"status": "ok", "message": "Item removed from saved items"},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            UserProfile.objects.update_or_create(
+                email=user.email,
+                defaults={"saved_items": [*user_model.saved_items, external_id]},
+            )
+            return Response(
+                {"status": "ok", "message": "Item added to saved items"},
+                status=status.HTTP_200_OK,
+            )
+
 
 
 class CheckItemSavedView(APIView):
@@ -284,33 +279,23 @@ class CheckItemSavedView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        try:
-            external_id = request.data.get("external_id")
-            if not external_id:
-                return Response(
-                    {"status": "error", "message": "External ID is required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-            user_model = UserProfile.objects.get(email=user.email)
-            if external_id in user_model.saved_items:
-                return Response(
-                    {"status": "ok", "message": "Item is saved", "is_saved": True},
-                    status=status.HTTP_200_OK,
-                )
-            else:
-                return Response(
-                    {"status": "ok", "message": "Item is not saved", "is_saved": False},
-                    status=status.HTTP_200_OK,
-                )
-
-        except Exception as e:
+        external_id = request.data.get("external_id")
+        if not external_id:
             return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to check if item is saved: " + str(e),
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"status": "error", "message": "External ID is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user_model = UserProfile.objects.get(email=user.email)
+        if external_id in user_model.saved_items:
+            return Response(
+                {"status": "ok", "message": "Item is saved", "is_saved": True},
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return Response(
+                {"status": "ok", "message": "Item is not saved", "is_saved": False},
+                status=status.HTTP_200_OK,
             )
 
 
@@ -334,29 +319,20 @@ class SavedItemsView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        try:
-            user_model = UserProfile.objects.get(email=user.email)
-            saved_items = user_model.saved_items
-            suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
-            suggestions_data = SuggestionSerializer(suggestions, many=True).data
-            for suggestion in suggestions_data:
-                suggestion["is_saved"] = True
-            return Response(
-                {
-                    "status": "ok",
-                    "message": "Saved items retrieved successfully",
-                    "suggestions": suggestions_data,
-                },
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to retrieve saved items: " + str(e),
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        user_model = UserProfile.objects.get(email=user.email)
+        saved_items = user_model.saved_items
+        suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
+        suggestions_data = SuggestionSerializer(suggestions, many=True).data
+        for suggestion in suggestions_data:
+            suggestion["is_saved"] = True
+        return Response(
+            {
+                "status": "ok",
+                "message": "Saved items retrieved successfully",
+                "suggestions": suggestions_data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class UpdateUserInformationView(APIView):
@@ -379,43 +355,34 @@ class UpdateUserInformationView(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        try:
-            basic_information = request.data.get("basic_information")
-            interests = request.data.get("interests")
-            goals = request.data.get("goals")
-            other_goals = request.data.get("other_goals")
+        basic_information = request.data.get("basic_information")
+        interests = request.data.get("interests")
+        goals = request.data.get("goals")
+        other_goals = request.data.get("other_goals")
 
-            if not basic_information:
-                return Response(
-                    {"status": "error", "message": "Basic information is required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if not interests:
-                return Response(
-                    {"status": "error", "message": "Interests are required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            if not goals:
-                return Response(
-                    {"status": "error", "message": "Goals are required"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            user_model = UserProfile.objects.get(email=user.email)
-            user_model.basic_information = basic_information
-            user_model.interests = interests
-            user_model.goals = goals
-            user_model.other_goals = other_goals if other_goals else None
-            user_model.finished_onboarding = True
-            user_model.save()
+        if not basic_information:
             return Response(
-                {"status": "ok", "message": "User information updated successfully"},
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to update user information: " + str(e),
-                },
+                {"status": "error", "message": "Basic information is required"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if not interests:
+            return Response(
+                {"status": "error", "message": "Interests are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if not goals:
+            return Response(
+                {"status": "error", "message": "Goals are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        user_model = UserProfile.objects.get(email=user.email)
+        user_model.basic_information = basic_information
+        user_model.interests = interests
+        user_model.goals = goals
+        user_model.other_goals = other_goals if other_goals else None
+        user_model.finished_onboarding = True
+        user_model.save()
+        return Response(
+            {"status": "ok", "message": "User information updated successfully"},
+            status=status.HTTP_200_OK,
+        )

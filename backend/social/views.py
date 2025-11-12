@@ -58,12 +58,6 @@ class UpdateOrModifySuggestionRating(APIView):
                 {"status": "Failed due to external ID not existing"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        except Exception as e:
-            return Response(
-                {"status": f"Failed to update rating due to error: {e}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
 
 class GetSuggestionReviews(APIView):
     """Check average rating and amount of ratings"""
@@ -83,9 +77,4 @@ class GetSuggestionReviews(APIView):
             return Response(
                 {"status": "Failed due to external ID not existing"},
                 status=status.HTTP_400_BAD_REQUEST,
-            )
-        except Exception as e:
-            return Response(
-                {"status": f"Failed to fetch rating due to error: {e}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )

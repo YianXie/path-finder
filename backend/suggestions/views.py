@@ -34,43 +34,33 @@ class SuggestionListView(APIView):
 
     def get(self, request):
         # Get pagination parameters
-        try:
-            page = int(request.GET.get("page", 1))
-            page_size = int(
-                request.GET.get("page_size", 50)
-            )  # Default 50 items per page
+        page = int(request.GET.get("page", 1))
+        page_size = int(
+            request.GET.get("page_size", 50)
+        )  # Default 50 items per page
 
-            # Get all suggestions with pagination
-            suggestions = SuggestionModel.objects.all().order_by("name")
-            paginator = Paginator(suggestions, page_size)
-            page_obj = paginator.get_page(page)
+        # Get all suggestions with pagination
+        suggestions = SuggestionModel.objects.all().order_by("name")
+        paginator = Paginator(suggestions, page_size)
+        page_obj = paginator.get_page(page)
 
-            serializer = SuggestionSerializer(page_obj, many=True)
-            suggestions_data = serializer.data
+        serializer = SuggestionSerializer(page_obj, many=True)
+        suggestions_data = serializer.data
 
-            return Response(
-                {
-                    "results": suggestions_data,
-                    "pagination": {
-                        "page": page,
-                        "page_size": page_size,
-                        "total_pages": paginator.num_pages,
-                        "total_count": paginator.count,
-                        "has_next": page_obj.has_next(),
-                        "has_previous": page_obj.has_previous(),
-                    },
+        return Response(
+            {
+                "results": suggestions_data,
+                "pagination": {
+                    "page": page,
+                    "page_size": page_size,
+                    "total_pages": paginator.num_pages,
+                    "total_count": paginator.count,
+                    "has_next": page_obj.has_next(),
+                    "has_previous": page_obj.has_previous(),
                 },
-                status=status.HTTP_200_OK,
-            )
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to retrieve suggestions: " + str(e),
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
+            },
+            status=status.HTTP_200_OK,
+        )
 
 @sync_to_async
 def get_suggestions():
@@ -81,13 +71,10 @@ def get_suggestions():
 
 @sync_to_async
 def get_pagination_data(data, page, page_size):
-    try:
-        paginator = Paginator(data, page_size)
-        page_obj = paginator.get_page(page)
-        pagination_data = SuggestionSerializer(page_obj.object_list, many=True).data
-        return pagination_data, paginator, page_obj
-    except Exception as e:
-        raise Exception("Failed to retrieve pagination data: " + str(e))
+    paginator = Paginator(data, page_size)
+    page_obj = paginator.get_page(page)
+    pagination_data = SuggestionSerializer(page_obj.object_list, many=True).data
+    return pagination_data, paginator, page_obj
 
 
 @sync_to_async
@@ -148,85 +135,25 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        try:
-            page = int(request.GET.get("page", 1))
-            page_size = int(request.GET.get("page_size", 50))
-            suggestions_data = await get_suggestions()
-            user_model = await get_user_model(user.email)
-            saved_items = await get_saved_items(user.email)
+        page = int(request.GET.get("page", 1))
+        page_size = int(request.GET.get("page_size", 50))
+        suggestions_data = await get_suggestions()
+        user_model = await get_user_model(user.email)
+        saved_items = await get_saved_items(user.email)
 
-            suggestionsCache = await get_all_suggestions_cache()
-            suggestionCache = list(
-                filter(
-                    lambda cache: cache["interests"] == user_model.interests
-                    and cache["basic_information"] == user_model.basic_information
-                    and cache["goals"] == user_model.goals
-                    and cache["other_goals"] == user_model.other_goals,
-                    suggestionsCache,
-                )
+        suggestionsCache = await get_all_suggestions_cache()
+        suggestionCache = list(
+            filter(
+                lambda cache: cache["interests"] == user_model.interests
+                and cache["basic_information"] == user_model.basic_information
+                and cache["goals"] == user_model.goals
+                and cache["other_goals"] == user_model.other_goals,
+                suggestionsCache,
             )
+        )
 
-            if suggestionCache and len(suggestionCache) > 0:
-                ranked_suggestions = suggestionCache[0]["suggestions"]
-
-                pagination_data, paginator, page_obj = await get_pagination_data(
-                    ranked_suggestions, page, page_size
-                )
-
-                for suggestion in pagination_data:
-                    suggestion["is_saved"] = suggestion["external_id"] in saved_items
-
-                return Response(
-                    {
-                        "results": pagination_data,
-                        "pagination": {
-                            "page": page,
-                            "page_size": page_size,
-                            "total_pages": paginator.num_pages,
-                            "total_count": paginator.count,
-                            "has_next": page_obj.has_next(),
-                            "has_previous": page_obj.has_previous(),
-                        },
-                    },
-                    status=status.HTTP_200_OK,
-                )
-
-            api_key = os.environ.get("OPENAI_API_KEY")
-            client = AsyncOpenAI(api_key=api_key)
-
-            completion = await client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": SYSTEM_RULES},
-                    {
-                        "role": "user",
-                        "content": json.dumps(
-                            {
-                                "basic_info": user_model.basic_information,
-                                "interests": user_model.interests,
-                                "goals": user_model.goals,
-                                "additional_info": user_model.other_goals,
-                                "suggestions": suggestions_data,
-                            }
-                        ),
-                    },
-                ],
-                response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
-                timeout=20_000,
-                temperature=0.2,
-            )
-            content = json.loads(completion.choices[0].message.content)
-
-            ranked_suggestions = []
-            for s in suggestions_data:
-                for suggestion in content["suggestions"][:20]:
-                    if s["external_id"] == suggestion["external_id"]:
-                        s["score"] = suggestion["score"]
-                        break
-                ranked_suggestions.append(s)
-
-            # Add the data to the cache
-            await add_suggestion_cache(user_model, ranked_suggestions)
+        if suggestionCache and len(suggestionCache) > 0:
+            ranked_suggestions = suggestionCache[0]["suggestions"]
 
             pagination_data, paginator, page_obj = await get_pagination_data(
                 ranked_suggestions, page, page_size
@@ -249,11 +176,65 @@ class PersonalizedSuggestionsView(ADRFAPIView):
                 },
                 status=status.HTTP_200_OK,
             )
-        except Exception as e:
-            return Response(
-                {"status": "error", "message": f"Failed to retrieve suggestions: {e}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+
+        api_key = os.environ.get("OPENAI_API_KEY")
+        client = AsyncOpenAI(api_key=api_key)
+
+        completion = await client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": SYSTEM_RULES},
+                {
+                    "role": "user",
+                    "content": json.dumps(
+                        {
+                            "basic_info": user_model.basic_information,
+                            "interests": user_model.interests,
+                            "goals": user_model.goals,
+                            "additional_info": user_model.other_goals,
+                            "suggestions": suggestions_data,
+                        }
+                    ),
+                },
+            ],
+            response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
+            timeout=20_000,
+            temperature=0.2,
+        )
+        content = json.loads(completion.choices[0].message.content)
+
+        ranked_suggestions = []
+        for s in suggestions_data:
+            for suggestion in content["suggestions"][:20]:
+                if s["external_id"] == suggestion["external_id"]:
+                    s["score"] = suggestion["score"]
+                    break
+            ranked_suggestions.append(s)
+
+        # Add the data to the cache
+        await add_suggestion_cache(user_model, ranked_suggestions)
+
+        pagination_data, paginator, page_obj = await get_pagination_data(
+            ranked_suggestions, page, page_size
+        )
+
+        for suggestion in pagination_data:
+            suggestion["is_saved"] = suggestion["external_id"] in saved_items
+
+        return Response(
+            {
+                "results": pagination_data,
+                "pagination": {
+                    "page": page,
+                    "page_size": page_size,
+                    "total_pages": paginator.num_pages,
+                    "total_count": paginator.count,
+                    "has_next": page_obj.has_next(),
+                    "has_previous": page_obj.has_previous(),
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class SuggestionDetailView(APIView):
@@ -279,16 +260,6 @@ class SuggestionDetailView(APIView):
             return Response(
                 {"status": "error", "message": "Suggestion not found"},
                 status=status.HTTP_404_NOT_FOUND,
-            )
-
-        # Other exceptions
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to retrieve suggestion: " + str(e),
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
@@ -330,13 +301,4 @@ class SuggestionDetailWithSavedStatusView(APIView):
             return Response(
                 {"status": "error", "message": "Suggestion not found"},
                 status=status.HTTP_404_NOT_FOUND,
-            )
-
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Failed to retrieve suggestion: " + str(e),
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
