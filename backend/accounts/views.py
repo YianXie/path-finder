@@ -19,6 +19,7 @@ from .serializers import CustomRefreshToken
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 ALLOWED_GOOGLE_HD = os.getenv("ALLOWED_GOOGLE_HD")
+
 User = get_user_model()
 
 
@@ -108,7 +109,6 @@ class GoogleLoginView(APIView):
                 }
             )
         except Exception:
-            # TODO: Fix block before PR closed
             raise errors.ValidationError("Invalid credentials")
 
 
@@ -146,17 +146,15 @@ class UserProfileView(APIView):
         Response: Response
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         user = request.user
-        if not user.is_authenticated:
-            # TODO: Add permission class
-            raise errors.NotAuthenticated("Authentication required")
 
         try:
             # Try to get user data from UserProfile first
             user_model = UserProfile.objects.get(email=user.email)
 
-            # TODO: Use serializer here
             return Response(
                 {
                     "email": user.email,
@@ -201,9 +199,6 @@ class SaveItemView(APIView):
 
     def post(self, request):
         user = request.user
-        if not user.is_authenticated:
-            # TODO: Check permission class
-            raise errors.NotAuthenticated("Authentication required")
 
         external_id = request.data.get("external_id")
         if not external_id:
@@ -215,13 +210,10 @@ class SaveItemView(APIView):
                 email=user.email,
                 defaults={
                     "saved_items": [
-                        item
-                        for item in user_model.saved_items
-                        if item != external_id
+                        item for item in user_model.saved_items if item != external_id
                     ]
                 },
             )
-            # TODO: Ok response function
             return Response(
                 {"status": "ok", "message": "Item removed from saved items"},
                 status=status.HTTP_200_OK,
@@ -235,7 +227,6 @@ class SaveItemView(APIView):
                 {"status": "ok", "message": "Item added to saved items"},
                 status=status.HTTP_200_OK,
             )
-
 
 
 class CheckItemSavedView(APIView):
@@ -286,9 +277,6 @@ class SavedItemsView(APIView):
 
     def post(self, request):
         user = request.user
-        if not user.is_authenticated:
-            # TODO: Check permissions
-            raise errors.NotAuthenticated("Authentication required")
 
         user_model = UserProfile.objects.get(email=user.email)
         saved_items = user_model.saved_items
@@ -320,9 +308,6 @@ class UpdateUserInformationView(APIView):
 
     def post(self, request):
         user = request.user
-        if not user.is_authenticated:
-            # TODO: Check permissions
-            raise errors.ValidationError("Authentication required")
 
         basic_information = request.data.get("basic_information")
         interests = request.data.get("interests")
@@ -331,7 +316,7 @@ class UpdateUserInformationView(APIView):
 
         if not basic_information:
             raise errors.ValidationError("Basic information is required")
-        
+
         if not interests:
             raise errors.ValidationError("Interests are required")
 

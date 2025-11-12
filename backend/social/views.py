@@ -19,39 +19,38 @@ class UpdateOrModifySuggestionRating(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        external_id = request.data.get("external_id")
         try:
-            external_id = request.data.get("external_id")
-            try:
-                rating = int(request.data.get("rating"))
-            except ValueError:
-                raise errors.ValidationError("Failed due to non-integer rating value")
+            rating = int(request.data.get("rating"))
+        except ValueError:
+            raise errors.ValidationError("Failed due to non-integer rating value")
 
-            if rating < 1 or rating > 5:
-                # TODO: Update message
-                raise errors.ValidationError("Failed due to rating outside of 1-5 range")
+        if rating < 1 or rating > 5:
+            raise errors.ValidationError("Rating must be an integer between 1 and 5.")
 
-            comment: str = request.data.get("comment")
+        comment: str = request.data.get("comment")
 
+        try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
-
-            review = UserRating.objects.filter(user=request.user, suggestion=suggestion)
-
-            if len(review) > 0:
-                review = review[0]
-                review.rating = rating
-                review.comment = comment
-                review.save()
-            else:
-                UserRating.objects.get_or_create(
-                    user=request.user,
-                    suggestion=suggestion,
-                    rating=rating,
-                    comment=comment,
-                )
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
         except SuggestionModel.DoesNotExist:
-            # TODO: Make condition more concise
             raise errors.ValidationError("Failed due to external ID not existing")
+
+        review = UserRating.objects.filter(user=request.user, suggestion=suggestion)
+
+        if len(review) > 0:
+            review = review[0]
+            review.rating = rating
+            review.comment = comment
+            review.save()
+        else:
+            UserRating.objects.get_or_create(
+                user=request.user,
+                suggestion=suggestion,
+                rating=rating,
+                comment=comment,
+            )
+        return Response({"status": "success"}, status=status.HTTP_200_OK)
+
 
 class GetSuggestionReviews(APIView):
     """Check average rating and amount of ratings"""
@@ -63,7 +62,6 @@ class GetSuggestionReviews(APIView):
             suggestion = SuggestionModel.objects.get(external_id=external_id)
 
             reviews = UserRating.objects.filter(suggestion=suggestion)
-            # TODO: Normalize fields with suggestions
             return Response(
                 UserRatingSerializer(reviews, many=True).data,
                 status=status.HTTP_200_OK,

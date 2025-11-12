@@ -8,7 +8,7 @@ class IDAdminModel(admin.ModelAdmin):
 
 def custom_exception_handler(exc, context):
     # https://www.django-rest-framework.org/api-guide/exceptions/#custom-exception-handling
-    
+
     # Call REST framework's default exception handler first,
     # to get the standard error response.
     response = exception_handler(exc, context)
@@ -21,5 +21,5 @@ def custom_exception_handler(exc, context):
         response.data["status"] = "error"
         response.data["status_code"] = response.status_code
         response.data["message"] = message
-        
+
     return response

@@ -36,9 +36,7 @@ class SuggestionListView(APIView):
     def get(self, request):
         # Get pagination parameters
         page = int(request.GET.get("page", 1))
-        page_size = int(
-            request.GET.get("page_size", 50)
-        )  # Default 50 items per page
+        page_size = int(request.GET.get("page_size", 50))  # Default 50 items per page
 
         # Get all suggestions with pagination
         suggestions = SuggestionModel.objects.all().order_by("name")
@@ -62,6 +60,7 @@ class SuggestionListView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
 
 @sync_to_async
 def get_suggestions():
@@ -130,9 +129,6 @@ class PersonalizedSuggestionsView(ADRFAPIView):
 
     async def get(self, request):
         user = request.user
-        if not user.is_authenticated:
-            # TODO: Check permission class
-            raise errors.NotAuthenticated("Authentication required")
 
         page = int(request.GET.get("page", 1))
         page_size = int(request.GET.get("page_size", 50))
@@ -266,9 +262,6 @@ class SuggestionDetailWithSavedStatusView(APIView):
 
     def get(self, request, external_id):
         user = request.user
-        if not user.is_authenticated:
-            # TODO: Check permission class
-            raise errors.NotAuthenticated("Authentication required")
 
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
