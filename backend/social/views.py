@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
+import rest_framework.exceptions as errors
 
 from django.contrib.auth import get_user_model
 
@@ -23,16 +24,11 @@ class UpdateOrModifySuggestionRating(APIView):
             try:
                 rating = int(request.data.get("rating"))
             except ValueError:
-                return Response(
-                    {"status": "Failed due to non-integer rating value"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                raise errors.ValidationError("Failed due to non-integer rating value")
 
             if rating < 1 or rating > 5:
-                return Response(
-                    {"status": "Failed due to rating outside of 1-5 range"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                # TODO: Update message
+                raise errors.ValidationError("Failed due to rating outside of 1-5 range")
 
             comment: str = request.data.get("comment")
 
@@ -54,10 +50,8 @@ class UpdateOrModifySuggestionRating(APIView):
                 )
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except SuggestionModel.DoesNotExist:
-            return Response(
-                {"status": "Failed due to external ID not existing"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            # TODO: Make condition more concise
+            raise errors.ValidationError("Failed due to external ID not existing")
 
 class GetSuggestionReviews(APIView):
     """Check average rating and amount of ratings"""
@@ -69,12 +63,10 @@ class GetSuggestionReviews(APIView):
             suggestion = SuggestionModel.objects.get(external_id=external_id)
 
             reviews = UserRating.objects.filter(suggestion=suggestion)
+            # TODO: Normalize fields with suggestions
             return Response(
                 UserRatingSerializer(reviews, many=True).data,
                 status=status.HTTP_200_OK,
             )
         except SuggestionModel.DoesNotExist:
-            return Response(
-                {"status": "Failed due to external ID not existing"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("Failed due to external ID not existing")

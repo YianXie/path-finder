@@ -7,6 +7,7 @@ from openai import AsyncOpenAI
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+import rest_framework.exceptions as errors
 from rest_framework.views import APIView
 
 from django.core.paginator import Paginator
@@ -130,10 +131,8 @@ class PersonalizedSuggestionsView(ADRFAPIView):
     async def get(self, request):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            # TODO: Check permission class
+            raise errors.NotAuthenticated("Authentication required")
 
         page = int(request.GET.get("page", 1))
         page_size = int(request.GET.get("page_size", 50))
@@ -257,10 +256,7 @@ class SuggestionDetailView(APIView):
 
         # Handle suggestion not found
         except SuggestionModel.DoesNotExist:
-            return Response(
-                {"status": "error", "message": "Suggestion not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            raise errors.NotFound("Suggestion not found")
 
 
 class SuggestionDetailWithSavedStatusView(APIView):
@@ -271,10 +267,8 @@ class SuggestionDetailWithSavedStatusView(APIView):
     def get(self, request, external_id):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            # TODO: Check permission class
+            raise errors.NotAuthenticated("Authentication required")
 
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
@@ -297,8 +291,5 @@ class SuggestionDetailWithSavedStatusView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        except SuggestionModel.DoesNotExist as e:
-            return Response(
-                {"status": "error", "message": "Suggestion not found"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+        except SuggestionModel.DoesNotExist:
+            raise errors.NotFound("Suggestion not found")

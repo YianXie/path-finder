@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+import rest_framework.exceptions as errors
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
@@ -45,10 +45,7 @@ class GoogleLoginView(APIView):
     def post(self, request):
         credential = request.data.get("credential")
         if not credential:
-            return Response(
-                {"status": "error", "message": "Credentials are required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.NotAuthenticated("Credentials required")
 
         try:
             # Verify Google ID token
@@ -58,10 +55,7 @@ class GoogleLoginView(APIView):
 
             # Hosted domain restriction
             if ALLOWED_GOOGLE_HD and idinfo.get("hd") != ALLOWED_GOOGLE_HD:
-                return Response(
-                    {"detail": "Unauthorized hosted domain."},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
+                raise errors.PermissionDenied("Unauthorized hosted domain.")
 
             # Extract user info
             sub = idinfo["sub"]  # Google unique user ID
@@ -70,10 +64,7 @@ class GoogleLoginView(APIView):
             name = idinfo.get("name") or ""
 
             if not email or not email_verified:
-                return Response(
-                    {"detail": "Email not verified by Google."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                raise errors.ValidationError("Email not verified by Google.")
 
             # Upsert user
             user, created = User.objects.get_or_create(
@@ -117,10 +108,8 @@ class GoogleLoginView(APIView):
                 }
             )
         except Exception:
-            return Response(
-                {"status": "error", "message": "Invalid credentials"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            # TODO: Fix block before PR closed
+            raise errors.ValidationError("Invalid credentials")
 
 
 class ParseTokenView(APIView):
@@ -138,19 +127,13 @@ class ParseTokenView(APIView):
     def post(self, request):
         token = request.data.get("token")
         if not token:
-            return Response(
-                {"status": "error", "message": "Token is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("Token is required")
 
         try:
             payload = decode(token, options={"verify_signature": False})
             return Response({"payload": payload})
         except Exception:
-            return Response(
-                {"status": "error", "message": "Invalid token"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("Invalid token")
 
 
 class UserProfileView(APIView):
@@ -166,14 +149,14 @@ class UserProfileView(APIView):
     def get(self, request):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            # TODO: Add permission class
+            raise errors.NotAuthenticated("Authentication required")
 
         try:
             # Try to get user data from UserProfile first
             user_model = UserProfile.objects.get(email=user.email)
+
+            # TODO: Use serializer here
             return Response(
                 {
                     "email": user.email,
@@ -219,17 +202,12 @@ class SaveItemView(APIView):
     def post(self, request):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            # TODO: Check permission class
+            raise errors.NotAuthenticated("Authentication required")
 
         external_id = request.data.get("external_id")
         if not external_id:
-            return Response(
-                {"status": "error", "message": "External ID is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("External ID is required")
 
         user_model = UserProfile.objects.get(email=user.email)
         if external_id in user_model.saved_items:
@@ -243,6 +221,7 @@ class SaveItemView(APIView):
                     ]
                 },
             )
+            # TODO: Ok response function
             return Response(
                 {"status": "ok", "message": "Item removed from saved items"},
                 status=status.HTTP_200_OK,
@@ -274,17 +253,11 @@ class CheckItemSavedView(APIView):
     def post(self, request):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            raise errors.ValidationError("Authentication required")
 
         external_id = request.data.get("external_id")
         if not external_id:
-            return Response(
-                {"status": "error", "message": "External ID is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("External ID is required")
 
         user_model = UserProfile.objects.get(email=user.email)
         if external_id in user_model.saved_items:
@@ -314,10 +287,8 @@ class SavedItemsView(APIView):
     def post(self, request):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            # TODO: Check permissions
+            raise errors.NotAuthenticated("Authentication required")
 
         user_model = UserProfile.objects.get(email=user.email)
         saved_items = user_model.saved_items
@@ -350,10 +321,8 @@ class UpdateUserInformationView(APIView):
     def post(self, request):
         user = request.user
         if not user.is_authenticated:
-            return Response(
-                {"status": "error", "message": "Authentication required"},
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+            # TODO: Check permissions
+            raise errors.ValidationError("Authentication required")
 
         basic_information = request.data.get("basic_information")
         interests = request.data.get("interests")
@@ -361,20 +330,14 @@ class UpdateUserInformationView(APIView):
         other_goals = request.data.get("other_goals")
 
         if not basic_information:
-            return Response(
-                {"status": "error", "message": "Basic information is required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("Basic information is required")
+        
         if not interests:
-            return Response(
-                {"status": "error", "message": "Interests are required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("Interests are required")
+
         if not goals:
-            return Response(
-                {"status": "error", "message": "Goals are required"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise errors.ValidationError("Goals are required")
+
         user_model = UserProfile.objects.get(email=user.email)
         user_model.basic_information = basic_information
         user_model.interests = interests
