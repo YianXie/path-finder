@@ -4,12 +4,14 @@ import Divider from "@mui/material/Divider";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
 
 import api from "../../api";
 import { useAsyncData } from "../../hooks";
 import { stringAvatar } from "../../utils/stringUtils.js";
 
 function ItemComments({ external_id }) {
+    const [hasComments, setHasComments] = useState(false);
     const { data: reviews } = useAsyncData(async () => {
         const res = await api.get(
             `/api/social/reviews?external_id=${external_id}`
@@ -17,9 +19,20 @@ function ItemComments({ external_id }) {
         return res.data;
     }, []);
 
+    useEffect(() => {
+        if (reviews && reviews.length > 0) {
+            for (const review of reviews) {
+                if (review.comment && review.comment.trim() !== "") {
+                    setHasComments(true);
+                    return;
+                }
+            }
+        }
+    }, [reviews]);
+
     return (
         <>
-            {reviews && reviews.length > 0 ? (
+            {hasComments ? (
                 <Box sx={{ my: 4 }}>
                     <Typography variant="h4" fontWeight={500}>
                         User Review
@@ -66,7 +79,8 @@ function ItemComments({ external_id }) {
                                                     />
                                                 </Stack>
                                                 <Typography>
-                                                    {review.comment}
+                                                    {review.comment?.trim() ||
+                                                        "No comment"}
                                                 </Typography>
                                             </Stack>
                                         </Stack>

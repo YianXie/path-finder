@@ -9,6 +9,7 @@ import CardMedia from "@mui/material/CardMedia";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import Rating from "@mui/material/Rating";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { memo, useEffect, useState } from "react";
@@ -39,6 +40,7 @@ function Item({
     category,
     description,
     image,
+    average_rating: rating,
     is_saved: initialIsSaved = false,
     onSaveSuccess,
 }) {
@@ -125,7 +127,19 @@ function Item({
                 </CardContent>
             </CardActionArea>
             {/* Action buttons for save and menu */}
-            <CardActions className="flex items-center justify-end">
+            <CardActions
+                sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <Rating
+                    value={rating}
+                    readOnly
+                    // size="small"
+                    sx={{ marginRight: "auto" }}
+                />
                 <Tooltip title="Save item" placement="bottom" arrow>
                     <IconButton
                         aria-label="Save item"

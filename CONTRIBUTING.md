@@ -1,124 +1,130 @@
 # Contributing to PathFinder
 
-Thank you for your interest in contributing to PathFinder! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to PathFinder! This guide explains how to set up your environment, follow our workflows, and ship high-quality changes.
 
 ## Development Setup
 
 ### Prerequisites
 
 -   Python 3.11 or higher
--   Node.js 18 or higher
--   PostgreSQL (for local development)
+-   Node.js 18+ (Node 20 recommended) and npm
+-   Optional: PostgreSQL 15+ if you prefer not to use SQLite during development
+-   Access to the SAS Google Workspace OAuth client and OpenAI credentials (for features that depend on them)
 
 ### Quick Start
 
 1. **Clone the repository**
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/YianXie/path-finder.git
     cd path-finder
     ```
 
 2. **Set up the backend**
 
     ```bash
-    cd backend
-    python -m venv env
-    source env/bin/activate  # On Windows: env\Scripts\activate
-    pip install -r requirements.txt
-    python manage.py migrate
+    python -m venv .venv
+    source .venv/bin/activate  # Windows: .venv\Scripts\activate
+    pip install -r backend/requirements.txt
+    # Create backend/.env based on the Environment Variables section
+    python backend/manage.py migrate
     ```
 
 3. **Set up the frontend**
 
     ```bash
-    cd ../frontend
+    cd frontend
     npm install
+    # Create .env.local (or .env) based on the Environment Variables section
+    cd ..
     ```
 
 4. **Run the development servers**
 
     ```bash
-    # Backend (in one terminal)
-    cd backend
-    python manage.py runserver
+    # terminal 1 (from the repository root)
+    source .venv/bin/activate  # if not already active
+    python backend/manage.py runserver
 
-    # Frontend (in another terminal)
-    cd frontend
+    # terminal 2
+    cd path-finder/frontend  # from home directory; omit the prefix if already in the repo
     npm run dev
     ```
+
+The API runs on `http://localhost:8000` and the web app on `http://localhost:5173`.
+
+### One-command installs
+
+Prefer automation? From the repository root:
+
+```bash
+make install     # install backend + frontend dependencies
+make ci-local    # run the same checks as CI
+```
+
+See [Makefile](Makefile) for the full list of commands.
 
 ## Code Quality Standards
 
 ### Before Submitting Code
 
-Run our CI checks locally to ensure your code meets our standards:
+Always run our CI-equivalent checks locally:
 
 ```bash
-# Run all CI checks
 make ci-local
-
-# Or use the script directly
+# or
 ./scripts/ci-local.sh
 ```
 
-### Code Formatting
+### Formatting
 
--   **Backend**: Use Black for formatting and isort for import sorting
--   **Frontend**: Use Prettier for formatting
+-   **Backend**: Ruff formatter (Black-compatible) and isort import ordering
+-   **Frontend**: Prettier with Tailwind and import sort plugins
 
 ```bash
-# Format all code
 make format
 ```
 
 ### Linting
 
-We use several linting tools to maintain code quality:
-
--   **Backend**: Ruff, isort
--   **Frontend**: ESLint, Prettier
+-   **Backend**: `ruff check` for linting, security linting via Bandit
+-   **Frontend**: ESLint with React and hooks plugins
 
 ```bash
-# Run linting
 make lint
 ```
 
 ### Testing
 
--   **Backend**: Django test suite with comprehensive API tests
--   **Frontend**: Build verification
+-   **Backend**: Django test suite (`python backend/manage.py test`)
+-   **Frontend**: Vite build verification (`npm run build`)
 
 ```bash
-# Run tests
 make test
 ```
 
-### Security
+### Security Checks
 
-Security checks are run automatically in CI:
-
--   **Backend**: Safety (dependency vulnerabilities), Bandit (security linting)
--   **Frontend**: npm audit
+-   **Backend**: Safety vulnerability scan, Bandit static analysis
+-   **Frontend**: `npm audit`
 
 ```bash
-# Run security checks
 make security
 ```
 
 ## Pull Request Process
 
-1. **Create a feature branch**
+1. **Create a focused branch**
 
     ```bash
-    git checkout -b feature/your-feature-name
+    git checkout -b feature/my-improvement
     ```
 
-2. **Make your changes**
+2. **Implement changes**
 
-    - Write tests for new functionality
-    - Update documentation if needed
-    - Ensure all CI checks pass
+    - Add or update tests where applicable
+    - Update documentation or config changes as needed
+    - Keep commits scoped and descriptive
 
 3. **Run local checks**
 
@@ -126,83 +132,98 @@ make security
     make ci-local
     ```
 
-4. **Commit your changes**
+4. **Commit with context**
 
     ```bash
     git add .
-    git commit -m "Add: brief description of changes"
+    git commit -m "feat: describe the change"
     ```
 
-5. **Push and create a Pull Request**
+5. **Push and open a PR**
+
     ```bash
-    git push origin feature/your-feature-name
+    git push origin feature/my-improvement
     ```
+
+In your PR description, summarize the change, list test coverage, and call out any follow-up work.
 
 ## GitHub Actions CI
 
-Our CI pipeline runs automatically on:
+We run CI on every push to `main` and every pull request. Current jobs include:
 
--   Every push to `main`
--   Every pull request
+1. **Backend tests** – Django test suite against PostgreSQL service
+2. **Backend linting** – Ruff lint, format check, Bandit
+3. **Frontend checks** – ESLint, Prettier format check, Vite build
+4. **Security** – Safety scan and dependency review
 
-### CI Jobs
-
-1. **Backend Tests**: Django test suite with PostgreSQL
-2. **Frontend Checks**: ESLint, Prettier, and build verification
-3. **Backend Linting**: Code quality checks
-4. **Security Checks**: Vulnerability scanning
-
-### PR Checks
-
-Additional checks for pull requests:
-
--   Test coverage reporting
--   Dependency vulnerability review
+PRs also report code coverage and dependency alerts when applicable.
 
 ## Environment Variables
 
-For local development, create a `.env` file in the backend directory:
+Configure environment variables before running servers or tests.
+
+**Backend (`backend/.env`):**
 
 ```bash
-# backend/.env
-SECRET_KEY=your-secret-key
+SECRET_KEY=django-insecure-change-me
 ENVIRONMENT=development
-DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
-CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-GOOGLE_CLIENT_ID=your-google-client-id
-ALLOWED_GOOGLE_HD=your-allowed-domain
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+DATABASE_URL=postgres://user:password@localhost:5432/pathfinder  # optional in dev
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+ALLOWED_GOOGLE_HD=sas.edu.sg
+OPENAI_API_KEY=sk-your-openai-key
 SHEET_ID=your-google-sheet-id
 ```
+
+**Frontend (`frontend/.env.local` or `.env`):**
+
+```bash
+VITE_API_URL=http://localhost:8000
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+VITE_ENVIRONMENT=development
+```
+
+Never commit secrets—use `.env.local` overrides or your deployment platform’s secret manager.
 
 ## Project Structure
 
 ```
 path-finder/
-├── backend/                 # Django REST API
-│   ├── accounts/           # User authentication
-│   ├── suggestions/        # Core functionality
-│   ├── pathfinder_api/     # Django project settings
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # React frontend
-│   ├── src/               # Source code
-│   └── package.json       # Node.js dependencies
-├── .github/               # GitHub Actions workflows
-├── scripts/               # Utility scripts
-└── Makefile              # Development commands
+├── backend/
+│   ├── accounts/                # Google OAuth, profile management, saved items
+│   ├── social/                  # Ratings and reviews APIs
+│   ├── suggestions/             # Suggestion models, ingestion, LLM personalization
+│   │   └── management/commands/ # sync_sheet, add_missing_tags, etc.
+│   ├── pathfinder_api/          # Django settings, urls, ASGI/WSGI
+│   ├── requirements.txt
+│   └── requirements-dev.txt
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── hooks/
+│   │   └── pages/
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+├── scripts/                     # CI helpers
+├── Makefile                     # Project-wide tasks
+├── .github/                     # GitHub Actions workflows & docs
+└── README.md
 ```
 
 ## Getting Help
 
--   Check the [GitHub Issues](https://github.com/your-repo/issues) for known problems
--   Run `make help` to see available commands
--   Review the [GitHub Actions README](.github/README.md) for CI documentation
+-   Browse [GitHub Issues](https://github.com/YianXie/path-finder/issues) before filing new ones
+-   Run `make help` for available automation commands
+-   Check the [GitHub Actions README](.github/README_TEMPLATE.md) for CI details
+-   Reach out via [yianxie52@gmail.com](mailto:yianxie52@gmail.com) for urgent support
 
 ## Code of Conduct
 
-Please be respectful and constructive in all interactions. We aim to create a welcoming environment for all contributors.
+We strive for a welcoming, collaborative community. Please be respectful and constructive in discussions and reviews.
 
 ## License
 
-By contributing to PathFinder, you agree that your contributions will be licensed under the MIT License.
+By contributing to PathFinder you agree that your contributions are provided under the MIT License.
