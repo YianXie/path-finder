@@ -49,7 +49,7 @@ function useAsyncData(apiCall, dependencies = []) {
     useEffect(() => {
         fetchData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchData, ...dependencies]);
+    }, [...dependencies]);
 
     return { data, isLoading, error, refetch: fetchData };
 }

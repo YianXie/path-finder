@@ -31,13 +31,7 @@ echo "=================="
 # Install backend dev dependencies
 echo "Installing backend dependencies..."
 cd backend
-if [ ! -f requirements-dev.txt ]; then
-    print_warning "requirements-dev.txt not found, installing basic requirements..."
-    pip install -r requirements.txt
-    pip install black isort flake8 safety bandit
-else
-    pip install -r requirements-dev.txt
-fi
+pip install -r requirements.txt
 
 # Run Django tests
 echo "Running Django tests..."
@@ -48,12 +42,12 @@ else
     exit 1
 fi
 
-# Run Black formatting check
-echo "Checking code formatting with Black..."
-if black --check --diff .; then
-    print_status "Black formatting check passed"
+# Run Ruff formatting check
+echo "Checking code formatting with Ruff..."
+if ruff format --check .; then
+    print_status "Ruff formatting check passed"
 else
-    print_error "Black formatting check failed. Run 'black .' to fix."
+    print_error "Ruff formatting check failed. Run 'ruff format .' to fix."
     exit 1
 fi
 
@@ -63,15 +57,6 @@ if isort --check-only --diff .; then
     print_status "isort import sorting check passed"
 else
     print_error "isort import sorting check failed. Run 'isort .' to fix."
-    exit 1
-fi
-
-# Run flake8 linting
-echo "Running flake8 linting..."
-if flake8 .; then
-    print_status "flake8 linting passed"
-else
-    print_error "flake8 linting failed"
     exit 1
 fi
 

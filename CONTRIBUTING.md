@@ -25,7 +25,7 @@ Thank you for your interest in contributing to PathFinder! This document provide
     cd backend
     python -m venv env
     source env/bin/activate  # On Windows: env\Scripts\activate
-    pip install -r requirements-dev.txt
+    pip install -r requirements.txt
     python manage.py migrate
     ```
 
@@ -76,7 +76,7 @@ make format
 
 We use several linting tools to maintain code quality:
 
--   **Backend**: flake8, Black, isort
+-   **Backend**: Ruff, isort
 -   **Frontend**: ESLint, Prettier
 
 ```bash

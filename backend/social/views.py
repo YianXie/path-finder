@@ -1,10 +1,11 @@
 import rest_framework.exceptions as errors
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView, Response
 
 from django.contrib.auth import get_user_model
 
+from accounts.models import UserProfile
 from suggestions.models import SuggestionModel
 
 from .models import UserRating
@@ -35,16 +36,17 @@ class UpdateOrModifySuggestionRating(APIView):
         except SuggestionModel.DoesNotExist:
             raise errors.ValidationError("Failed due to external ID not existing")
 
-        review = UserRating.objects.filter(user=request.user, suggestion=suggestion)
+        print(request.user.email)
+        user_profile = UserProfile.objects.get(email=request.user.email)
+        review = UserRating.objects.filter(user=user_profile, suggestion=suggestion).first()
 
-        if len(review) > 0:
-            review = review[0]
+        if review:
             review.rating = rating
             review.comment = comment
             review.save()
         else:
             UserRating.objects.get_or_create(
-                user=request.user,
+                user=user_profile,
                 suggestion=suggestion,
                 rating=rating,
                 comment=comment,
@@ -53,7 +55,9 @@ class UpdateOrModifySuggestionRating(APIView):
 
 
 class GetSuggestionReviews(APIView):
-    """Check average rating and amount of ratings"""
+    """Check average rating and suggestions"""
+
+    permission_classes = [AllowAny]
 
     def get(self, request):
         try:

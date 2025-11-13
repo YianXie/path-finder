@@ -261,14 +261,16 @@ class SuggestionDetailWithSavedStatusView(APIView):
 
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
-            user_model = UserProfile.objects.get(email=user.email)
-            saved_items = set(user_model.saved_items)
+            user_profile = UserProfile.objects.get(email=user.email)
+            saved_items = set(user_profile.saved_items)
             is_saved = external_id in saved_items
             external_id = request.data.get("external_id")
-            review = UserRating.objects.filter(user=request.user, suggestion=suggestion)
+            review = UserRating.objects.filter(user=user_profile, suggestion=suggestion).first()
             rating = 0
-            if len(review) > 0:
-                rating = review[0].rating
+            comment = None
+            if review:
+                rating = review.rating
+                comment = review.comment
             serializer = SuggestionSerializer(suggestion)
 
             return Response(
@@ -276,6 +278,7 @@ class SuggestionDetailWithSavedStatusView(APIView):
                     "suggestion": serializer.data,
                     "is_saved": is_saved,
                     "rating": rating,
+                    "comment": comment,
                 },
                 status=status.HTTP_200_OK,
             )

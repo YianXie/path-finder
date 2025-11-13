@@ -23,16 +23,9 @@ import usePageTitle from "../hooks/usePageTitle";
 function ItemDetail() {
     usePageTitle("PathFinder | Item Detail");
 
-    /**
-     * Fetches item information from the API
-     * Uses different endpoints based on authentication status
-     */
-
     const { state, setters } = useContext(ItemDetailContext);
-
     const { external_id } = useParams();
     const { access } = useAuth();
-
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,7 +44,7 @@ function ItemDetail() {
 
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
-                setters.setRating(response.data.rating);
+                // setters.setRating(response.data.review);
                 setters.setAverageRating(
                     response.data.suggestion.average_rating
                 );

@@ -14,6 +14,7 @@ import { useContext, useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { ItemDetailContext } from "../../contexts/ItemDetailContext";
 import { ItemActions } from "./ItemActions";
+import ItemComments from "./ItemComments";
 import { ItemDescription } from "./ItemDescription";
 import { ItemHeader } from "./ItemHeader";
 import { ItemImage } from "./ItemImage";
@@ -38,97 +39,100 @@ export function ItemDetailCard({ external_id }) {
     };
 
     return (
-        <Card elevation={2}>
-            <Grid container spacing={0}>
-                {/* Item image section */}
-                <ItemImage />
+        <>
+            <Card elevation={2}>
+                <Grid container spacing={0}>
+                    {/* Item image section */}
+                    <ItemImage />
 
-                {/* Item content section */}
-                <Grid>
-                    <CardContent
-                        sx={{
-                            height: "100%",
-                            display: "flex",
-                            flexDirection: "column",
-                        }}
-                    >
-                        {/* Item header with title, categories, and action buttons */}
-                        <Box sx={{ marginBottom: 3 }}>
-                            <ItemHeader />
-                            <ItemActions />
-                        </Box>
-
-                        {access && (
-                            <Button
-                                color="primary"
-                                sx={{ width: "fit-content" }}
-                                onClick={handleRateItem}
-                            >
-                                <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={1}
-                                >
-                                    <RateReviewIcon color="primary" />
-                                    <Typography
-                                        variant="body1"
-                                        fontWeight={500}
-                                    >
-                                        Leave a review
-                                    </Typography>
-                                </Stack>
-                            </Button>
-                        )}
-
-                        <Divider sx={{ marginY: 2 }} />
-
-                        {/* Description */}
-                        {state.itemInfo.description && <ItemDescription />}
-
-                        {/* External Link */}
-                        {state.itemInfo.url && (
+                    {/* Item content section */}
+                    <Grid>
+                        <CardContent
+                            sx={{
+                                height: "100%",
+                                display: "flex",
+                                flexDirection: "column",
+                            }}
+                        >
+                            {/* Item header with title, categories, and action buttons */}
                             <Box sx={{ marginBottom: 3 }}>
-                                <Stack
-                                    direction="row"
-                                    alignItems="center"
-                                    spacing={1}
-                                    sx={{ marginBottom: 1 }}
-                                >
-                                    <LinkIcon color="primary" />
-                                    <Typography variant="h6" component="h2">
-                                        External Link
-                                    </Typography>
-                                </Stack>
-                                <LinkIcon
-                                    href={state.itemInfo.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{
-                                        wordBreak: "break-all",
-                                        display: "block",
-                                        marginBottom: 1,
-                                    }}
-                                >
-                                    {state.itemInfo.url}
-                                </LinkIcon>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<OpenInNewIcon />}
-                                    onClick={handleExternalLink}
-                                    sx={{ marginTop: 1 }}
-                                >
-                                    Visit Website
-                                </Button>
+                                <ItemHeader />
+                                <ItemActions />
                             </Box>
-                        )}
-                    </CardContent>
+
+                            {access && (
+                                <Button
+                                    color="primary"
+                                    sx={{ width: "fit-content" }}
+                                    onClick={handleRateItem}
+                                >
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        spacing={1}
+                                    >
+                                        <RateReviewIcon color="primary" />
+                                        <Typography
+                                            variant="body1"
+                                            fontWeight={500}
+                                        >
+                                            Write a review
+                                        </Typography>
+                                    </Stack>
+                                </Button>
+                            )}
+
+                            <Divider sx={{ marginY: 2 }} />
+
+                            {/* Description */}
+                            {state.itemInfo.description && <ItemDescription />}
+
+                            {/* External Link */}
+                            {state.itemInfo.url && (
+                                <Box sx={{ marginBottom: 3 }}>
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        spacing={1}
+                                        sx={{ marginBottom: 1 }}
+                                    >
+                                        <LinkIcon color="primary" />
+                                        <Typography variant="h6" component="h2">
+                                            External Link
+                                        </Typography>
+                                    </Stack>
+                                    <LinkIcon
+                                        href={state.itemInfo.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        sx={{
+                                            wordBreak: "break-all",
+                                            display: "block",
+                                            marginBottom: 1,
+                                        }}
+                                    >
+                                        {state.itemInfo.url}
+                                    </LinkIcon>
+                                    <Button
+                                        variant="contained"
+                                        startIcon={<OpenInNewIcon />}
+                                        onClick={handleExternalLink}
+                                        sx={{ marginTop: 1 }}
+                                    >
+                                        Visit Website
+                                    </Button>
+                                </Box>
+                            )}
+                        </CardContent>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Card>
+            <ItemComments external_id={external_id} />
             <RateItem
                 open={isRateItemOpen}
                 onClose={() => setIsRateItemOpen(false)}
                 external_id={external_id}
             />
-        </Card>
+        </>
     );
 }

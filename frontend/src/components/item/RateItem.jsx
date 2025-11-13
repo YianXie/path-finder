@@ -150,7 +150,7 @@ function RateItem({ open, onClose, external_id }) {
                                 color="primary"
                                 fullWidth
                                 onClick={handleSubmit}
-                                disabled={rating === 0 || comment.length === 0}
+                                disabled={!rating}
                                 sx={{ mt: 2 }}
                             >
                                 Submit

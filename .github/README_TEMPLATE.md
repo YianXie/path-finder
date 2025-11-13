@@ -10,7 +10,7 @@ Runs on every push to `main` and on pull requests. Includes:
 
 -   **Backend Tests**: Django test suite with PostgreSQL
 -   **Frontend Checks**: ESLint, Prettier formatting, and build verification
--   **Backend Linting**: Black, isort, and flake8 code quality checks
+-   **Backend Linting**: Ruff and isort code quality checks
 -   **Security Checks**: Safety and Bandit for Python, npm audit for Node.js
 
 ### PR Checks (`pr-checks.yml`)
@@ -52,9 +52,7 @@ chmod +x scripts/ci-local.sh
 
 ## Configuration Files
 
--   `backend/pyproject.toml` - Black and isort configuration
--   `backend/.flake8` - Flake8 linting configuration
--   `backend/requirements-dev.txt` - Development dependencies
+-   `backend/pyproject.toml` - Ruff and isort configuration
 -   `frontend/.prettierignore` - Prettier ignore patterns
 
 ## Environment Variables
@@ -77,7 +75,7 @@ Or check .env.example file for more details
 To add new CI checks:
 
 1. Update the appropriate workflow file in `.github/workflows/`
-2. Add any new dependencies to `requirements-dev.txt` (backend) or `package.json` (frontend)
+2. Add any new dependencies to `requirements.txt` (backend) or `package.json` (frontend)
 3. Update the local CI script in `scripts/ci-local.sh`
 4. Update this README with documentation
 
