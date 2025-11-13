@@ -37,9 +37,7 @@ class UpdateOrModifySuggestionRating(APIView):
             raise errors.ValidationError("Failed due to external ID not existing")
 
         user_profile = UserProfile.objects.get(email=request.user.email)
-        review = UserRating.objects.filter(
-            user=user_profile, suggestion=suggestion
-        ).first()
+        review = UserRating.objects.filter(user=user_profile, suggestion=suggestion).first()
 
         if review:
             review.rating = rating
