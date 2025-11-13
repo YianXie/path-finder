@@ -1,7 +1,7 @@
+import rest_framework.exceptions as errors
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
-import rest_framework.exceptions as errors
 
 from django.contrib.auth import get_user_model
 

@@ -1,13 +1,13 @@
 import json
 import os
 
+import rest_framework.exceptions as errors
 from adrf.views import APIView as ADRFAPIView
 from asgiref.sync import sync_to_async
 from openai import AsyncOpenAI
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-import rest_framework.exceptions as errors
 from rest_framework.views import APIView
 
 from django.core.paginator import Paginator

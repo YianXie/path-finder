@@ -178,7 +178,7 @@ class SaveItemViewTestCase(APITestCase):
         self.assertNotIn("test123", self.user_model.saved_items)
 
     def test_save_item_user_model_not_found(self):
-        """Test that save item returns 400 when UserProfile doesn't exist"""
+        """Test that save item returns 404 when UserProfile doesn't exist"""
         # Delete the UserProfile
         self.user_model.delete()
 
@@ -187,9 +187,9 @@ class SaveItemViewTestCase(APITestCase):
             {"external_id": "test123"},
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data["status"], "error")
-        self.assertIn("Failed to save item", response.data["message"])
+        self.assertIn("User not found", response.data["message"])
 
 
 class CheckItemSavedViewTestCase(APITestCase):
@@ -250,7 +250,7 @@ class CheckItemSavedViewTestCase(APITestCase):
         self.assertFalse(response.data["is_saved"])
 
     def test_check_item_saved_user_model_not_found(self):
-        """Test that check item saved returns 500 when UserProfile doesn't exist"""
+        """Test that check item saved returns 404 when UserProfile doesn't exist"""
         # Delete the UserProfile
         self.user_model.delete()
 
@@ -259,9 +259,9 @@ class CheckItemSavedViewTestCase(APITestCase):
             {"external_id": "test123"},
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data["status"], "error")
-        self.assertIn("Failed to check if item is saved", response.data["message"])
+        self.assertIn("User not found", response.data["message"])
 
 
 class SavedItemsViewTestCase(APITestCase):
@@ -334,7 +334,7 @@ class SavedItemsViewTestCase(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["status"], "error")
-        self.assertIn("Failed to retrieve saved items", response.data["message"])
+        self.assertIn("User not found", response.data["message"])
 
 
 class TokenObtainTestCase(APITestCase):

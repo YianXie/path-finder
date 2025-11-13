@@ -1,5 +1,6 @@
 import os
 
+import rest_framework.exceptions as errors
 from google.auth.transport import requests as grequests
 from google.oauth2 import id_token
 from jwt import decode
@@ -7,7 +8,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-import rest_framework.exceptions as errors
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
@@ -46,7 +47,7 @@ class GoogleLoginView(APIView):
     def post(self, request):
         credential = request.data.get("credential")
         if not credential:
-            raise errors.NotAuthenticated("Credentials required")
+            raise errors.ValidationError("Credentials are required")
 
         try:
             # Verify Google ID token
@@ -204,7 +205,11 @@ class SaveItemView(APIView):
         if not external_id:
             raise errors.ValidationError("External ID is required")
 
-        user_model = UserProfile.objects.get(email=user.email)
+        try:
+            user_model = UserProfile.objects.get(email=user.email)
+        except UserProfile.DoesNotExist:
+            raise errors.NotFound("User not found")
+
         if external_id in user_model.saved_items:
             UserProfile.objects.update_or_create(
                 email=user.email,
@@ -250,7 +255,11 @@ class CheckItemSavedView(APIView):
         if not external_id:
             raise errors.ValidationError("External ID is required")
 
-        user_model = UserProfile.objects.get(email=user.email)
+        try:
+            user_model = UserProfile.objects.get(email=user.email)
+        except UserProfile.DoesNotExist:
+            raise errors.NotFound("User not found")
+
         if external_id in user_model.saved_items:
             return Response(
                 {"status": "ok", "message": "Item is saved", "is_saved": True},
@@ -278,12 +287,17 @@ class SavedItemsView(APIView):
     def post(self, request):
         user = request.user
 
-        user_model = UserProfile.objects.get(email=user.email)
+        try:
+            user_model = UserProfile.objects.get(email=user.email)
+        except UserProfile.DoesNotExist:
+            raise errors.ValidationError("User not found")
+
         saved_items = user_model.saved_items
         suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
         suggestions_data = SuggestionSerializer(suggestions, many=True).data
         for suggestion in suggestions_data:
             suggestion["is_saved"] = True
+
         return Response(
             {
                 "status": "ok",
