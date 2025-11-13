@@ -1,5 +1,0 @@
-[flake8]
-ignore = E203, W503, E501, C901
-exclude = .git, __pycache__, build, dist, docs/*
-max-line-length = 120
-max-complexity = 10

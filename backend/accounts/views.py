@@ -51,9 +51,7 @@ class GoogleLoginView(APIView):
 
         try:
             # Verify Google ID token
-            idinfo = id_token.verify_oauth2_token(
-                credential, grequests.Request(), GOOGLE_CLIENT_ID
-            )
+            idinfo = id_token.verify_oauth2_token(credential, grequests.Request(), GOOGLE_CLIENT_ID)
 
             # Hosted domain restriction
             if ALLOWED_GOOGLE_HD and idinfo.get("hd") != ALLOWED_GOOGLE_HD:
@@ -213,11 +211,7 @@ class SaveItemView(APIView):
         if external_id in user_model.saved_items:
             UserProfile.objects.update_or_create(
                 email=user.email,
-                defaults={
-                    "saved_items": [
-                        item for item in user_model.saved_items if item != external_id
-                    ]
-                },
+                defaults={"saved_items": [item for item in user_model.saved_items if item != external_id]},
             )
             return Response(
                 {"status": "ok", "message": "Item removed from saved items"},

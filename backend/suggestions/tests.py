@@ -14,9 +14,7 @@ class TokenObtainTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
 
     def test_obtain_token_with_valid_credentials(self):
         """Test obtaining JWT token with valid credentials"""
@@ -47,24 +45,18 @@ class TokenRefreshTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user and tokens"""
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         self.refresh = RefreshToken.for_user(self.user)
 
     def test_refresh_token_with_valid_refresh_token(self):
         """Test refreshing access token with valid refresh token"""
-        response = self.client.post(
-            "/api/token/refresh/", {"refresh": str(self.refresh)}
-        )
+        response = self.client.post("/api/token/refresh/", {"refresh": str(self.refresh)})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
 
     def test_refresh_token_with_invalid_refresh_token(self):
         """Test refreshing access token with invalid refresh token"""
-        response = self.client.post(
-            "/api/token/refresh/", {"refresh": "invalidrefreshtoken123"}
-        )
+        response = self.client.post("/api/token/refresh/", {"refresh": "invalidrefreshtoken123"})
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_refresh_token_with_missing_refresh_token(self):
@@ -94,9 +86,7 @@ class SuggestionListViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
 
     def test_suggestion_list_view_returns_ok(self):
         """Test that the suggestion list view endpoint returns status ok"""
@@ -109,9 +99,7 @@ class SuggestionListWithSavedStatusViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         self.access = AccessToken.for_user(self.user)
 
     def test_suggestion_list_with_saved_status_view_returns_ok(self):
@@ -147,9 +135,7 @@ class SuggestionDetailViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         SuggestionModel.objects.update_or_create(
             external_id=EXAMPLE_EXTERNAL_ID,
             name="Example Item",
@@ -161,9 +147,7 @@ class SuggestionDetailViewTestCase(APITestCase):
 
     def test_suggestion_detail_view_returns_ok(self):
         """Test that the suggestion detail view endpoint returns status ok"""
-        response = self.client.get(
-            f"/api/suggestions/suggestions/{EXAMPLE_EXTERNAL_ID}/"
-        )
+        response = self.client.get(f"/api/suggestions/suggestions/{EXAMPLE_EXTERNAL_ID}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_suggestion_detail_view_returns_404(self):
@@ -177,9 +161,7 @@ class SuggestionDetailWithSavedStatusViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(
-            username="testuser", email="test@example.com", password="testpassword123"
-        )
+        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         UserProfile.objects.update_or_create(
             email=self.user.email,
             defaults={
@@ -206,9 +188,7 @@ class SuggestionDetailWithSavedStatusViewTestCase(APITestCase):
 
     def test_suggestion_detail_with_saved_status_view_returns_401(self):
         """Test that the suggestion detail with saved status view endpoint returns 401 if not authenticated"""
-        response = self.client.get(
-            f"/api/suggestions/suggestions-with-saved-status/{EXAMPLE_EXTERNAL_ID}/"
-        )
+        response = self.client.get(f"/api/suggestions/suggestions-with-saved-status/{EXAMPLE_EXTERNAL_ID}/")
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_suggestion_detail_with_saved_status_view_returns_404(self):

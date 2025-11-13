@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("suggestions", "0012_remove_suggestionscachemodel_suggestion_ids_and_more"),
     ]

@@ -150,9 +150,7 @@ class PersonalizedSuggestionsView(ADRFAPIView):
         if suggestionCache and len(suggestionCache) > 0:
             ranked_suggestions = suggestionCache[0]["suggestions"]
 
-            pagination_data, paginator, page_obj = await get_pagination_data(
-                ranked_suggestions, page, page_size
-            )
+            pagination_data, paginator, page_obj = await get_pagination_data(ranked_suggestions, page, page_size)
 
             for suggestion in pagination_data:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
@@ -209,9 +207,7 @@ class PersonalizedSuggestionsView(ADRFAPIView):
         # Add the data to the cache
         await add_suggestion_cache(user_model, ranked_suggestions)
 
-        pagination_data, paginator, page_obj = await get_pagination_data(
-            ranked_suggestions, page, page_size
-        )
+        pagination_data, paginator, page_obj = await get_pagination_data(ranked_suggestions, page, page_size)
 
         for suggestion in pagination_data:
             suggestion["is_saved"] = suggestion["external_id"] in saved_items

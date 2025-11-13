@@ -28,3 +28,14 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLD
 [tool.bandit]
 exclude_dirs = ["env", "__pycache__", "migrations"]
 skips = ["B101", "B601"]
+
+
+[tool.ruff]
+exclude = [".git", "__pycache__", "build", "dist", "docs/*"]
+line-length = 120
+
+[tool.ruff.lint]
+ignore = ["E203", "E501", "C901"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10

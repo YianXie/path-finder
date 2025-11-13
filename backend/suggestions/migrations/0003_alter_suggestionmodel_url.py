@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("suggestions", "0002_rename_image_url_suggestionmodel_image_and_more"),
     ]

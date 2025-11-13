@@ -18,15 +18,11 @@ logger.setLevel(logging.INFO)
 log_dirs = "./var/log"
 if not os.path.exists(log_dirs):
     os.makedirs(log_dirs)
-log_file_path = os.path.join(
-    log_dirs, f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log"
-)
+log_file_path = os.path.join(log_dirs, f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.log")
 
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel(logging.INFO)
-file_handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-)
+file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
 logger.addHandler(file_handler)
 
 

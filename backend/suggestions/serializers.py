@@ -16,9 +16,7 @@ class SuggestionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def get_average_rating(self, obj):
-        return (
-            obj.userrating_set.aggregate(avg=Avg("rating"))["avg"] or 0
-        )  # 0 if no ratings
+        return obj.userrating_set.aggregate(avg=Avg("rating"))["avg"] or 0  # 0 if no ratings
 
     def get_total_ratings(self, obj):
         return obj.userrating_set.count()  # let database do the work

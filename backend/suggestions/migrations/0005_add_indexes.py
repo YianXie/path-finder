@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("suggestions", "0004_alter_suggestionmodel_description_and_more"),
     ]

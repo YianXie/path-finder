@@ -36,14 +36,14 @@ test:
 # Run linting
 lint:
 	@echo "Running backend linting..."
-	cd backend && flake8 .
+	cd backend && ruff check .
 	@echo "Running frontend linting..."
 	cd frontend && npm run lint
 
 # Format code
 format:
 	@echo "Formatting backend code..."
-	cd backend && black . && isort .
+	cd backend && ruff format . && isort .
 	@echo "Formatting frontend code..."
 	cd frontend && npx prettier . --write --ignore-path .prettierignore
 

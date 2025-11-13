@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("suggestions", "0008_suggestionmodel_tags"),
         ("suggestions", "0015_alter_suggestionmodel_score"),
