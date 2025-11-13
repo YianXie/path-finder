@@ -1,226 +1,232 @@
 # PathFinder
 
-### Table of Contents
+PathFinder helps SAS high school students discover extracurricular opportunities—from competitions and clubs to internships and tutoring—tailored to their interests, goals, and past engagement.
 
--   [Purpose](#purpose)
+## Table of Contents
+
+-   [Overview](#overview)
 -   [Tech Stack](#tech-stack)
-    -   [Backend](#backend)
-    -   [Frontend](#frontend)
 -   [Project Structure](#project-structure)
 -   [Getting Started](#getting-started)
     -   [Prerequisites](#prerequisites)
-    -   [Cloning Repository](#cloning-the-repository)
-    -   [Backend setup](#backend-setup)
-    -   [Frontend setup](#frontend-setup)
-    -   [Environment Variables](#environment-variables-important)
-    -   [Encountered Issues](#encountered-any-issues)
--   [API endpoints](#api-endpoints)
--   [Development](#development)
-    -   [Backend development](#backend-development)
-    -   [Frontend development](#frontend-development)
--   [Current available features](#current-available-features)
--   [Future features](#future-features)
+    -   [Backend Setup](#backend-setup)
+    -   [Frontend Setup](#frontend-setup)
+    -   [Run Both Apps](#run-both-apps)
+-   [Environment Variables](#environment-variables)
+-   [Developer Tooling](#developer-tooling)
+    -   [Makefile Commands](#makefile-commands)
+    -   [Management Commands](#management-commands)
+-   [API Surface](#api-surface)
+    -   [Suggestions](#suggestions)
+    -   [Accounts](#accounts)
+    -   [Social](#social)
+    -   [Auth](#auth)
+-   [Current Features](#current-features)
+-   [Roadmap](#roadmap)
+-   [Support](#support)
 -   [License](#license)
 
 ### Other README files
 
 -   [GitHub Actions](.github/README_TEMPLATE.md)
 
-## Introduction
+## Overview
 
-PathFinder is a web application designed to provide personalized suggestions for SAS high school students on competitions, clubs, and tutoring based on their interests, skills, and academic goals.
+-   **Personalized discovery**: Uses onboarding data, saved items, and LLM-assisted ranking to tailor recommendations.
+-   **Integrated experience**: Google-backed authentication keeps access limited to SAS students and staff.
+-   **Feedback loop**: Ratings, reviews, and saved items feed the recommendation engine.
+-   **Operations ready**: Automated Google Sheet ingestion keeps the catalog current.
 
-[Website link](https://sas-pathfinder.org)
-
-## Purpose
-
-High school students (including SAS students) often struggle to discover relevant extracurricular opportunities that align with their interests and career aspirations. PathFinder solves this problem by:
-
--   **Personalized Recommendations**: Get tailored suggestions for competitions, clubs, and internships based on your profile
--   **Comprehensive Database**: Access a curated collection of opportunities across various fields
--   **Smart Matching**: Our intelligent system matches your interests and goals with relevant opportunities
--   **User-Friendly Interface**: Easy-to-use platform designed specifically for high school students
+[Production site](https://sas-pathfinder.org)
 
 ## Tech Stack
 
-### Backend
+**Backend**
 
--   **Django**: Python web framework for building the REST API
--   **Django REST Framework**: Powerful toolkit for building Web APIs
--   **django-cors-headers**: Handles Cross-Origin Resource Sharing (CORS) for frontend-backend communication
--   **PostgreSQL**: A solid database
+-   Python 3.11, Django 5, Django REST Framework 3.16
+-   Async APIs via `adrf` for personalized recommendations
+-   PostgreSQL (prod) and SQLite (local default)
+-   Background ingestion via management commands and logging under `backend/var/log`
 
-### Frontend
+**Frontend**
 
--   **React 18**: Modern JavaScript library for building user interfaces
--   **Vite**: Next-generation frontend build tool for fast development
--   **Tailwind CSS 3**: Utility-first CSS framework for rapid UI development
--   **JavaScript/JSX**: Core frontend technologies
+-   React 19 with Vite 7 for fast DX
+-   React Router 7, Material UI 7, Tailwind CSS 4
+-   Axios-powered API client with automatic token refresh
+
+**Tooling & DevOps**
+
+-   Ruff, Black, isort, Bandit, Safety for Python quality and security
+-   ESLint, Prettier, and Tailwind plugins for the frontend
+-   Makefile helpers and `scripts/ci-local.sh` to mirror CI locally
 
 ## Project Structure
 
 ```
 path-finder/
-├── backend/               # Django REST Framework backend
-│   ├── pathfinder_api/     # Main Django project
-│   ├── suggestions/        # Django app for handling suggestions
-│   ├── manage.py           # Django management script
-│   ├── render-build.sh     # automatically runs when deploy to Render
-│   └── requirements.txt    # Python dependencies
-├── frontend/              # React frontend
-│   ├── src/                # Source files
-│   ├── public/             # Static assets
-│   ├── package.json        # Node.js dependencies
-│   ├── vite.config.js      # Vite configuration
-│   └── ...                 # other files
-└── README.md              # This file
+├── backend/                     # Django project
+│   ├── accounts/                # Google auth + profile APIs
+│   ├── social/                  # Ratings and reviews APIs
+│   ├── suggestions/             # Suggestion models, serializers, views
+│   │   └── management/commands/ # Data ingestion utilities (Google Sheets, tagging)
+│   ├── pathfinder_api/          # Django settings, URLs, ASGI/WSGI config
+│   ├── var/log/                 # Import logs (created at runtime)
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── requirements-dev.txt
+├── frontend/                    # React single-page app
+│   ├── src/
+│   │   ├── components/          # UI primitives, layout, shared widgets
+│   │   ├── contexts/            # Auth, snackbar, item detail providers
+│   │   ├── hooks/               # Data fetching and UX hooks
+│   │   └── pages/               # Route-level screens (Home, Onboarding, Saved, etc.)
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
+├── scripts/                     # Local CI helper scripts
+├── Makefile                     # Common dev commands
+├── LICENSE
+└── README.md
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
--   Python 3.8 or higher
--   Node.js 18 or higher
--   npm
-
-### Cloning the repository
-
-```bash
-cd /path/to/the/folder/you/want/to/put/your/code/
-git clone https://github.com/YianXie/path-finder.git
-```
+-   Python 3.11
+-   Node.js 18+ (Node 20 recommended) and npm
+-   Google OAuth client configured for the SAS Google Workspace
 
 ### Backend Setup
 
-1. Navigate to the repo directory:
-
 ```bash
 cd path-finder
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install -r backend/requirements.txt
+python backend/manage.py migrate
+python backend/manage.py runserver
 ```
 
-2. Create and activate a virtual environment:
+The API listens on `http://localhost:8000`.
 
-```bash
-python -m venv env
-source env/bin/activate  # On Windows: env\Scripts\activate
-```
-
-3. Navigate to the backend directory:
-
-```bash
-cd backend
-```
-
-4. Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-5. Run migrations:
-
-```bash
-python manage.py migrate
-```
-
-6. Start the development server:
-
-```bash
-python manage.py runserver
-```
-
-The API should be available at `http://localhost:8000`
+Create `backend/.env` following the values listed in [Environment Variables](#environment-variables) before running the server.
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
-
 ```bash
-cd ../frontend
-```
-
-2. Install dependencies:
-
-```bash
+cd path-finder/frontend
 npm install
-```
-
-3. Start the development server:
-
-```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+The SPA is served from `http://localhost:5173`.
 
-### Environment Variables (important)
+Create `frontend/.env.local` (or `.env`) with the keys in [Environment Variables](#environment-variables) before starting Vite.
 
-Refer to .env.example file located in the backend and frontend directory for more details
+### Run Both Apps
 
-### Encountered any issues?
+Use separate terminals for backend and frontend, or rely on the Makefile:
 
-Please contact us through Emails ([yianxie52@gmail.com](mailto:yianxie52@gmail.com)), or describe the issue in GitHub Issues under our repository page
+```bash
+cd path-finder
+make install        # installs backend + frontend deps
+make backend-prod   # optional: run backend with gunicorn
+```
 
-## API Endpoints
+For routine development, run `python backend/manage.py runserver` and `npm run dev` concurrently.
 
-### `/api`
+## Environment Variables
 
--   `GET /api/health/` — Check if the API is running (health check).
--   `GET /api/suggestions/` — List all suggestions with pagination (public).
--   `GET /api/suggestions/{external_id}/` — Retrieve details for a specific suggestion by its `external_id` (public).
--   `GET /api/suggestions/saved/` — List all suggestions for the current user, including saved-status (authenticated).
--   `GET /api/suggestions/saved/{external_id}/` — Get suggestion detail with saved status for the current user (authenticated).
+Create a `.env` file in `backend/`:
 
-### `/accounts`
+```bash
+SECRET_KEY=django-insecure-change-me
+ENVIRONMENT=development
+ALLOWED_HOSTS=localhost,127.0.0.1
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+DATABASE_URL=postgres://username:password@localhost:5432/pathfinder  # optional in dev
+GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+ALLOWED_GOOGLE_HD=sas.edu.sg
+OPENAI_API_KEY=sk-your-openai-key
+SHEET_ID=your_google_sheet_id
+```
 
--   `POST /accounts/google/` — Login or register with Google OAuth2.
--   `POST /accounts/parse-token/` — Parse the JWT token and return its payload.
--   `GET /accounts/profile/` — Retrieve the current user's profile (email, name, Google sub).
--   `POST /accounts/save-item/` — Save or unsave an item for the current user (toggle).
--   `POST /accounts/item-saved/` — Check if a particular item is saved to the current user's list.
--   `POST /accounts/saved-items/` — Get a list of all saved items for the current user.
+Create a `.env.local` (or `.env`) file in `frontend/`:
 
-### `others`
+```bash
+VITE_API_URL=http://localhost:8000
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
+VITE_ENVIRONMENT=development
+```
 
--   `POST /api/token/` — Obtain JWT access and refresh tokens with username/password.
--   `POST /api/token/refresh/` — Refresh JWT access token using the refresh token.
+> The backend falls back to SQLite when `ENVIRONMENT=development`. Provide `DATABASE_URL` for production or local Postgres.
 
-## Development
+## Developer Tooling
 
-### Backend Development
+### Makefile Commands
 
--   The backend uses Django REST Framework to create RESTful APIs
--   API endpoints are defined in the `suggestions` and `accounts` app
--   CORS is configured to allow requests from the React frontend
+-   `make install` – install backend and frontend dependencies
+-   `make lint` – run Ruff and frontend ESLint checks
+-   `make format` – apply Ruff format, isort, and Prettier
+-   `make security` – run Safety and Bandit plus `npm audit`
+-   `make test` – execute Django test suite
+-   `make ci-local` – replicate CI pipeline locally (`scripts/ci-local.sh`)
+-   `make clean` – prune caches and build artifacts
 
-### Frontend Development
+### Management Commands
 
--   The frontend is built with React and uses Vite for fast development
--   Tailwind CSS is used for styling instead of CSS modules
--   Components are located in the `src` directory
+Run from `backend/` with the virtual environment activated:
 
-### CI/CD Checks
+-   `python manage.py sync_sheet` – ingest the latest opportunities from the configured Google Sheet (`SHEET_ID`)
+-   `python manage.py add_missing_tags` – backfill tags with help from the LLM
+-   `python manage.py collectstatic` – prepare static assets for production deployments
 
-Please refer to [GitHub Actions README](/.github/README_TEMPLATE.md)
+Log files for ingestion live under `backend/var/log/`.
 
-## Current Available Features
+## API Surface
 
--   Login with Google (oAuth2)
--   Email authentication to ensure only SAS students, teachers, and staff members have access to the website
--   Fetching Google Spreadsheet data
--   Create database rows with user data
--   Remember user's interests, roles, and goals in the database
--   Remember users' saved items
--   Toggle between light/dark mode
+### Suggestions
 
-## Future Features
+-   `GET /api/suggestions/health/` – service health check
+-   `GET /api/suggestions/suggestions/` – paginated list of all opportunities (public)
+-   `GET /api/suggestions/suggestions/<external_id>/` – opportunity detail (public)
+-   `GET /api/suggestions/personalized-suggestions/` – personalized feed (auth, async)
+-   `GET /api/suggestions/suggestions-with-saved-status/<external_id>/` – detail including saved flag (auth)
 
--   Advanced search and filtering
--   Personalized recommendation algorithm
--   User reviews and ratings
--   User settings (optional)
+### Accounts
+
+-   `POST /accounts/google/` – sign-in/up with Google OAuth credential
+-   `POST /accounts/parse-token/` – decode an arbitrary JWT (debugging utility)
+-   `GET /accounts/profile/` – retrieve enriched profile data (auth)
+-   `POST /accounts/save-item/` – toggle saved items (auth)
+-   `POST /accounts/check-item-saved/` – check saved state (auth)
+-   `POST /accounts/saved-items/` – list saved opportunities (auth)
+-   `POST /accounts/update-user-information/` – persist onboarding data (auth)
+
+### Social
+
+-   `POST /api/social/rate/` – create or update a rating/comment for an opportunity (auth)
+-   `GET /api/social/reviews/?external_id=<id>` – fetch reviews for an opportunity (public)
+
+### Auth
+
+-   `POST /api/token/` – obtain access + refresh tokens (username/password flow)
+-   `POST /api/token/refresh/` – refresh an access token
+
+## Current Features
+
+-   Google-based authentication restricted to SAS email domains
+-   Guided onboarding that captures interests, goals, and basic profile data
+-   LLM-assisted personalized recommendations with caching for repeat requests
+-   Saved items dashboard with optimistic UI updates
+-   Ratings and written reviews for each opportunity
+-   Light/dark theme toggle and responsive layout
+
+## Support
+
+Questions or issues? Email [yianxie52@gmail.com](mailto:yianxie52@gmail.com) or open a GitHub Issue on this repository.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License. See `LICENSE` for details.
