@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Rating from "@mui/material/Rating";
+import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { memo, useEffect, useState } from "react";
@@ -41,6 +42,8 @@ function Item({
     description,
     image,
     average_rating: rating,
+    rate_count,
+    saved_count,
     is_saved: initialIsSaved = false,
     onSaveSuccess,
 }) {
@@ -130,26 +133,57 @@ function Item({
             <CardActions
                 sx={{
                     display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    alignItems: "start",
                 }}
             >
-                <Rating
-                    value={rating}
-                    readOnly
-                    // size="small"
+                <Stack
+                    alignItems="center"
+                    direction="column"
+                    gap={0.5}
                     sx={{ marginRight: "auto" }}
-                />
-                <Tooltip title="Save item" placement="bottom" arrow>
-                    <IconButton
-                        aria-label="Save item"
-                        onClick={handleSave}
-                        color="primary"
+                >
+                    <Rating value={rating} readOnly />
+                    <Typography
+                        variant="body2"
+                        fontSize={12}
+                        sx={{ color: "text.secondary" }}
                     >
-                        {isSaved ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                    </IconButton>
-                </Tooltip>
-                <Tooltip title="Open menu" placement="bottom" arrow>
+                        {rate_count} reviews
+                    </Typography>
+                </Stack>
+                <Stack alignItems="center" direction="column" gap={0.5}>
+                    <Tooltip
+                        title="Save item"
+                        placement="bottom"
+                        arrow
+                        sx={{ padding: 0 }}
+                    >
+                        <IconButton
+                            aria-label="Save item"
+                            onClick={handleSave}
+                            color="primary"
+                        >
+                            {isSaved ? (
+                                <FavoriteIcon />
+                            ) : (
+                                <FavoriteBorderIcon />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+                    <Typography
+                        variant="body2"
+                        fontSize={12}
+                        sx={{ color: "text.secondary" }}
+                    >
+                        {saved_count}
+                    </Typography>
+                </Stack>
+                <Tooltip
+                    title="Open menu"
+                    placement="bottom"
+                    arrow
+                    sx={{ alignSelf: "center" }}
+                >
                     <IconButton
                         aria-label="Open menu"
                         onClick={handleMenuClick}
