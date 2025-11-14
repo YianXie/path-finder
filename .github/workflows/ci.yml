@@ -29,24 +29,21 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Set up Python
-              uses: actions/setup-python@v4
+            - name: Install uv
+              uses: astral-sh/setup-uv@v6
               with:
-                  python-version: "3.11"
+                python-version-file: "backend/pyproject.toml"
 
-            - name: Cache pip dependencies
-              uses: actions/cache@v3
-              with:
-                  path: ~/.cache/pip
-                  key: ${{ runner.os }}-pip-${{ hashFiles('backend/requirements.txt') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pip-
+                # The actions/cache could be used but the uv action seems to have
+                # a native way to do so
+                # https://docs.astral.sh/uv/guides/integration/github/#caching
 
-            - name: Install dependencies
+                enable-cache: true
+
+            - name: Install python and dependencies
               working-directory: ./backend
               run: |
-                  python -m pip install --upgrade pip
-                  pip install -r requirements.txt
+                  uv sync
 
             - name: Run Django tests
               working-directory: ./backend
@@ -61,8 +58,8 @@ jobs:
                   ALLOWED_GOOGLE_HD: test-hd
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
               run: |
-                  python manage.py makemigrations && python manage.py migrate
-                  python manage.py test
+                  uv run python manage.py makemigrations && uv run python manage.py migrate
+                  uv run python manage.py test
 
     frontend-checks:
         name: Frontend Linting & Formatting
@@ -103,25 +100,29 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Set up Python
-              uses: actions/setup-python@v4
+            - name: Install uv
+              uses: astral-sh/setup-uv@v6
               with:
-                  python-version: "3.11"
+                python-version-file: "backend/pyproject.toml"
 
-            - name: Install dependencies
+                # The actions/cache could be used but the uv action seems to have
+                # a native way to do so
+                # https://docs.astral.sh/uv/guides/integration/github/#caching
+
+                enable-cache: true
+
+            - name: Install python and dependencies
               working-directory: ./backend
               run: |
-                  python -m pip install --upgrade pip
-                  pip install -r requirements.txt
-                  pip install isort ruff
+                  uv sync
 
             - name: Run Ruff (code formatting check)
               working-directory: ./backend
-              run: ruff format --check .
+              run: uv run ruff format --check .
 
             - name: Run isort (import sorting check)
               working-directory: ./backend
-              run: isort --check-only --diff .
+              run: uv run isort --check-only --diff .
 
     security-checks:
         name: Security Checks
@@ -131,28 +132,36 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Set up Python
-              uses: actions/setup-python@v4
+            - name: Install uv
+              uses: astral-sh/setup-uv@v6
               with:
-                  python-version: "3.11"
+                python-version-file: "backend/pyproject.toml"
 
-            - name: Install dependencies
+                # The actions/cache could be used but the uv action seems to have
+                # a native way to do so
+                # https://docs.astral.sh/uv/guides/integration/github/#caching
+
+                enable-cache: true
+
+            - name: Install python and dependencies
               working-directory: ./backend
               run: |
-                  python -m pip install --upgrade pip
-                  pip install -r requirements.txt
-                  pip install safety bandit
+                  uv sync
+            
+            - name: Generate requirements.txt for safety
+              working-directory: ./backend
+              run: uv export --no-hashes > requirements.txt
 
-            - uses: actions/checkout@main
             - name: Run Safety CLI to check for vulnerabilities
               uses: pyupio/safety-action@v1
               with:
                   api-key: ${{ secrets.SAFETY_API_KEY }}
                   args: --detailed-output
+                  requirements: backend/requirements.txt
 
             - name: Run bandit (security linting)
               working-directory: ./backend
-              run: bandit -r . -x ./env,./__pycache__
+              run: uv run bandit -r . -x .env -x __pycache__ -x .venv
 
             - name: Set up Node.js
               uses: actions/setup-node@v4
