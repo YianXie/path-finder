@@ -260,7 +260,7 @@ class SuggestionDetailWithSavedStatusView(APIView):
 
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
-            user_profile = UserProfile.objects.get(email=user.email)
+            user_profile = UserProfile.objects.get(user=user)
             saved_items = set(user_profile.saved_items)
             is_saved = external_id in saved_items
             external_id = request.data.get("external_id")

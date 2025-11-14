@@ -211,6 +211,7 @@ class SaveItemView(APIView):
 
         if external_id in user_model.saved_items:
             UserProfile.objects.update_or_create(
+                user=user,
                 defaults={"saved_items": [item for item in user_model.saved_items if item != external_id]},
             )
             return Response(
@@ -219,6 +220,7 @@ class SaveItemView(APIView):
             )
         else:
             UserProfile.objects.update_or_create(
+                user=user,
                 defaults={"saved_items": [*user_model.saved_items, external_id]},
             )
             return Response(

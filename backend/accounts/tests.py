@@ -87,7 +87,7 @@ class UserProfileViewTestCase(APITestCase):
     def test_user_profile_with_auth_with_usermodel(self):
         """Test that user profile returns UserProfile data when it exists"""
         UserProfile.objects.create(
-            email="test@example.com",
+            user=self.user,
             name="Test User",
             google_sub="google_sub_123",
         )
@@ -110,7 +110,7 @@ class SaveItemViewTestCase(APITestCase):
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
-            email="test@example.com",
+            user=self.user,
             name="Test User",
             saved_items=[],
         )
@@ -188,7 +188,7 @@ class CheckItemSavedViewTestCase(APITestCase):
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
-            email="test@example.com",
+            user=self.user,
             name="Test User",
             saved_items=["saved_item_123"],
         )
@@ -256,7 +256,7 @@ class SavedItemsViewTestCase(APITestCase):
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
-            email="test@example.com",
+            user=self.user,
             name="Test User",
             saved_items=[EXAMPLE_EXTERNAL_ID],
         )
@@ -384,7 +384,7 @@ class UpdateUserInformationViewTestCase(APITestCase):
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
-            email="test@example.com",
+            user=self.user,
             name="Test User",
             finished_onboarding=False,
         )
