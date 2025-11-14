@@ -2,9 +2,8 @@ from rest_framework import serializers
 
 from django.db.models import Avg
 
-from social.models import UserRating
-
 from accounts.models import UserProfile
+from social.models import UserRating
 
 from .models import SuggestionModel
 
