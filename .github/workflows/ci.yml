@@ -161,7 +161,7 @@ jobs:
 
             - name: Run bandit (security linting)
               working-directory: ./backend
-              run: uv run bandit -r . -x .env -x __pycache__ -x .venv
+              run: uv run bandit -r . -x ./.env -x ./__pycache__ -x ./.venv
 
             - name: Set up Node.js
               uses: actions/setup-node@v4

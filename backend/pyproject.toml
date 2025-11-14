@@ -1,7 +1,9 @@
 [project]
 name = "pathfinder"
 
-requires-python = ">=3.11"
+
+requires-python = ">=3.11,<3.14" # Bandit doesn't have support for 3.14 yet
+
 version = "0"
 dependencies = [
     "adrf>=0.1.11",
