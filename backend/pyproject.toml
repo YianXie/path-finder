@@ -1,10 +1,6 @@
 [project]
 name = "pathfinder"
-# authors = [
-#   {name = "YianXie"},
-#   {name = "Aryan Mahajan"},
-#   {name = "ninjamar"}
-# ]
+
 requires-python = ">=3.11"
 version = "0"
 dependencies = [
