@@ -10,3 +10,6 @@ class UserRating(models.Model):
     suggestion = models.ForeignKey(SuggestionModel, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.name} - {self.suggestion.name}"

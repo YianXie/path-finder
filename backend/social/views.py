@@ -15,7 +15,7 @@ User = get_user_model()
 
 
 class UpdateOrModifySuggestionRating(APIView):
-    """Suggestion List View"""
+    """Update or modify suggestion rating"""
 
     permission_classes = [IsAuthenticated]
 

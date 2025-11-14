@@ -86,11 +86,11 @@ class GoogleLoginView(APIView):
             tokens = issue_tokens_for_user(user)
 
             try:
-                user_model = UserProfile.objects.get(user__email = email)
+                user_model = UserProfile.objects.get(user__email=email)
                 finished_onboarding = user_model.finished_onboarding
             except UserProfile.DoesNotExist:
                 finished_onboarding = False
-            
+
             UserProfile.objects.update_or_create(
                 user=user,
                 name=name,
@@ -211,6 +211,7 @@ class SaveItemView(APIView):
 
         if external_id in user_model.saved_items:
             UserProfile.objects.update_or_create(
+                user=user,
                 defaults={"saved_items": [item for item in user_model.saved_items if item != external_id]},
             )
             return Response(
@@ -219,6 +220,7 @@ class SaveItemView(APIView):
             )
         else:
             UserProfile.objects.update_or_create(
+                user=user,
                 defaults={"saved_items": [*user_model.saved_items, external_id]},
             )
             return Response(
