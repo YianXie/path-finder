@@ -3,8 +3,18 @@
 # Exit on error
 set -o errexit
 
+
 echo "Installing dependencies..."
-pip install -r requirements.txt
+
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+# Set path
+export PATH="$HOME/.local/bin:$PATH"
+
+# Make venv and install packages
+uv venv
+source .venv/bin/activate
+uv sync
 
 echo "Collecting static files..."
 python manage.py collectstatic --no-input

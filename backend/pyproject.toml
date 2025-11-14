@@ -1,26 +1,34 @@
-[tool.black]
-line-length = 88
-target-version = ['py311']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-  | migrations
-)/
-'''
+[project]
+name = "pathfinder"
+# authors = [
+#   {name = "YianXie"},
+#   {name = "Aryan Mahajan"},
+#   {name = "ninjamar"}
+# ]
+requires-python = ">=3.11"
+version = "0"
+dependencies = [
+    "adrf>=0.1.11",
+    "dj-database-url>=3.0.1",
+    "django>=5.2.8",
+    "django-cors-headers>=4.9.0",
+    "django-environ>=0.12.0",
+    "djangorestframework>=3.16.1",
+    "djangorestframework-simplejwt>=5.5.1",
+    "google-auth>=2.43.0",
+    "gunicorn>=23.0.0",
+    "isort>=7.0.0",
+    "openai>=2.8.0",
+    "requests>=2.32.5",
+    "ruff>=0.14.5",
+    "whitenoise>=6.11.0",
+]
+
 
 [tool.isort]
 profile = "black"
 multi_line_output = 3
-line_length = 88
+line_length = 120
 known_django = "django"
 known_first_party = ["accounts", "suggestions", "pathfinder_api"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
@@ -39,3 +47,9 @@ ignore = ["E203", "E501", "C901"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10
+
+[dependency-groups]
+dev = [
+    "bandit>=1.8.6",
+    "safety>=3.7.0",
+]
