@@ -86,11 +86,11 @@ class GoogleLoginView(APIView):
             tokens = issue_tokens_for_user(user)
 
             try:
-                user_model = UserProfile.objects.get(user__email = email)
+                user_model = UserProfile.objects.get(user__email=email)
                 finished_onboarding = user_model.finished_onboarding
             except UserProfile.DoesNotExist:
                 finished_onboarding = False
-            
+
             UserProfile.objects.update_or_create(
                 user=user,
                 name=name,

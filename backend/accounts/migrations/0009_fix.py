@@ -6,8 +6,8 @@ from django.db import migrations, models
 
 
 def link_user(apps, schema_editor):
-    UserProfile = apps.get_model('accounts', 'UserProfile')
-    User = apps.get_model('auth', 'User')
+    UserProfile = apps.get_model("accounts", "UserProfile")
+    User = apps.get_model("auth", "User")
 
     for profile in UserProfile.objects.all():
         if profile.email:
@@ -16,6 +16,7 @@ def link_user(apps, schema_editor):
                 profile.save()
             except User.DoesNotExist:
                 pass
+
 
 class Migration(migrations.Migration):
     dependencies = [
