@@ -86,12 +86,13 @@ class GoogleLoginView(APIView):
             tokens = issue_tokens_for_user(user)
 
             try:
-                user_model = UserProfile.objects.get(email=email)
+                user_model = UserProfile.objects.get(user__email = email)
                 finished_onboarding = user_model.finished_onboarding
             except UserProfile.DoesNotExist:
                 finished_onboarding = False
+            
             UserProfile.objects.update_or_create(
-                email=email,
+                user=user,
                 name=name,
                 google_sub=sub,
                 finished_onboarding=finished_onboarding,
@@ -152,7 +153,7 @@ class UserProfileView(APIView):
 
         try:
             # Try to get user data from UserProfile first
-            user_model = UserProfile.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(user=user)
 
             return Response(
                 {
@@ -204,13 +205,12 @@ class SaveItemView(APIView):
             raise errors.ValidationError("External ID is required")
 
         try:
-            user_model = UserProfile.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
             raise errors.NotFound("User not found")
 
         if external_id in user_model.saved_items:
             UserProfile.objects.update_or_create(
-                email=user.email,
                 defaults={"saved_items": [item for item in user_model.saved_items if item != external_id]},
             )
             return Response(
@@ -219,7 +219,6 @@ class SaveItemView(APIView):
             )
         else:
             UserProfile.objects.update_or_create(
-                email=user.email,
                 defaults={"saved_items": [*user_model.saved_items, external_id]},
             )
             return Response(
@@ -250,7 +249,7 @@ class CheckItemSavedView(APIView):
             raise errors.ValidationError("External ID is required")
 
         try:
-            user_model = UserProfile.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
             raise errors.NotFound("User not found")
 
@@ -282,7 +281,7 @@ class SavedItemsView(APIView):
         user = request.user
 
         try:
-            user_model = UserProfile.objects.get(email=user.email)
+            user_model = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
             raise errors.ValidationError("User not found")
 
@@ -331,7 +330,7 @@ class UpdateUserInformationView(APIView):
         if not goals:
             raise errors.ValidationError("Goals are required")
 
-        user_model = UserProfile.objects.get(email=user.email)
+        user_model = UserProfile.objects.get(user=user)
         user_model.basic_information = basic_information
         user_model.interests = interests
         user_model.goals = goals

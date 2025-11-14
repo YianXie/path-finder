@@ -78,11 +78,11 @@ def get_pagination_data(data, page, page_size):
 
 
 @sync_to_async
-def get_user_model(email):
+def get_user_model(user):
     user_model, created = UserProfile.objects.get_or_create(
-        email=email,
+        user=user,
         defaults={
-            "name": email.split("@")[0],
+            "name": user.email.split("@")[0],
             "basic_information": {},
             "interests": [],
             "goals": [],
@@ -115,9 +115,9 @@ def update_suggestion_score(external_id, score):
 
 
 @sync_to_async
-def get_saved_items(email):
+def get_saved_items(user):
     try:
-        user_model = UserProfile.objects.get(email=email)
+        user_model = UserProfile.objects.get(user=user)
         return set(user_model.saved_items)
     except UserProfile.DoesNotExist:
         return set()
@@ -132,8 +132,8 @@ class PersonalizedSuggestionsView(ADRFAPIView):
         page = int(request.GET.get("page", 1))
         page_size = int(request.GET.get("page_size", 50))
         suggestions_data = await get_suggestions()
-        user_model = await get_user_model(user.email)
-        saved_items = await get_saved_items(user.email)
+        user_model = await get_user_model(user)
+        saved_items = await get_saved_items(user)
 
         suggestionsCache = await get_all_suggestions_cache()
         suggestionCache = list(

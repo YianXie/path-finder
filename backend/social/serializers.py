@@ -15,7 +15,7 @@ class SuggestionReviewSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ["name", "email"]
+        fields = ["name", "user__email"]
 
 
 class UserRatingSerializer(serializers.ModelSerializer):

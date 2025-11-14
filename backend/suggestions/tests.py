@@ -163,7 +163,7 @@ class SuggestionDetailWithSavedStatusViewTestCase(APITestCase):
         """Set up test user"""
         self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
         UserProfile.objects.update_or_create(
-            email=self.user.email,
+            user=self.user,
             defaults={
                 "saved_items": [EXAMPLE_EXTERNAL_ID],
             },
