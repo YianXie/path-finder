@@ -5,18 +5,25 @@ from django.conf import settings
 from django.db import migrations, models
 
 
-class Migration(migrations.Migration):
+def link_user(apps, schema_editor):
+    UserProfile = apps.get_model('accounts', 'UserProfile')
+    User = apps.get_model('auth', 'User')
 
+    for profile in UserProfile.objects.all():
+        if profile.email:
+            try:
+                profile.user = User.objects.get(email=profile.email)
+                profile.save()
+            except User.DoesNotExist:
+                pass
+
+class Migration(migrations.Migration):
     dependencies = [
         ("accounts", "0008_rename_usermodel_userprofile"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="userprofile",
-            name="email",
-        ),
         migrations.AddField(
             model_name="userprofile",
             name="user",
@@ -26,4 +33,5 @@ class Migration(migrations.Migration):
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
+        migrations.RunPython(link_user),
     ]
