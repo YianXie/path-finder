@@ -8,6 +8,7 @@ import InterestsIcon from "@mui/icons-material/Interests";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
@@ -151,8 +152,8 @@ function Header() {
                         to="/"
                         display="flex"
                         alignItems="center"
-                        className="cursor-pointer"
                         gap={1}
+                        sx={{ cursor: "pointer" }}
                         onClick={() => navigate("/")}
                     >
                         <img
@@ -161,9 +162,9 @@ function Header() {
                             width={32}
                             height={32}
                             draggable={false}
-                            className="select-none"
+                            sx={{ userSelect: "none" }}
                         />
-                        <Typography variant="h6" className="select-none">
+                        <Typography variant="h6" sx={{ userSelect: "none" }}>
                             PathFinder
                         </Typography>
                     </Box>
@@ -172,6 +173,20 @@ function Header() {
                             <MenuIcon />
                         </IconButton>
                     )}
+                    <Divider orientation="vertical" flexItem />
+                    <HeaderLink
+                        to="https://forms.gle/yeXqMeYjKnoHSmdo6"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                        }}
+                    >
+                        Add a new item
+                        <OpenInNewIcon fontSize="small" color="primary" />
+                    </HeaderLink>
                     {isMobile ? (
                         <Drawer
                             open={drawerOpen}
@@ -182,7 +197,6 @@ function Header() {
                         </Drawer>
                     ) : (
                         <>
-                            <Divider orientation="vertical" flexItem />
                             <Box
                                 display="flex"
                                 alignItems="center"

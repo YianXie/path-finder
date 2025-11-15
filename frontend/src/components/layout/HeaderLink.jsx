@@ -1,9 +1,9 @@
 import Link from "@mui/material/Link";
 import { Link as RouterLink } from "react-router-dom";
 
-function HeaderLink({ children, to, ...props }) {
+function HeaderLink({ children, to, underline = "hover", ...props }) {
     return (
-        <Link component={RouterLink} underline="hover" to={to} {...props}>
+        <Link component={RouterLink} underline={underline} to={to} {...props}>
             {children}
         </Link>
     );
