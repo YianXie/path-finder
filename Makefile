@@ -17,14 +17,7 @@ help:
 # Install dependencies
 install:
 	@echo "Installing backend dependencies..."
-	cd backend && pip install -r requirements.txt
-	@echo "Installing frontend dependencies..."
-	cd frontend && npm install
-
-# Install development dependencies
-install-dev:
-	@echo "Installing backend dev dependencies..."
-	cd backend && pip install -r requirements.txt
+	cd backend && uv sync
 	@echo "Installing frontend dependencies..."
 	cd frontend && npm install
 
