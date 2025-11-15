@@ -1,20 +1,26 @@
 #!/bin/bash
 
 # Exit on error
-set -o errexit
-
+set -e
 
 echo "Installing dependencies..."
 
+mkdir -p .uvbin
+
 # Install uv
-curl -LsSf https://astral.sh/uv/install.sh | sh
+curl -LsSf https://astral.sh/uv/install.sh | UV_INSTALL_DIR=".uvbin" sh
+
 # Set path
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$PATH:$(pwd)/.uvbin"
 
 # Make venv and install packages
 echo "Making venv..."
 if [ ! -d ".venv" ]; then uv venv; fi # if venv doesn't exist, create it
+
+echo "Activating venv..."
 source .venv/bin/activate
+
+echo "Syncing dependencies..."
 uv sync
 
 # Collect static files
