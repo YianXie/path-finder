@@ -33,6 +33,8 @@ echo "Installing backend dependencies..."
 cd backend
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
+
+if [ ! -d ".venv" ]; then uv venv; fi # if venv doesn't exist, create it
 source .venv/bin/activate
 uv sync
 
