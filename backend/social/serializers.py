@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from accounts.models import UserProfile
 from suggestions.models import SuggestionModel
 
