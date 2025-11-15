@@ -25,14 +25,6 @@ import Logout from "./pages/auth/Logout";
  * Includes public routes (Home, Login) and protected routes (Saved, OnBoarding, etc.).
  */
 function App() {
-    if (import.meta.env.VITE_ENVIRONMENT === "production") {
-        console.log = () => {};
-        console.error = () => {};
-        console.warn = () => {};
-        console.info = () => {};
-        console.debug = () => {};
-    }
-
     return (
         <Router>
             <Routes>
