@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from accounts.models import UserProfile
 from suggestions.models import SuggestionModel
 
@@ -13,9 +12,11 @@ class SuggestionReviewSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source="user.email", read_only=True)
+
     class Meta:
         model = UserProfile
-        fields = ["name", "user__email"]
+        fields = ["name", "email"]
 
 
 class UserRatingSerializer(serializers.ModelSerializer):
