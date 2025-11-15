@@ -31,7 +31,10 @@ echo "=================="
 # Install backend dev dependencies
 echo "Installing backend dependencies..."
 cd backend
-pip install -r requirements.txt
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export PATH="$HOME/.local/bin:$PATH"
+source .venv/bin/activate
+uv sync
 
 # Run Django tests
 echo "Running Django tests..."
