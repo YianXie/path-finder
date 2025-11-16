@@ -263,21 +263,12 @@ class SuggestionDetailWithSavedStatusView(APIView):
             user_profile = UserProfile.objects.get(user=user)
             saved_items = set(user_profile.saved_items)
             is_saved = external_id in saved_items
-            external_id = request.data.get("external_id")
-            review = UserRating.objects.filter(user=user_profile, suggestion=suggestion).first()
-            rating = 0
-            comment = None
-            if review:
-                rating = review.rating
-                comment = review.comment
             serializer = SuggestionSerializer(suggestion)
 
             return Response(
                 {
                     "suggestion": serializer.data,
                     "is_saved": is_saved,
-                    "rating": rating,
-                    "comment": comment,
                 },
                 status=status.HTTP_200_OK,
             )

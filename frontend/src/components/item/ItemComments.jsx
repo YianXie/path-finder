@@ -1,6 +1,7 @@
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import Link from "@mui/material/Link";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -16,13 +17,17 @@ function ItemComments({ external_id }) {
         const res = await api.get(
             `/api/social/reviews?external_id=${external_id}`
         );
+        console.log("res:", res.data);
         return res.data;
     }, []);
 
     useEffect(() => {
         if (reviews && reviews.length > 0) {
             for (const review of reviews) {
-                if (review.comment && review.comment.trim() !== "") {
+                if (
+                    (review.comment && review.comment.trim() !== "") ||
+                    review.image
+                ) {
                     setHasComments(true);
                     return;
                 }
@@ -38,33 +43,39 @@ function ItemComments({ external_id }) {
                         User Review
                     </Typography>
                     <Stack spacing={2}>
-                        {reviews &&
-                            reviews.map((review) => {
-                                return (
-                                    <>
+                        {reviews.map((review) => {
+                            return (
+                                <>
+                                    <Stack
+                                        direction="row"
+                                        alignItems="center"
+                                        spacing={2}
+                                        key={review.id}
+                                        sx={{ p: 2 }}
+                                    >
+                                        <Avatar
+                                            {...stringAvatar(review.user.name)}
+                                            sx={{ width: 40, height: 40 }}
+                                        />
                                         <Stack
-                                            direction="row"
-                                            alignItems="center"
-                                            spacing={2}
-                                            key={review.id}
-                                            sx={{ p: 2 }}
+                                            direction="column"
+                                            alignItems="flex-start"
+                                            spacing={1}
+                                            sx={{ ml: 2 }}
+                                            width="100%"
                                         >
-                                            <Avatar
-                                                {...stringAvatar(
-                                                    review.user.name
-                                                )}
-                                                sx={{ width: 40, height: 40 }}
-                                            />
                                             <Stack
-                                                direction="column"
-                                                alignItems="flex-start"
+                                                direction="row"
                                                 spacing={1}
-                                                sx={{ ml: 2 }}
+                                                alignItems="center"
+                                                justifyContent="space-between"
+                                                width="100%"
                                             >
-                                                <Stack
-                                                    direction="row"
-                                                    spacing={1}
-                                                    alignItems="center"
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                    }}
                                                 >
                                                     <Typography
                                                         fontWeight={500}
@@ -77,17 +88,35 @@ function ItemComments({ external_id }) {
                                                         readOnly
                                                         sx={{ ml: 1 }}
                                                     />
-                                                </Stack>
-                                                <Typography>
-                                                    {review.comment?.trim() ||
-                                                        "No comment"}
+                                                </Box>
+                                                <Typography
+                                                    variant="body2"
+                                                    color="text.secondary"
+                                                >
+                                                    {new Date(
+                                                        review.created_at
+                                                    ).toLocaleDateString()}
                                                 </Typography>
                                             </Stack>
+                                            <Typography>
+                                                {review.comment?.trim() ||
+                                                    "No comment"}
+                                            </Typography>
+                                            {review.image && (
+                                                <Link
+                                                    href={review.image}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    View Image
+                                                </Link>
+                                            )}
                                         </Stack>
-                                        <Divider />
-                                    </>
-                                );
-                            })}
+                                    </Stack>
+                                    <Divider />
+                                </>
+                            );
+                        })}
                     </Stack>
                 </Box>
             ) : (
@@ -97,7 +126,7 @@ function ItemComments({ external_id }) {
                     align="center"
                     sx={{ my: 4 }}
                 >
-                    No reviews yet
+                    No comments yet
                 </Typography>
             )}
         </>

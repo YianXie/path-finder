@@ -97,8 +97,11 @@ function Item({
     return (
         <Card
             sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
                 width: 300,
-                maxHeight: 400,
+                height: 375,
             }}
         >
             {/* Clickable area that navigates to item detail page */}
@@ -108,7 +111,7 @@ function Item({
                     image={image}
                     draggable={false}
                     alt={name}
-                    sx={{ objectFit: "cover", maxHeight: 200 }}
+                    sx={{ objectFit: "cover", height: 200 }}
                 />
                 {/* Item information display */}
                 <CardContent>

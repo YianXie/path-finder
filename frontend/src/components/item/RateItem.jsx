@@ -1,4 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
+import UploadIcon from "@mui/icons-material/Upload";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -11,24 +12,44 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import { styled } from "@mui/material/styles";
 import { useState } from "react";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 
+const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+});
+
 function RateItem({ open, onClose, external_id }) {
     const { access } = useAuth();
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
+    const [image, setImage] = useState(null);
     const { setSnackBar } = useSnackBar();
 
     const handleSubmit = async () => {
         try {
-            const res = await api.post("/api/social/rate/", {
-                rating: rating,
-                comment: comment,
-                external_id: external_id,
+            const formData = new FormData();
+            formData.append("rating", String(rating));
+            formData.append("comment", comment || "");
+            formData.append("external_id", external_id);
+            if (image) {
+                formData.append("image", image);
+            }
+
+            const res = await api.post("/api/social/rate/", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
             if (res.status === 200) {
                 setSnackBar({
@@ -41,7 +62,9 @@ function RateItem({ open, onClose, external_id }) {
             setSnackBar({
                 open: true,
                 severity: "error",
-                message: error.response.data.detail,
+                message:
+                    error?.response?.data?.detail ||
+                    "Failed to submit review. Please try again.",
             });
         } finally {
             onClose();
@@ -124,7 +147,8 @@ function RateItem({ open, onClose, external_id }) {
                             </Box>
                             <Box
                                 sx={{
-                                    my: 2,
+                                    mt: 2,
+                                    mb: 1,
                                     display: "flex",
                                     flexDirection: "column",
                                     gap: 1,
@@ -144,6 +168,22 @@ function RateItem({ open, onClose, external_id }) {
                                     }
                                 />
                             </Box>
+                            <Button
+                                sx={{ fontWeight: 500, mb: 1 }}
+                                role={undefined}
+                                tabIndex={-1}
+                                startIcon={<UploadIcon />}
+                                component="label"
+                            >
+                                {image ? image.name : "Upload Image"}
+                                <VisuallyHiddenInput
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(event) =>
+                                        setImage(event.target.files[0])
+                                    }
+                                />
+                            </Button>
 
                             <Button
                                 variant="contained"
