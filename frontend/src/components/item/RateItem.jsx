@@ -31,7 +31,7 @@ const VisuallyHiddenInput = styled("input")({
     width: 1,
 });
 
-function RateItem({ open, onClose, external_id }) {
+function RateItem({ open, onClose, external_id, onSubmitted }) {
     const { access } = useAuth();
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
@@ -52,6 +52,9 @@ function RateItem({ open, onClose, external_id }) {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             if (res.status === 200) {
+                if (typeof onSubmitted === "function") {
+                    onSubmitted();
+                }
                 setSnackBar({
                     open: true,
                     severity: "success",

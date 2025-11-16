@@ -11,7 +11,7 @@ import api from "../../api";
 import { useAsyncData } from "../../hooks";
 import { stringAvatar } from "../../utils/stringUtils.js";
 
-function ItemComments({ external_id }) {
+function ItemComments({ external_id, refreshKey }) {
     const [hasComments, setHasComments] = useState(false);
     const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
     const { data: reviews } = useAsyncData(async () => {
@@ -19,7 +19,7 @@ function ItemComments({ external_id }) {
             `/api/social/reviews?external_id=${external_id}`
         );
         return res.data;
-    }, []);
+    }, [external_id, refreshKey]);
 
     useEffect(() => {
         if (reviews && reviews.length > 0) {
