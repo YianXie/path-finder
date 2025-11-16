@@ -9,8 +9,8 @@ from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -54,9 +54,7 @@ class GoogleLoginView(APIView):
 
         try:
             # Verify Google ID token
-            idinfo = id_token.verify_oauth2_token(
-                credential, grequests.Request(), GOOGLE_CLIENT_ID
-            )
+            idinfo = id_token.verify_oauth2_token(credential, grequests.Request(), GOOGLE_CLIENT_ID)
 
             # Hosted domain restriction
             if ALLOWED_GOOGLE_HD and idinfo.get("hd") != ALLOWED_GOOGLE_HD:
@@ -236,11 +234,7 @@ class SaveItemView(APIView):
         if external_id in user_model.saved_items:
             UserProfile.objects.update_or_create(
                 user=user,
-                defaults={
-                    "saved_items": [
-                        item for item in user_model.saved_items if item != external_id
-                    ]
-                },
+                defaults={"saved_items": [item for item in user_model.saved_items if item != external_id]},
             )
             return Response(
                 {"status": "ok", "message": "Item removed from saved items"},
