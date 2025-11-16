@@ -20,7 +20,9 @@ class GoogleLoginViewTestCase(APITestCase):
 
     def test_google_login_invalid_credential(self):
         """Test that Google login returns 400 when credential is invalid"""
-        response = self.client.post("/accounts/google/", {"credential": "invalid_credential"})
+        response = self.client.post(
+            "/accounts/google/", {"credential": "invalid_credential"}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["status"], "error")
         self.assertEqual(response.data["message"], "Invalid credentials")
@@ -44,7 +46,9 @@ class ParseTokenViewTestCase(APITestCase):
 
     def test_parse_token_invalid_token(self):
         """Test that parse token returns 400 when token is invalid"""
-        response = self.client.post("/accounts/parse-token/", {"token": "invalid_token"})
+        response = self.client.post(
+            "/accounts/parse-token/", {"token": "invalid_token"}
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.data["status"], "error")
         self.assertEqual(response.data["message"], "Invalid token")
@@ -52,10 +56,14 @@ class ParseTokenViewTestCase(APITestCase):
     def test_parse_token_valid_token(self):
         """Test that parse token returns 200 with valid token"""
         # Create a test token
-        user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         access_token = AccessToken.for_user(user)
 
-        response = self.client.post("/accounts/parse-token/", {"token": str(access_token)})
+        response = self.client.post(
+            "/accounts/parse-token/", {"token": str(access_token)}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("payload", response.data)
 
@@ -65,7 +73,9 @@ class UserProfileViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         self.access = AccessToken.for_user(self.user)
 
     def test_user_profile_without_auth(self):
@@ -74,15 +84,14 @@ class UserProfileViewTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_user_profile_with_auth_no_usermodel(self):
-        """Test that user profile returns fallback data when UserProfile doesn't exist"""
+        """Test that user profile returns 404 when UserProfile doesn't exist"""
         response = self.client.get(
             "/accounts/profile/",
             HTTP_AUTHORIZATION=f"Bearer {self.access}",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["email"], "test@example.com")
-        self.assertEqual(response.data["name"], "testuser")
-        self.assertIsNone(response.data["google_sub"])
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["status"], "error")
+        self.assertEqual(response.data["message"], "User not found")
 
     def test_user_profile_with_auth_with_usermodel(self):
         """Test that user profile returns UserProfile data when it exists"""
@@ -107,7 +116,9 @@ class SaveItemViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user and UserProfile"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
             user=self.user,
@@ -185,7 +196,9 @@ class CheckItemSavedViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user and UserProfile"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
             user=self.user,
@@ -195,7 +208,9 @@ class CheckItemSavedViewTestCase(APITestCase):
 
     def test_check_item_saved_without_auth(self):
         """Test that check item saved returns 401 when not authenticated"""
-        response = self.client.post("/accounts/check-item-saved/", {"external_id": "test123"})
+        response = self.client.post(
+            "/accounts/check-item-saved/", {"external_id": "test123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_check_item_saved_missing_external_id(self):
@@ -253,7 +268,9 @@ class SavedItemsViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user, UserProfile, and suggestions"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
             user=self.user,
@@ -286,7 +303,9 @@ class SavedItemsViewTestCase(APITestCase):
         self.assertEqual(response.data["status"], "ok")
         self.assertEqual(response.data["message"], "Saved items retrieved successfully")
         self.assertEqual(len(response.data["suggestions"]), 1)
-        self.assertEqual(response.data["suggestions"][0]["external_id"], EXAMPLE_EXTERNAL_ID)
+        self.assertEqual(
+            response.data["suggestions"][0]["external_id"], EXAMPLE_EXTERNAL_ID
+        )
 
     def test_saved_items_empty_list(self):
         """Test that saved items returns empty list when user has no saved items"""
@@ -322,18 +341,24 @@ class TokenObtainTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
 
     def test_obtain_token_with_valid_credentials(self):
         """Test obtaining JWT token with valid credentials"""
-        response = self.client.post("/api/token/", {"username": "testuser", "password": "testpassword123"})
+        response = self.client.post(
+            "/api/token/", {"username": "testuser", "password": "testpassword123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
 
     def test_obtain_token_with_invalid_credentials(self):
         """Test obtaining JWT token with invalid credentials"""
-        response = self.client.post("/api/token/", {"username": "testuser", "password": "wrongpassword"})
+        response = self.client.post(
+            "/api/token/", {"username": "testuser", "password": "wrongpassword"}
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_obtain_token_with_missing_fields(self):
@@ -347,18 +372,24 @@ class TokenRefreshTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user and tokens"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         self.refresh = RefreshToken.for_user(self.user)
 
     def test_refresh_token_with_valid_refresh_token(self):
         """Test refreshing access token with valid refresh token"""
-        response = self.client.post("/api/token/refresh/", {"refresh": str(self.refresh)})
+        response = self.client.post(
+            "/api/token/refresh/", {"refresh": str(self.refresh)}
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("access", response.data)
 
     def test_refresh_token_with_invalid_refresh_token(self):
         """Test refreshing access token with invalid refresh token"""
-        response = self.client.post("/api/token/refresh/", {"refresh": "invalidrefreshtoken123"})
+        response = self.client.post(
+            "/api/token/refresh/", {"refresh": "invalidrefreshtoken123"}
+        )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_refresh_token_with_missing_refresh_token(self):
@@ -381,7 +412,9 @@ class UpdateUserInformationViewTestCase(APITestCase):
 
     def setUp(self):
         """Set up test user and UserProfile"""
-        self.user = User.objects.create_user(username="testuser", email="test@example.com", password="testpassword123")
+        self.user = User.objects.create_user(
+            username="testuser", email="test@example.com", password="testpassword123"
+        )
         self.access = AccessToken.for_user(self.user)
         self.user_model = UserProfile.objects.create(
             user=self.user,
