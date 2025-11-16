@@ -147,7 +147,7 @@ CLOUDINARY_STORAGE = {
 if ENVIRONMENT == "production":
     STORAGES = {
         "default": {
-            "BACKEND": "cloudinary_storage.storage.CloudinaryStorage",
+            "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
         },
         "staticfiles": {
             "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
