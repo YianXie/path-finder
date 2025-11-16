@@ -13,11 +13,11 @@ import { stringAvatar } from "../../utils/stringUtils.js";
 
 function ItemComments({ external_id }) {
     const [hasComments, setHasComments] = useState(false);
+    const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
     const { data: reviews } = useAsyncData(async () => {
         const res = await api.get(
             `/api/social/reviews?external_id=${external_id}`
         );
-        console.log("res:", res.data);
         return res.data;
     }, []);
 
@@ -34,6 +34,18 @@ function ItemComments({ external_id }) {
             }
         }
     }, [reviews]);
+
+    const toAbsoluteMediaUrl = (maybeRelativeUrl) => {
+        if (!maybeRelativeUrl) return "";
+        if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
+        // Ensure leading slash on relative media path
+        const path = maybeRelativeUrl.startsWith("/")
+            ? maybeRelativeUrl
+            : `/${maybeRelativeUrl}`;
+        // Fallback to localhost:8000 if env is missing in dev
+        const origin = apiBaseUrl || "http://localhost:8000";
+        return `${origin}${path}`;
+    };
 
     return (
         <>
@@ -104,7 +116,9 @@ function ItemComments({ external_id }) {
                                             </Typography>
                                             {review.image && (
                                                 <Link
-                                                    href={review.image}
+                                                    href={toAbsoluteMediaUrl(
+                                                        review.image
+                                                    )}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                 >
