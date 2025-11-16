@@ -44,7 +44,6 @@ function ItemDetail() {
 
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
-                // setters.setRating(response.data.review);
                 setters.setAverageRating(
                     response.data.suggestion.average_rating
                 );
