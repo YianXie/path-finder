@@ -23,7 +23,11 @@ class UpdateOrModifySuggestionRating(APIView):
 
     def post(self, request):
         external_id = request.data.get("external_id")
-        rating = int(request.data.get("rating"))
+        try:
+            rating = int(request.data.get("rating"))
+        except ValueError:
+            raise errors.ValidationError("Rating must be an integer")
+
         comment = request.data.get("comment", "")
         image = request.FILES.get("image", None)
 
@@ -48,7 +52,9 @@ class UpdateOrModifySuggestionRating(APIView):
             raise errors.ValidationError("Failed due to external ID not existing")
 
         user_profile = UserProfile.objects.get(user=request.user)
-        review = UserRating.objects.filter(user=user_profile, suggestion=suggestion).first()
+        review = UserRating.objects.filter(
+            user=user_profile, suggestion=suggestion
+        ).first()
 
         if review:
             # If review already exists, update it
