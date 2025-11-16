@@ -171,14 +171,12 @@ export const AuthProvider = ({ children }) => {
         async function checkIfUserIsAdmin() {
             try {
                 const res = await api.get("/accounts/profile/");
-                console.log(res.data);
                 setUser(res.data);
             } catch {
                 // The user is not an admin
             }
         }
         checkIfUserIsAdmin();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {

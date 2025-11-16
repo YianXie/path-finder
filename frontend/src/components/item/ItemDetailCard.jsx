@@ -23,6 +23,7 @@ import RateItem from "./RateItem";
 export function ItemDetailCard({ external_id }) {
     const { state } = useContext(ItemDetailContext);
     const [isRateItemOpen, setIsRateItemOpen] = useState(false);
+    const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
     const { access } = useAuth();
 
     /**
@@ -127,11 +128,15 @@ export function ItemDetailCard({ external_id }) {
                     </Grid>
                 </Grid>
             </Card>
-            <ItemComments external_id={external_id} />
+            <ItemComments
+                external_id={external_id}
+                refreshKey={reviewsRefreshKey}
+            />
             <RateItem
                 open={isRateItemOpen}
                 onClose={() => setIsRateItemOpen(false)}
                 external_id={external_id}
+                onSubmitted={() => setReviewsRefreshKey((k) => k + 1)}
             />
         </>
     );
