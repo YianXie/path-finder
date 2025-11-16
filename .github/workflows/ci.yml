@@ -32,13 +32,13 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@v6
               with:
-                python-version-file: "backend/pyproject.toml"
+                  python-version-file: "backend/pyproject.toml"
 
-                # The actions/cache could be used but the uv action seems to have
-                # a native way to do so
-                # https://docs.astral.sh/uv/guides/integration/github/#caching
+                  # The actions/cache could be used but the uv action seems to have
+                  # a native way to do so
+                  # https://docs.astral.sh/uv/guides/integration/github/#caching
 
-                enable-cache: true
+                  enable-cache: true
 
             - name: Install python and dependencies
               working-directory: ./backend
@@ -51,11 +51,14 @@ jobs:
                   SECRET_KEY: test-secret-key-for-ci
                   ENVIRONMENT: development
                   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+                  CLOUDINARY_CLOUD_NAME: test-cloudinary-name
+                  CLOUDINARY_API_KEY: test-cloudinary-api-key
+                  CLOUDINARY_API_SECRET: test-cloudinary-api-secret
                   DEBUG: "True"
                   ALLOWED_HOSTS: localhost,127.0.0.1
                   CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
-                  GOOGLE_CLIENT_ID: test-client-id
                   ALLOWED_GOOGLE_HD: test-hd
+                  GOOGLE_CLIENT_ID: test-client-id
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
               run: |
                   uv run python manage.py makemigrations && uv run python manage.py migrate
@@ -103,13 +106,13 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@v6
               with:
-                python-version-file: "backend/pyproject.toml"
+                  python-version-file: "backend/pyproject.toml"
 
-                # The actions/cache could be used but the uv action seems to have
-                # a native way to do so
-                # https://docs.astral.sh/uv/guides/integration/github/#caching
+                  # The actions/cache could be used but the uv action seems to have
+                  # a native way to do so
+                  # https://docs.astral.sh/uv/guides/integration/github/#caching
 
-                enable-cache: true
+                  enable-cache: true
 
             - name: Install python and dependencies
               working-directory: ./backend
@@ -135,19 +138,19 @@ jobs:
             - name: Install uv
               uses: astral-sh/setup-uv@v6
               with:
-                python-version-file: "backend/pyproject.toml"
+                  python-version-file: "backend/pyproject.toml"
 
-                # The actions/cache could be used but the uv action seems to have
-                # a native way to do so
-                # https://docs.astral.sh/uv/guides/integration/github/#caching
+                  # The actions/cache could be used but the uv action seems to have
+                  # a native way to do so
+                  # https://docs.astral.sh/uv/guides/integration/github/#caching
 
-                enable-cache: true
+                  enable-cache: true
 
             - name: Install python and dependencies
               working-directory: ./backend
               run: |
                   uv sync
-            
+
             - name: Generate requirements.txt for safety
               working-directory: ./backend
               run: uv export --no-hashes > requirements.txt
