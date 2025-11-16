@@ -125,7 +125,7 @@ export const AuthProvider = ({ children }) => {
      * Checks for valid tokens and refreshes if needed
      */
     useEffect(() => {
-        const initializeAuth = () => {
+        const initializeAuth = async () => {
             const storedAccess = localStorage.getItem("access");
             const storedRefresh = localStorage.getItem("refresh");
 
@@ -166,6 +166,20 @@ export const AuthProvider = ({ children }) => {
 
         initializeAuth();
     }, [refreshToken, fetchUserProfile]);
+
+    useEffect(() => {
+        async function checkIfUserIsAdmin() {
+            try {
+                const res = await api.get("/accounts/profile/");
+                console.log(res.data);
+                setUser(res.data);
+            } catch {
+                // The user is not an admin
+            }
+        }
+        checkIfUserIsAdmin();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (access) {

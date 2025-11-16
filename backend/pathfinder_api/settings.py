@@ -174,8 +174,15 @@ if ENVIRONMENT == "development":
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ]
+    CSRF_TRUSTED_ORIGINS = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
 else:
     CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+
+CORS_ALLOW_CREDENTIALS = True
+SESSION_COOKIE_SAMESITE = "Lax"
 
 if ENVIRONMENT == "production":
     SECURE_SSL_REDIRECT = True
