@@ -65,7 +65,7 @@ function HomeRedesign() {
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
             ))}
-        </Container>
+        </Container> 
     );
 }
 
