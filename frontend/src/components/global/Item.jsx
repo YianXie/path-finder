@@ -139,22 +139,31 @@ function Item({
                     alignItems: "start",
                 }}
             >
-                <Stack
-                    alignItems="center"
-                    direction="column"
-                    gap={0.5}
-                    sx={{ marginRight: "auto" }}
-                >
-                    <Rating value={rating} readOnly />
-                    <Typography
-                        variant="body2"
-                        fontSize={12}
-                        sx={{ color: "text.secondary" }}
+                {rate_count!=0 ? (
+                    <Stack
+                        alignItems="center"
+                        direction="row"
+                        gap={0.5}
+                        sx={{ marginRight: "auto" }}
                     >
-                        {rate_count} reviews
-                    </Typography>
-                </Stack>
-                <Stack alignItems="center" direction="column" gap={0.5}>
+                        <Rating value={rating} readOnly />
+                        <Typography
+                            variant="body2"
+                            fontSize={16}
+                            sx={{ color: "text.secondary" }}
+                        >
+                            ({rate_count})
+                        </Typography>
+                    </Stack>
+                ) : (
+                    <Stack
+                        alignItems="center"
+                        direction="row"
+                        gap={0.5}
+                        sx={{ marginRight: "auto" }}
+                    ></Stack>
+                )}
+                <Stack alignItems="center" direction="row" gap={0.5}>
                     <Tooltip
                         title="Save item"
                         placement="bottom"
@@ -175,17 +184,17 @@ function Item({
                     </Tooltip>
                     <Typography
                         variant="body2"
-                        fontSize={12}
-                        sx={{ color: "text.secondary" }}
+                        fontSize={16}
+                        sx={{color: "text.secondary" }}
                     >
-                        {saved_count}
+                        ({saved_count})
                     </Typography>
                 </Stack>
                 <Tooltip
                     title="Open menu"
                     placement="bottom"
                     arrow
-                    sx={{ alignSelf: "center" }}
+                    sx={{ alignSelf: "center"}}
                 >
                     <IconButton
                         aria-label="Open menu"
