@@ -136,33 +136,24 @@ function Item({
             <CardActions
                 sx={{
                     display: "flex",
-                    alignItems: "start",
+                    alignItems: "center",
                 }}
             >
-                {rate_count != 0 ? (
-                    <Stack
-                        alignItems="center"
-                        direction="row"
-                        gap={0.5}
-                        sx={{ marginRight: "auto" }}
+                <Stack
+                    alignItems="center"
+                    direction="row"
+                    gap={0.5}
+                    sx={{ marginRight: "auto" }}
+                >
+                    <Rating value={rating} readOnly />
+                    <Typography
+                        variant="body2"
+                        fontSize={16}
+                        sx={{ color: "text.secondary" }}
                     >
-                        <Rating value={rating} readOnly />
-                        <Typography
-                            variant="body2"
-                            fontSize={16}
-                            sx={{ color: "text.secondary" }}
-                        >
-                            ({rate_count})
-                        </Typography>
-                    </Stack>
-                ) : (
-                    <Stack
-                        alignItems="center"
-                        direction="row"
-                        gap={0.5}
-                        sx={{ marginRight: "auto" }}
-                    ></Stack>
-                )}
+                        ({rate_count})
+                    </Typography>
+                </Stack>
                 <Stack alignItems="center" direction="row" gap={0.5}>
                     <Tooltip
                         title="Save item"
