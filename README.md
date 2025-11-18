@@ -99,11 +99,17 @@ path-finder/
 
 ### Backend Setup
 
+Install UV
+
 ```bash
-cd path-finder
-python -m venv .venv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+```bash
+cd path-finder/backend
+uv venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r backend/requirements.txt
+uv sync
 python backend/manage.py migrate
 python backend/manage.py runserver
 ```

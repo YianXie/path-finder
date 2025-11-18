@@ -23,11 +23,12 @@ Thank you for your interest in contributing to PathFinder! This guide explains h
 2. **Set up the backend**
 
     ```bash
-    python -m venv .venv
+    cd backend
+    uv venv
     source .venv/bin/activate  # Windows: .venv\Scripts\activate
-    pip install -r backend/requirements.txt
+    uv sync
     # Create backend/.env based on the Environment Variables section
-    python backend/manage.py migrate
+    python manage.py migrate
     ```
 
 3. **Set up the frontend**
