@@ -139,7 +139,7 @@ function Item({
                     alignItems: "start",
                 }}
             >
-                {rate_count!=0 ? (
+                {rate_count != 0 ? (
                     <Stack
                         alignItems="center"
                         direction="row"
@@ -185,7 +185,7 @@ function Item({
                     <Typography
                         variant="body2"
                         fontSize={16}
-                        sx={{color: "text.secondary" }}
+                        sx={{ color: "text.secondary" }}
                     >
                         ({saved_count})
                     </Typography>
@@ -194,7 +194,7 @@ function Item({
                     title="Open menu"
                     placement="bottom"
                     arrow
-                    sx={{ alignSelf: "center"}}
+                    sx={{ alignSelf: "center" }}
                 >
                     <IconButton
                         aria-label="Open menu"
