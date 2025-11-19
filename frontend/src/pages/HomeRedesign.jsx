@@ -15,6 +15,7 @@ function HomeRedesign() {
     const [isLoading, setIsLoading] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [personalizedSuggestions, setPersonalizedSuggestions] = useState([]);
+    const [savedSuggestions, setSavedSuggestions] = useState([]);
 
     const tagsList = [
         "STEM & Innovation",
@@ -47,6 +48,11 @@ function HomeRedesign() {
                 console.log("access: ", access);
                 if (access) {
                     setPersonalizedSuggestions(uniqueSuggestions.slice(0, 10));
+                    setSavedSuggestions(
+                        uniqueSuggestions.filter(
+                            (suggestion) => suggestion.is_saved
+                        )
+                    );
                 }
             } catch (error) {
                 handleError(
@@ -59,11 +65,7 @@ function HomeRedesign() {
         },
         [handleError, access]
     );
-    useEffect(() => {
-        console.log("recommended for you: " + personalizedSuggestions);
-        console.log("all suggestions: " + suggestions);
-    }, [personalizedSuggestions, suggestions]);
-
+    
     useEffect(() => {
         getSuggestions();
     }, [getSuggestions]);
@@ -77,6 +79,16 @@ function HomeRedesign() {
                     <ItemList
                         name={"Recommended For You"}
                         suggestions={personalizedSuggestions}
+                    />
+                    <Divider sx={{ marginY: 2 }} />
+                </Fragment>
+            )}
+
+            {savedSuggestions.length > 0 && (
+                <Fragment key="saved-by-you">
+                    <ItemList
+                        name={"Saved by You"}
+                        suggestions={savedSuggestions}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
