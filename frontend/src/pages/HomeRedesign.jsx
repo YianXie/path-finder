@@ -65,7 +65,7 @@ function HomeRedesign() {
         },
         [handleError, access]
     );
-    
+
     useEffect(() => {
         getSuggestions();
     }, [getSuggestions]);
