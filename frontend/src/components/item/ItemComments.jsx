@@ -110,7 +110,19 @@ function ItemComments({ external_id, refreshKey }) {
                                                     ).toLocaleDateString()}
                                                 </Typography>
                                             </Stack>
-                                            <Typography>
+                                            <Typography
+                                                sx={
+                                                    review.comment
+                                                        ? {
+                                                              fontStyle:
+                                                                  "normal",
+                                                          }
+                                                        : {
+                                                              fontStyle:
+                                                                  "italic",
+                                                          }
+                                                }
+                                            >
                                                 {review.comment?.trim() ||
                                                     "No comment"}
                                             </Typography>

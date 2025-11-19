@@ -97,7 +97,13 @@ function useItemActions() {
         [access, handleError, handleSuccess]
     );
 
-    return { handleSave, handleShare, handleRating };
+    const handleExternalLink = useCallback((url) => {
+        if (url) {
+            window.open(url, "_blank", "noopener,noreferrer");
+        }
+    }, []);
+
+    return { handleSave, handleShare, handleRating, handleExternalLink };
 }
 
 export default useItemActions;

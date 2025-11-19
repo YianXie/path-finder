@@ -1,5 +1,3 @@
-import LinkIcon from "@mui/icons-material/Link";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -26,15 +24,6 @@ export function ItemDetailCard({ external_id }) {
     const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
     const { access } = useAuth();
 
-    /**
-     * Opens the external link in a new tab
-     */
-    const handleExternalLink = () => {
-        if (state.itemInfo?.url) {
-            window.open(state.itemInfo.url, "_blank", "noopener,noreferrer");
-        }
-    };
-
     const handleRateItem = () => {
         setIsRateItemOpen(true);
     };
@@ -47,7 +36,7 @@ export function ItemDetailCard({ external_id }) {
                     <ItemImage />
 
                     {/* Item content section */}
-                    <Grid>
+                    <Grid width={1}>
                         <CardContent
                             sx={{
                                 height: "100%",
@@ -87,43 +76,6 @@ export function ItemDetailCard({ external_id }) {
 
                             {/* Description */}
                             {state.itemInfo.description && <ItemDescription />}
-
-                            {/* External Link */}
-                            {state.itemInfo.url && (
-                                <Box sx={{ marginBottom: 3 }}>
-                                    <Stack
-                                        direction="row"
-                                        alignItems="center"
-                                        spacing={1}
-                                        sx={{ marginBottom: 1 }}
-                                    >
-                                        <LinkIcon color="primary" />
-                                        <Typography variant="h6" component="h2">
-                                            External Link
-                                        </Typography>
-                                    </Stack>
-                                    <LinkIcon
-                                        href={state.itemInfo.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        sx={{
-                                            wordBreak: "break-all",
-                                            display: "block",
-                                            marginBottom: 1,
-                                        }}
-                                    >
-                                        {state.itemInfo.url}
-                                    </LinkIcon>
-                                    <Button
-                                        variant="contained"
-                                        startIcon={<OpenInNewIcon />}
-                                        onClick={handleExternalLink}
-                                        sx={{ marginTop: 1 }}
-                                    >
-                                        Visit Website
-                                    </Button>
-                                </Box>
-                            )}
                         </CardContent>
                     </Grid>
                 </Grid>

@@ -15,9 +15,7 @@ import { useItemActions } from "../../hooks";
 export function ItemActions() {
     const { access } = useAuth();
     const { state, setters } = useContext(ItemDetailContext);
-
-    const { handleShare, handleSave } = useItemActions();
-
+    const { handleShare, handleSave, handleExternalLink } = useItemActions();
     const { external_id } = useParams();
 
     /**
@@ -43,25 +41,11 @@ export function ItemActions() {
     };
 
     /**
-     * Handles User Rating changes with Optimistc UI design
-     */
-    // const onRating = async (e, newRating) => {
-    //     // I change the UI before I send the requests
-    //     setters.setRating(newRating);
-    //     try {
-    //         await handleRating(external_id, newRating, () => {});
-    //     } catch {
-    //         // But if it fails we toggle back the current value to make sure we have the correct value
-    //         setters.setIsSaved((prev) => !prev);
-    //     }
-    // };
-
-    /**
      * Opens the external link in a new tab
      */
-    const handleExternalLink = () => {
+    const onExternalLink = () => {
         if (state.itemInfo?.url) {
-            window.open(state.itemInfo.url, "_blank", "noopener,noreferrer");
+            handleExternalLink(state.itemInfo.url);
         }
     };
 
@@ -91,7 +75,6 @@ export function ItemActions() {
             )}
 
             {/* Share Button */}
-
             <Tooltip title="Share" placement="bottom">
                 <IconButton
                     onClick={onShare}
@@ -102,13 +85,13 @@ export function ItemActions() {
                 </IconButton>
             </Tooltip>
 
-            {/* External Link */}
-            {state.itemInfo.url && (
-                <Tooltip title="Open external link" placement="bottom">
+            {/* External Link Button */}
+            {state.itemInfo?.url && (
+                <Tooltip title="Visit Website" placement="bottom">
                     <IconButton
-                        onClick={handleExternalLink}
+                        onClick={onExternalLink}
                         color="primary"
-                        aria-label="Open external link"
+                        aria-label="Visit Website"
                     >
                         <OpenInNewIcon />
                     </IconButton>
