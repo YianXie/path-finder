@@ -80,7 +80,7 @@ function Header() {
     const [searchActive, setSearchActive] = useState(false);
     const [value, setValue] = useState(null);
     const [options, setOptions] = useState([]);
-    const handleInput = (e) => {
+    const handleInput = () => {
         setSearchActive(true);
     };
 
