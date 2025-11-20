@@ -11,13 +11,14 @@ import CircularProgress from "@mui/material/CircularProgress";
  * @param {boolean} props.open - Whether the backdrop is visible
  * @param {string} props.color - Color of the loading spinner (default: "inherit")
  */
-function LoadingBackdrop({ open, color = "inherit" }) {
+function LoadingBackdrop({ open, color = "inherit", backdropProps }) {
     return (
         <Backdrop
+            {...(backdropProps ?? {})}
             open={open}
             sx={(theme) => ({
                 color: "#fff",
-                zIndex: theme.zIndex.drawer + 1,
+                zIndex: theme.zIndex.tooltip + 1,
             })}
         >
             <CircularProgress color={color} />

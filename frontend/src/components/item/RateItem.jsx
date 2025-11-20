@@ -1,6 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from "@mui/icons-material/Upload";
-import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -18,6 +17,7 @@ import { useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
+import LoadingBackdrop from "../common/LoadingBackdrop";
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -91,7 +91,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                         pointerEvents: open ? "auto" : "none",
                     }}
                 >
-                    <Backdrop
+                    <LoadingBackdrop
                         open={open}
                         onClick={onClose}
                         sx={(theme) => ({
@@ -99,7 +99,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                             backdropFilter: "brightness(0.5)",
                             zIndex: theme.zIndex.drawer + 1,
                         })}
-                    ></Backdrop>
+                    ></LoadingBackdrop>
                     <Slide direction="up" in={open} mountOnEnter unmountOnExit>
                         <Box
                             sx={(theme) => ({

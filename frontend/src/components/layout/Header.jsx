@@ -12,6 +12,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import SearchIcon from "@mui/icons-material/Search";
 import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
+import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
@@ -31,8 +32,8 @@ import { useColorScheme } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -47,15 +48,15 @@ import HeaderLink from "./HeaderLink";
  * @param {Object} props - Component props
  * @param {React.ReactNode} props.children - Child components to hide/show
  */
-const HideOnScroll = forwardRef(function HideOnScroll({ children }, ref) {
+const HideOnScroll = ({ children }) => {
     const trigger = useScrollTrigger({ threshold: 100 });
 
     return (
         <Slide appear={false} direction="down" in={!trigger} timeout={200}>
-            <div ref={ref}>{children}</div>
+            {children ?? <div />}
         </Slide>
     );
-});
+};
 
 /**
  * Main header component with navigation and user menu
@@ -70,16 +71,14 @@ function Header() {
     const { mode, setMode } = useColorScheme();
     const mainMenu = useMenu();
     const themeMenu = useMenu();
-    const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
-    const isMobile = useMediaQuery("(max-width: 600px)");
     const theme = useTheme();
-
-    const headerRef = useRef(null);
-    const [headerHeight, setHeaderHeight] = useState(0);
+    const isMobile = useMediaQuery("(max-width: 600px)");
     const [searchActive, setSearchActive] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [value, setValue] = useState(null);
     const [options, setOptions] = useState([]);
+
     const handleInput = () => {
         setSearchActive(true);
     };
@@ -95,6 +94,7 @@ function Header() {
             setSearchActive(false);
         }
     };
+
     useEffect(() => {
         if (searchActive) {
             document.body.style.overflow = "hidden";
@@ -106,25 +106,6 @@ function Header() {
             document.body.style.overflow = "";
         };
     }, [searchActive]);
-
-    useEffect(() => {
-        const updateHeight = () => {
-            console.log("updating header height");
-            if (headerRef.current) {
-                console.log(
-                    "header height: ",
-                    headerRef.current.getBoundingClientRect().height
-                );
-                setHeaderHeight(
-                    headerRef.current.getBoundingClientRect().height
-                );
-            }
-        };
-
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
-    }, []);
 
     const getSuggestions = useCallback(async (page = 1) => {
         try {
@@ -166,7 +147,7 @@ function Header() {
             path: "/onboarding",
         },
         {
-            label: "About this site",
+            label: "About Us",
             icon: <InfoIcon />,
             path: "/about",
         },
@@ -204,7 +185,7 @@ function Header() {
 
     return (
         <>
-            <HideOnScroll ref={headerRef}>
+            <HideOnScroll>
                 <header
                     style={{
                         position: "sticky",
@@ -255,30 +236,18 @@ function Header() {
                             </IconButton>
                         )}
                         <Divider orientation="vertical" flexItem />
-                        <HeaderLink
-                            to="https://forms.gle/yeXqMeYjKnoHSmdo6"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            sx={{
+                        <form
+                            style={{
                                 display: "flex",
                                 alignItems: "center",
-                                gap: 1,
                             }}
-                        >
-                            Add a new item
-                            <OpenInNewIcon fontSize="small" color="primary" />
-                        </HeaderLink>
-                        <form
-                            style={{ display: "flex", alignItems: "center" }}
                             onSubmit={handleSubmit}
                         >
                             <Autocomplete
                                 freeSolo
                                 value={value}
-                                onChange={(event, newValue) =>
-                                    setValue(newValue)
-                                }
-                                onInputChange={(event, newInputValue) =>
+                                onChange={(_, newValue) => setValue(newValue)}
+                                onInputChange={(_, newInputValue) =>
                                     handleInput(newInputValue)
                                 }
                                 options={options}
@@ -318,7 +287,7 @@ function Header() {
                                     ml="auto"
                                 >
                                     <HeaderLink to="/about">
-                                        About this site
+                                        About Us
                                     </HeaderLink>
                                     <Divider orientation="vertical" flexItem />
                                     {access && user ? (
@@ -413,6 +382,22 @@ function Header() {
                                                     {user.finished_onboarding
                                                         ? "Update your information"
                                                         : "Finish onboarding"}
+                                                </MenuItem>
+                                                <MenuItem
+                                                    onClick={() => {
+                                                        window.open(
+                                                            "https://forms.gle/yeXqMeYjKnoHSmdo6",
+                                                            "_blank"
+                                                        );
+                                                        mainMenu.handleClose(
+                                                            true
+                                                        );
+                                                    }}
+                                                >
+                                                    <ListItemIcon>
+                                                        <OpenInNewIcon fontSize="small" />
+                                                    </ListItemIcon>
+                                                    Request a new item
                                                 </MenuItem>
                                                 <MenuItem
                                                     onClick={
@@ -548,22 +533,15 @@ function Header() {
                     </Box>
                 </header>
             </HideOnScroll>
-            {searchActive && (
-                <Box
-                    onMouseDown={() => setSearchActive(false)}
-                    sx={{
-                        position: "fixed",
-                        top: `${headerHeight}px`, // dynamic start
-                        left: 0,
-                        width: "100vw",
-                        height: `calc(100vh - ${headerHeight}px)`,
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                        backdropFilter: "blur(3px)",
-                        zIndex: 20,
-                        transition: "opacity 0.25s ease",
-                    }}
-                />
-            )}
+
+            {/* This backdrop will not hide the header */}
+            <Backdrop
+                open={searchActive}
+                onClick={() => setSearchActive(false)}
+                sx={{
+                    zIndex: 999,
+                }}
+            />
         </>
     );
 }
