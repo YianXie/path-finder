@@ -39,14 +39,14 @@ function HomeRedesign() {
                 const uniqueSuggestions = res.data.results.filter(
                     (suggestion, index, self) =>
                         index ===
-                        self.findIndex(
-                            (s) => s.external_id === suggestion.external_id
-                        )
+                            self.findIndex(
+                                (s) => s.external_id === suggestion.external_id
+                            ) && suggestion.score !== 0
                 );
 
                 setSuggestions(uniqueSuggestions);
-                console.log("access: ", access);
                 if (access) {
+                    uniqueSuggestions.sort((a, b) => b.score - a.score);
                     setPersonalizedSuggestions(uniqueSuggestions.slice(0, 10));
                     setSavedSuggestions(
                         uniqueSuggestions.filter(

@@ -14,14 +14,14 @@ function ItemList({ suggestions, name }) {
                     overflowX: "auto", // allow horizontal scroll inside this box
                     gap: 2,
                     width: "100%",
-                    scrollBehavior: "smooth",
+                    scrollbarWidth: "none",
                 }}
             >
                 {[...suggestions].map(
                     (suggestion, index) =>
                         suggestion && (
                             <Box
-                                sx={{ flex: "0 0 auto" }}
+                                sx={{ flex: "0 0 auto", padding: 1 }}
                                 key={`${suggestion.external_id}-${index}`}
                             >
                                 <Item {...suggestion} />
