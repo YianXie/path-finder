@@ -36,16 +36,18 @@ function HomeRedesign() {
                 const params = { page, page_size: 50 };
                 const res = await api.get(endpoint, { params });
 
-                const uniqueSuggestions = res.data.results.filter(
-                    (suggestion, index, self) =>
-                        index ===
-                            self.findIndex(
-                                (s) => s.external_id === suggestion.external_id
-                            ) && suggestion.score !== 0
-                );
+                setSuggestions(res.data.results);
 
-                setSuggestions(uniqueSuggestions);
                 if (access) {
+                    const uniqueSuggestions = res.data.results.filter(
+                        (suggestion, index, self) =>
+                            index ===
+                                self.findIndex(
+                                    (s) =>
+                                        s.external_id === suggestion.external_id
+                                ) && suggestion.score !== 0
+                    );
+
                     uniqueSuggestions.sort((a, b) => b.score - a.score);
                     setPersonalizedSuggestions(uniqueSuggestions.slice(0, 10));
                     setSavedSuggestions(

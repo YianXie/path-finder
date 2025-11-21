@@ -168,18 +168,6 @@ export const AuthProvider = ({ children }) => {
     }, [refreshToken, fetchUserProfile]);
 
     useEffect(() => {
-        async function checkIfUserIsAdmin() {
-            try {
-                const res = await api.get("/accounts/profile/");
-                setUser(res.data);
-            } catch {
-                // The user is not an admin
-            }
-        }
-        checkIfUserIsAdmin();
-    }, []);
-
-    useEffect(() => {
         if (access) {
             try {
                 const payload = jwtDecode(access);
