@@ -28,7 +28,8 @@ PathFinder helps SAS high school students discover extracurricular opportunities
 
 ### Other README files
 
--   [GitHub Actions](.github/README_TEMPLATE.md)
+-   [GitHub Actions](/docs/GitHub_Action.md)
+-   [Connection to the Themes](/docs/Theme_Connection.md)
 
 ## Overview
 
