@@ -28,7 +28,7 @@ function Search() {
     const { access } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
-    const [sortBy, setSortBy] = useState("default");
+    const [sortBy, setSortBy] = useState("relevance");
     const [sortDirection, setSortDirection] = useState(1); // 1 for ascending, -1 for descending
     const [pagination, setPagination] = useState({
         page: 1,
@@ -46,11 +46,9 @@ function Search() {
         async (page = 1) => {
             try {
                 setIsLoading(true);
-                const endpoint = access
-                    ? "/api/suggestions/personalized-suggestions/"
-                    : "/api/suggestions/suggestions/";
+                const endpoint = "/api/suggestions/suggestions/";
 
-                const params = { page, page_size: 50 };
+                const params = { page, page_size: 50, query: query || "" };
                 const res = await api.get(endpoint, { params });
 
                 const uniqueSuggestions = res.data.results.filter(
@@ -91,7 +89,7 @@ function Search() {
         const suggestionsCopy = [...suggestions];
 
         switch (sortBy.toLowerCase()) {
-            case "default":
+            case "relevance":
                 return suggestionsCopy.sort(
                     (a, b) => (b.score - a.score) * sortDirection
                 );
@@ -135,7 +133,7 @@ function Search() {
             <LoadingBackdrop open={isLoading} />
             <PageHeader
                 title="Welcome to PathFinder"
-                subtitle={"All items"+ (query ? ` for "${query}"` : "")}
+                subtitle={"All items" + (query ? ` for "${query}"` : "")}
                 className="mt-6 mb-4"
             />
             <Box display="flex" flexDirection="row" gap={2} alignItems="center">
@@ -147,7 +145,7 @@ function Search() {
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
                     >
-                        <MenuItem value="default">Default</MenuItem>
+                        <MenuItem value="relevance">Relevance</MenuItem>
                         <MenuItem value="alphabetical">Alphabetical</MenuItem>
                         <MenuItem value="newest">Newest</MenuItem>
                         <MenuItem value="oldest">Oldest</MenuItem>

@@ -12,8 +12,8 @@ import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import { ItemDetailProvider } from "./contexts/ItemDetailProvider";
 import About from "./pages/About";
-import Search from "./pages/Search";
 import HomeRedesign from "./pages/HomeRedesign";
+import Search from "./pages/Search";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
 
