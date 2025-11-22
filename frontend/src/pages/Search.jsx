@@ -12,6 +12,7 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
@@ -20,7 +21,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useApiError } from "../hooks";
 import usePageTitle from "../hooks/usePageTitle";
 
-function Home() {
+function Search() {
     usePageTitle("PathFinder | Home");
 
     const { handleError, handleSuccess } = useApiError();
@@ -37,6 +38,9 @@ function Home() {
         has_next: false,
         has_previous: false,
     });
+
+    const [searchParams] = useSearchParams();
+    const query = searchParams.get("query");
 
     const getSuggestions = useCallback(
         async (page = 1) => {
@@ -131,7 +135,7 @@ function Home() {
             <LoadingBackdrop open={isLoading} />
             <PageHeader
                 title="Welcome to PathFinder"
-                subtitle="All items"
+                subtitle={"All items"+ (query ? ` for "${query}"` : "")}
                 className="mt-6 mb-4"
             />
             <Box display="flex" flexDirection="row" gap={2} alignItems="center">
@@ -218,4 +222,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default Search;
