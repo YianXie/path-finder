@@ -12,8 +12,8 @@ import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import { ItemDetailProvider } from "./contexts/ItemDetailProvider";
 import About from "./pages/About";
-import Home from "./pages/Home";
 import HomeRedesign from "./pages/HomeRedesign";
+import Search from "./pages/Search";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
 
@@ -31,7 +31,7 @@ function App() {
                 <Route path="/" element={<Layout />}>
                     <Route index element={<HomeRedesign />} />
                     <Route path="/about" element={<About />} />
-                    <Route path="/home-redesign" element={<Home />} />
+                    <Route path="/search" element={<Search />} />
                     <Route
                         path="/saved"
                         element={

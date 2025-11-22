@@ -97,7 +97,7 @@ function Header() {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (e.target[0].value.trim() !== "") {
-            navigate(`/?query=${e.target[0].value.trim()}`);
+            navigate(`/search?query=${e.target[0].value.trim()}`);
             setSearchActive(false);
         }
     };
