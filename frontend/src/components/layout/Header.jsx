@@ -32,8 +32,8 @@ import { useColorScheme } from "@mui/material/styles";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -74,6 +74,7 @@ function Header() {
     const navigate = useNavigate();
     const theme = useTheme();
     const isMobile = useMediaQuery("(max-width: 600px)");
+    const searchBarRef = useRef(null);
     const [searchActive, setSearchActive] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [value, setValue] = useState(null);
@@ -95,15 +96,23 @@ function Header() {
         }
     };
 
+    const handleClickOutside = (e) => {
+        if (searchBarRef.current && !searchBarRef.current.contains(e.target)) {
+            setSearchActive(false);
+        }
+    };
+
     useEffect(() => {
         if (searchActive) {
             document.body.style.overflow = "hidden";
+            document.addEventListener("click", handleClickOutside);
         } else {
-            document.body.style.overflow = "";
+            document.body.style.overflow = "auto";
         }
 
         return () => {
-            document.body.style.overflow = "";
+            document.body.style.overflow = "auto";
+            document.removeEventListener("click", handleClickOutside);
         };
     }, [searchActive]);
 
@@ -237,6 +246,7 @@ function Header() {
                         )}
                         <Divider orientation="vertical" flexItem />
                         <form
+                            ref={searchBarRef}
                             style={{
                                 display: "flex",
                                 alignItems: "center",
@@ -537,7 +547,6 @@ function Header() {
             {/* This backdrop will not hide the header */}
             <Backdrop
                 open={searchActive}
-                onClick={() => setSearchActive(false)}
                 sx={{
                     zIndex: 999,
                 }}
