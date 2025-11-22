@@ -6,6 +6,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import InfoIcon from "@mui/icons-material/Info";
 import InterestsIcon from "@mui/icons-material/Interests";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import Login from "@mui/icons-material/Login";
 import Logout from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
@@ -14,6 +15,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -73,7 +78,8 @@ function Header() {
     const themeMenu = useMenu();
     const navigate = useNavigate();
     const theme = useTheme();
-    const isMobile = useMediaQuery("(max-width: 600px)");
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // < 600px
+    const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600px - 900px
     const searchBarRef = useRef(null);
     const [searchActive, setSearchActive] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
@@ -138,7 +144,8 @@ function Header() {
 
     useEffect(() => {
         getSuggestions();
-    }, [getSuggestions]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Navigation items for the mobile drawer
     const drawerListItems = [
@@ -146,6 +153,7 @@ function Header() {
             label: "Saved",
             icon: <FavoriteIcon />,
             path: "/saved",
+            requiresAuth: true,
         },
         {
             label:
@@ -154,18 +162,38 @@ function Header() {
                     : "Finish onboarding",
             icon: <InterestsIcon />,
             path: "/onboarding",
+            requiresAuth: true,
         },
         {
             label: "About Us",
             icon: <InfoIcon />,
             path: "/about",
+            requiresAuth: false,
         },
         {
-            label: "Logout",
-            icon: <Logout />,
-            path: "/logout",
+            label: "Request a new item",
+            icon: <OpenInNewIcon />,
+            path: null,
+            external: "https://forms.gle/yeXqMeYjKnoHSmdo6",
         },
-    ];
+        ...(access && user
+            ? [
+                  {
+                      label: "Logout",
+                      icon: <Logout />,
+                      path: "/logout",
+                      requiresAuth: true,
+                  },
+              ]
+            : [
+                  {
+                      label: "Login",
+                      icon: <Login />,
+                      path: "/login",
+                      requiresAuth: false,
+                  },
+              ]),
+    ].filter((item) => !item.requiresAuth || (access && user));
 
     /**
      * Toggles the mobile drawer open/closed state
@@ -176,19 +204,180 @@ function Header() {
     };
 
     const drawerList = (
-        <Box onClick={() => toggleDrawer(false)}>
-            <List>
-                {drawerListItems.map((item) => (
-                    <ListItem key={item.path}>
-                        <ListItemButton onClick={() => navigate(item.path)}>
-                            <ListItemIcon sx={{ minWidth: 32 }}>
-                                {item.icon}
+        <Box
+            sx={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
+            {/* User info section at top of drawer */}
+            {access && user && (
+                <>
+                    <Box
+                        sx={{
+                            p: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 2,
+                            borderBottom: 1,
+                            borderColor: "divider",
+                        }}
+                    >
+                        <Avatar
+                            {...stringAvatar(user.name)}
+                            sx={{ width: 48, height: 48 }}
+                        />
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                            <Typography
+                                variant="subtitle1"
+                                sx={{
+                                    fontWeight: 600,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    whiteSpace: "nowrap",
+                                }}
+                            >
+                                {user.name}
+                            </Typography>
+                            {user.email && (
+                                <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    sx={{
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        display: "block",
+                                    }}
+                                >
+                                    {user.email}
+                                </Typography>
+                            )}
+                        </Box>
+                    </Box>
+                </>
+            )}
+            <Box sx={{ flex: 1, overflow: "auto" }}>
+                <List sx={{ py: 1 }}>
+                    {drawerListItems.map((item, index) => (
+                        <ListItem
+                            key={item.path || item.external || index}
+                            disablePadding
+                        >
+                            <ListItemButton
+                                onClick={() => {
+                                    if (item.external) {
+                                        window.open(item.external, "_blank");
+                                    } else {
+                                        navigate(item.path);
+                                    }
+                                    toggleDrawer(false);
+                                }}
+                                sx={{
+                                    py: 1.5,
+                                    px: 2,
+                                }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 40 }}>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.label} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
+                </List>
+                {/* Theme selector in drawer */}
+                <>
+                    <Divider sx={{ my: 1 }} />
+                    <List>
+                        <ListItem disablePadding>
+                            <ListItemButton
+                                onClick={themeMenu.handleClick}
+                                sx={{ py: 1.5, px: 2 }}
+                            >
+                                <ListItemIcon sx={{ minWidth: 40 }}>
+                                    <ContrastIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Theme" />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                    <Menu
+                        anchorEl={themeMenu.anchorEl}
+                        open={themeMenu.open}
+                        onClose={themeMenu.handleClose}
+                        slotProps={{
+                            paper: {
+                                elevation: 0,
+                                sx: {
+                                    overflow: "visible",
+                                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                                    mt: 1.5,
+                                },
+                            },
+                        }}
+                        transformOrigin={{
+                            horizontal: "right",
+                            vertical: "top",
+                        }}
+                        anchorOrigin={{
+                            horizontal: "right",
+                            vertical: "bottom",
+                        }}
+                    >
+                        <MenuItem
+                            onClick={() => {
+                                setMode("system");
+                                themeMenu.handleClose();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <ComputerIcon fontSize="small" />
                             </ListItemIcon>
-                            <ListItemText primary={item.label} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
-            </List>
+                            System default
+                            {mode === "system" && (
+                                <ListItemIcon sx={{ marginLeft: 2 }}>
+                                    <CheckIcon fontSize="small" />
+                                </ListItemIcon>
+                            )}
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                setMode("light");
+                                themeMenu.handleClose();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <LightModeIcon fontSize="small" />
+                            </ListItemIcon>
+                            Light mode
+                            {mode === "light" && (
+                                <ListItemIcon sx={{ marginLeft: 2 }}>
+                                    <CheckIcon fontSize="small" />
+                                </ListItemIcon>
+                            )}
+                        </MenuItem>
+                        <MenuItem
+                            onClick={() => {
+                                setMode("dark");
+                                themeMenu.handleClose();
+                            }}
+                        >
+                            <ListItemIcon>
+                                <DarkModeIcon fontSize="small" />
+                            </ListItemIcon>
+                            Dark mode
+                            {mode === "dark" && (
+                                <ListItemIcon sx={{ marginLeft: 2 }}>
+                                    <CheckIcon fontSize="small" />
+                                </ListItemIcon>
+                            )}
+                        </MenuItem>
+                    </Menu>
+                </>
+            </Box>
         </Box>
     );
 
@@ -210,91 +399,155 @@ function Header() {
                         display="flex"
                         justifyContent={isMobile ? "space-between" : "center"}
                         alignItems="center"
-                        gap={3}
-                        paddingBlock={1.5}
-                        paddingInline={isMobile ? 2 : 4}
+                        gap={isMobile ? 1 : isTablet ? 2 : 3}
+                        paddingBlock={isMobile ? 1 : 1.5}
+                        paddingInline={isMobile ? 1.5 : isTablet ? 2.5 : 4}
                         borderBottom={1}
                         borderColor="divider"
+                        sx={{
+                            flexWrap: isMobile ? "nowrap" : "wrap",
+                        }}
                     >
+                        {/* Logo and Title */}
                         <Box
                             to="/"
                             display="flex"
                             alignItems="center"
-                            gap={1}
-                            sx={{ cursor: "pointer" }}
+                            gap={isMobile ? 0.5 : 1}
+                            sx={{
+                                cursor: "pointer",
+                                flexShrink: 0,
+                            }}
                             onClick={() => navigate("/")}
                         >
                             <img
                                 src="/logo.png"
                                 alt="PathFinder"
-                                width={32}
-                                height={32}
+                                width={isMobile ? 28 : 32}
+                                height={isMobile ? 28 : 32}
                                 draggable={false}
-                                sx={{ userSelect: "none" }}
+                                style={{ userSelect: "none" }}
                             />
                             <Typography
-                                variant="h6"
-                                sx={{ userSelect: "none" }}
+                                variant={isMobile ? "subtitle1" : "h6"}
+                                sx={{
+                                    userSelect: "none",
+                                    fontWeight: 600,
+                                    display: isMobile ? "none" : "block",
+                                }}
                             >
                                 PathFinder
                             </Typography>
                         </Box>
+
+                        {/* Mobile Menu Button */}
                         {isMobile && (
-                            <IconButton onClick={() => toggleDrawer(true)}>
+                            <IconButton
+                                onClick={() => toggleDrawer(true)}
+                                sx={{ flexShrink: 0 }}
+                            >
                                 <MenuIcon />
                             </IconButton>
                         )}
-                        <Divider orientation="vertical" flexItem />
-                        <form
-                            ref={searchBarRef}
-                            style={{
-                                display: "flex",
-                                alignItems: "center",
-                            }}
-                            onSubmit={handleSubmit}
-                        >
-                            <Autocomplete
-                                freeSolo
-                                value={value}
-                                onChange={(_, newValue) => setValue(newValue)}
-                                onInputChange={(_, newInputValue) =>
-                                    handleInput(newInputValue)
-                                }
-                                options={options}
-                                sx={{ width: 350, margin: "10px auto" }}
-                                renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        id="search-bar"
-                                        className="text"
-                                        onClick={handleClick}
-                                        label="Search items"
-                                        variant="outlined"
-                                        placeholder="Search..."
-                                        size="small"
-                                    />
-                                )}
-                            />
-                            <IconButton type="submit" aria-label="search">
-                                <SearchIcon style={{ fill: "primary.light" }} />
-                            </IconButton>
-                        </form>
+
+                        {/* Search Bar - Hidden on mobile, shown as icon */}
                         {isMobile ? (
-                            <Drawer
-                                open={drawerOpen}
-                                onClose={() => toggleDrawer(false)}
-                                anchor="right"
+                            <IconButton
+                                onClick={() => setSearchActive(true)}
+                                sx={{ ml: "auto", flexShrink: 0 }}
+                                aria-label="search"
                             >
-                                {drawerList}
-                            </Drawer>
+                                <SearchIcon />
+                            </IconButton>
                         ) : (
                             <>
+                                <Divider
+                                    orientation="vertical"
+                                    flexItem
+                                    sx={{
+                                        display: {
+                                            xs: "none",
+                                            sm: "block",
+                                        },
+                                    }}
+                                />
+                                <form
+                                    ref={searchBarRef}
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        flex: isTablet
+                                            ? "1 1 auto"
+                                            : "0 1 auto",
+                                        minWidth: 0,
+                                    }}
+                                    onSubmit={handleSubmit}
+                                >
+                                    <Autocomplete
+                                        freeSolo
+                                        value={value}
+                                        onChange={(_, newValue) =>
+                                            setValue(newValue)
+                                        }
+                                        onInputChange={(_, newInputValue) =>
+                                            handleInput(newInputValue)
+                                        }
+                                        options={options}
+                                        sx={{
+                                            width: isTablet
+                                                ? "100%"
+                                                : {
+                                                      xs: "100%",
+                                                      sm: 300,
+                                                      md: 350,
+                                                  },
+                                            maxWidth: "100%",
+                                            margin: "10px auto",
+                                        }}
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                id="search-bar"
+                                                className="text"
+                                                onClick={handleClick}
+                                                label={
+                                                    isTablet
+                                                        ? "Search"
+                                                        : "Search items"
+                                                }
+                                                variant="outlined"
+                                                placeholder="Search..."
+                                                size="small"
+                                            />
+                                        )}
+                                    />
+                                    <IconButton
+                                        type="submit"
+                                        aria-label="search"
+                                        sx={{ flexShrink: 0 }}
+                                    >
+                                        <SearchIcon />
+                                    </IconButton>
+                                </form>
+                            </>
+                        )}
+                        {/* Desktop Navigation */}
+                        {!isMobile && (
+                            <>
+                                <Divider
+                                    orientation="vertical"
+                                    flexItem
+                                    sx={{
+                                        display: { xs: "none", sm: "block" },
+                                    }}
+                                />
                                 <Box
                                     display="flex"
                                     alignItems="center"
                                     justifyContent="center"
-                                    gap={2}
+                                    gap={isTablet ? 1 : 2}
                                     ml="auto"
+                                    sx={{ flexShrink: 0 }}
                                 >
                                     <HeaderLink to="/about">
                                         About Us
@@ -540,17 +793,79 @@ function Header() {
                                 </Box>
                             </>
                         )}
+
+                        {/* Mobile Drawer */}
+                        {isMobile && (
+                            <Drawer
+                                open={drawerOpen}
+                                onClose={() => toggleDrawer(false)}
+                                anchor="right"
+                                slotProps={{
+                                    paper: {
+                                        sx: {
+                                            width: "80vw",
+                                            maxWidth: 400,
+                                            borderRadius: 0,
+                                            maxHeight: "100vh",
+                                        },
+                                    },
+                                }}
+                            >
+                                {drawerList}
+                            </Drawer>
+                        )}
                     </Box>
                 </header>
             </HideOnScroll>
 
+            {/* Mobile Search Dialog */}
+            {isMobile && (
+                <Dialog
+                    open={searchActive}
+                    onClose={() => setSearchActive(false)}
+                    fullWidth
+                    maxWidth="sm"
+                    aria-labelledby="search-dialog-title"
+                >
+                    <DialogTitle id="search-dialog-title" textAlign={"center"}>
+                        Search for an item
+                    </DialogTitle>
+                    <DialogContent>
+                        <form onSubmit={handleSubmit}>
+                            <Autocomplete
+                                freeSolo
+                                value={value}
+                                onChange={(_, newValue) => setValue(newValue)}
+                                onInputChange={(_, newInputValue) =>
+                                    handleInput(newInputValue)
+                                }
+                                options={options}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        id="mobile-search-bar"
+                                        className="text"
+                                        variant="outlined"
+                                        placeholder="Search..."
+                                        size="medium"
+                                        autoFocus
+                                    />
+                                )}
+                            />
+                        </form>
+                    </DialogContent>
+                </Dialog>
+            )}
+
             {/* This backdrop will not hide the header */}
-            <Backdrop
-                open={searchActive}
-                sx={{
-                    zIndex: 999,
-                }}
-            />
+            {!isMobile && (
+                <Backdrop
+                    open={searchActive}
+                    sx={{
+                        zIndex: 999,
+                    }}
+                />
+            )}
         </>
     );
 }
