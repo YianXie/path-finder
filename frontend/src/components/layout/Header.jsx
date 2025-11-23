@@ -156,10 +156,6 @@ function Header() {
         }
     }, []);
 
-    const handleDialogClose = () => {
-        setSearchActive(false);
-    };
-
     useEffect(() => {
         getSuggestions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -855,7 +851,7 @@ function Header() {
             {isMobile && (
                 <Dialog
                     open={searchActive}
-                    onClose={handleDialogClose}
+                    onClose={() => setSearchActive(false)}
                     fullWidth
                     maxWidth="sm"
                     aria-labelledby="search-dialog-title"

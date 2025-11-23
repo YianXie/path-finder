@@ -1,5 +1,4 @@
 import { Container, Divider } from "@mui/material";
-import { Typography } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { Fragment } from "react";
 
@@ -85,7 +84,6 @@ function Home() {
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
             )}
-
             {savedSuggestions.length > 0 && (
                 <Fragment key="saved-by-you">
                     <ItemList

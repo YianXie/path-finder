@@ -1,14 +1,34 @@
-import { Box, Divider, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { useEffect, useRef } from "react";
 
 import Item from "./Item";
 
 function ItemList({ suggestions, name }) {
+    const itemListRef = useRef(null);
+
+    useEffect(() => {
+        if (itemListRef.current && suggestions.length > 0) {
+            // Use requestAnimationFrame to ensure DOM is fully rendered
+            requestAnimationFrame(() => {
+                if (itemListRef.current) {
+                    itemListRef.current.scrollBy({
+                        top: 0,
+                        left: 50,
+                        behavior: "smooth",
+                    });
+                }
+            });
+        }
+    }, [suggestions]);
+
     return (
         <Box display="flex" flexDirection="column" gap={2} padding={2}>
             <Typography variant="h4" fontWeight={400} margin={1}>
                 {name}
             </Typography>
             <Box
+                ref={itemListRef}
                 sx={{
                     display: "flex",
                     overflowX: "auto", // allow horizontal scroll inside this box
