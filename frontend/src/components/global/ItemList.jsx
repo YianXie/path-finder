@@ -12,11 +12,7 @@ function ItemList({ suggestions, name }) {
             // Use requestAnimationFrame to ensure DOM is fully rendered
             requestAnimationFrame(() => {
                 if (itemListRef.current) {
-                    itemListRef.current.scrollBy({
-                        top: 0,
-                        left: 50,
-                        behavior: "smooth",
-                    });
+                    itemListRef.current.scrollLeft = 50;
                 }
             });
         }
