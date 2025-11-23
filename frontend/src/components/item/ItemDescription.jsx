@@ -2,12 +2,11 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
 
-import { ItemDetailContext } from "../../contexts/ItemDetailContext";
+import { useItemDetail } from "../../contexts/ItemDetailContext";
 
 export function ItemDescription() {
-    const { state } = useContext(ItemDetailContext);
+    const { state } = useItemDetail();
 
     return (
         <Box sx={{ marginBottom: 3 }}>

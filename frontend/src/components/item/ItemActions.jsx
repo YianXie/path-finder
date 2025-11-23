@@ -5,16 +5,16 @@ import ShareIcon from "@mui/icons-material/Share";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
-import { useContext } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
-import { ItemDetailContext } from "../../contexts/ItemDetailContext";
+import { useItemDetail } from "../../contexts/ItemDetailContext";
 import { useItemActions } from "../../hooks";
 
 export function ItemActions() {
     const { access } = useAuth();
-    const { state, setters } = useContext(ItemDetailContext);
+    const { state, setters } = useItemDetail();
     const { handleShare, handleSave, handleExternalLink } = useItemActions();
     const { external_id } = useParams();
 
@@ -48,6 +48,10 @@ export function ItemActions() {
             handleExternalLink(state.itemInfo.url);
         }
     };
+
+    useEffect(() => {
+        console.log(state);
+    }, [state]);
 
     return (
         <Stack direction="row" spacing={1}>

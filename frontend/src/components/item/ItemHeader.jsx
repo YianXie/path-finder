@@ -3,12 +3,11 @@ import Chip from "@mui/material/Chip";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
 
-import { ItemDetailContext } from "../../contexts/ItemDetailContext";
+import { useItemDetail } from "../../contexts/ItemDetailContext";
 
 export function ItemHeader() {
-    const { state } = useContext(ItemDetailContext);
+    const { state } = useItemDetail();
 
     return (
         <>

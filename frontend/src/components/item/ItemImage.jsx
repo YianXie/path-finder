@@ -1,11 +1,10 @@
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
-import { useContext } from "react";
 
-import { ItemDetailContext } from "../../contexts/ItemDetailContext";
+import { useItemDetail } from "../../contexts/ItemDetailContext";
 
 export function ItemImage() {
-    const { state } = useContext(ItemDetailContext);
+    const { state } = useItemDetail();
 
     return (
         <Grid padding={2} width="100%">

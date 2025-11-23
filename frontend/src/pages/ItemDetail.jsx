@@ -3,14 +3,14 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop } from "../components/common";
 import { ItemDetailCard } from "../components/item/ItemDetailCard";
 import { useAuth } from "../contexts/AuthContext";
-import { ItemDetailContext } from "../contexts/ItemDetailContext";
+import { useItemDetail } from "../contexts/ItemDetailContext";
 import usePageTitle from "../hooks/usePageTitle";
 
 /**
@@ -23,7 +23,7 @@ import usePageTitle from "../hooks/usePageTitle";
 function ItemDetail() {
     usePageTitle("PathFinder | Item Detail");
 
-    const { state, setters } = useContext(ItemDetailContext);
+    const { state, setters } = useItemDetail();
     const { external_id } = useParams();
     const { access } = useAuth();
     const navigate = useNavigate();

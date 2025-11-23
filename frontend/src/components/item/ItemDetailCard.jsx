@@ -7,10 +7,10 @@ import Divider from "@mui/material/Divider";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 import { useAuth } from "../../contexts/AuthContext";
-import { ItemDetailContext } from "../../contexts/ItemDetailContext";
+import { useItemDetail } from "../../contexts/ItemDetailContext";
 import { ItemActions } from "./ItemActions";
 import ItemComments from "./ItemComments";
 import { ItemDescription } from "./ItemDescription";
@@ -19,7 +19,7 @@ import { ItemImage } from "./ItemImage";
 import RateItem from "./RateItem";
 
 export function ItemDetailCard({ external_id }) {
-    const { state } = useContext(ItemDetailContext);
+    const { state } = useItemDetail();
     const [isRateItemOpen, setIsRateItemOpen] = useState(false);
     const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
     const { access } = useAuth();
