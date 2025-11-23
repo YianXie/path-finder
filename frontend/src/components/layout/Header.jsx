@@ -13,11 +13,9 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import SearchIcon from "@mui/icons-material/Search";
 import Autocomplete from "@mui/material/Autocomplete";
 import Avatar from "@mui/material/Avatar";
-import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
@@ -96,31 +94,47 @@ function Header() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setSearchActive(false);
         if (e.target[0].value.trim() !== "") {
             navigate(`/search?query=${e.target[0].value.trim()}`);
-            setSearchActive(false);
         }
     };
 
-    const handleClickOutside = (e) => {
-        if (searchBarRef.current && !searchBarRef.current.contains(e.target)) {
-            setSearchActive(false);
-        }
-    };
+    const handleClickOutside = useCallback(
+        (e) => {
+            if (
+                !isMobile &&
+                searchBarRef.current &&
+                !searchBarRef.current.contains(e.target)
+            ) {
+                setSearchActive(false);
+            }
+        },
+        [isMobile, searchBarRef]
+    );
 
     useEffect(() => {
         if (searchActive) {
-            document.body.style.overflow = "hidden";
-            document.addEventListener("click", handleClickOutside);
-        } else {
-            document.body.style.overflow = "auto";
-        }
+            // Only add click listener on desktop (mobile uses Dialog's onClose)
+            if (!isMobile) {
+                document.body.style.overflow = "hidden";
+                document.addEventListener("click", handleClickOutside);
+            }
 
-        return () => {
-            document.body.style.overflow = "auto";
-            document.removeEventListener("click", handleClickOutside);
-        };
-    }, [searchActive]);
+            return () => {
+                if (!isMobile) {
+                    document.body.style.overflow = "";
+                    document.removeEventListener("click", handleClickOutside);
+                }
+            };
+        } else {
+            // Clean up listener if it exists (shouldn't happen, but safety check)
+            if (!isMobile) {
+                document.body.style.overflow = "";
+                document.removeEventListener("click", handleClickOutside);
+            }
+        }
+    }, [searchActive, isMobile, handleClickOutside]);
 
     const getSuggestions = useCallback(async (page = 1) => {
         try {
@@ -141,6 +155,10 @@ function Header() {
             console.error("Failed to load suggestions for search bar.", error);
         }
     }, []);
+
+    const handleDialogClose = () => {
+        setSearchActive(false);
+    };
 
     useEffect(() => {
         getSuggestions();
@@ -443,7 +461,10 @@ function Header() {
                         {/* Mobile Menu Button */}
                         {isMobile && (
                             <IconButton
-                                onClick={() => toggleDrawer(true)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleDrawer(true);
+                                }}
                                 sx={{ flexShrink: 0 }}
                             >
                                 <MenuIcon />
@@ -493,6 +514,18 @@ function Header() {
                                             handleInput(newInputValue)
                                         }
                                         options={options}
+                                        slotProps={{
+                                            popper: {
+                                                sx: {
+                                                    boxShadow:
+                                                        "0 0 10px rgba(0, 0, 0, 0.1)",
+                                                    scrollbarWidth: "none",
+                                                    "&::-webkit-scrollbar": {
+                                                        display: "none",
+                                                    },
+                                                },
+                                            },
+                                        }}
                                         sx={{
                                             width: isTablet
                                                 ? "100%"
@@ -822,7 +855,7 @@ function Header() {
             {isMobile && (
                 <Dialog
                     open={searchActive}
-                    onClose={() => setSearchActive(false)}
+                    onClose={handleDialogClose}
                     fullWidth
                     maxWidth="sm"
                     aria-labelledby="search-dialog-title"
@@ -855,16 +888,6 @@ function Header() {
                         </form>
                     </DialogContent>
                 </Dialog>
-            )}
-
-            {/* This backdrop will not hide the header */}
-            {!isMobile && (
-                <Backdrop
-                    open={searchActive}
-                    sx={{
-                        zIndex: 999,
-                    }}
-                />
             )}
         </>
     );

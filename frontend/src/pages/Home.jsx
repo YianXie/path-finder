@@ -9,7 +9,7 @@ import ItemList from "../components/global/ItemList";
 import { useAuth } from "../contexts/AuthContext";
 import { useApiError } from "../hooks";
 
-function HomeRedesign() {
+function Home() {
     const { access } = useAuth();
     const { handleError } = useApiError();
     const [isLoading, setIsLoading] = useState(false);
@@ -110,4 +110,4 @@ function HomeRedesign() {
     );
 }
 
-export default HomeRedesign;
+export default Home;

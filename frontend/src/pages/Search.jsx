@@ -70,7 +70,7 @@ function Search() {
                 setIsLoading(false);
             }
         },
-        [access, handleError]
+        [handleError, query]
     );
 
     // Function to refresh suggestions (useful after saving/unsaving items)

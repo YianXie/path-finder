@@ -12,7 +12,7 @@ import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import { ItemDetailProvider } from "./contexts/ItemDetailProvider";
 import About from "./pages/About";
-import HomeRedesign from "./pages/HomeRedesign";
+import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Login from "./pages/auth/Login";
 import Logout from "./pages/auth/Logout";
@@ -29,7 +29,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/" element={<Layout />}>
-                    <Route index element={<HomeRedesign />} />
+                    <Route index element={<Home />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/search" element={<Search />} />
                     <Route
