@@ -1,23 +1,68 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Item from "./Item";
 
 function ItemList({ suggestions, name, handleSaveStatusUpdate }) {
     const itemListRef = useRef(null);
+    const [scrollState, setScrollState] = useState({
+        canScrollLeft: false,
+        canScrollRight: false,
+        atLeft: true,
+        atRight: false,
+    });
+
+    const checkScrollState = (el) => {
+        if (!el) return;
+
+        const scrollLeft = el.scrollLeft;
+        const scrollWidth = el.scrollWidth;
+        const clientWidth = el.clientWidth;
+        const atLeft = scrollLeft <= 0;
+        const atRight = scrollLeft + clientWidth >= scrollWidth - 1; // -1 for rounding
+        const canScroll = scrollWidth > clientWidth;
+
+        setScrollState({
+            canScrollLeft: canScroll && !atLeft,
+            canScrollRight: canScroll && !atRight,
+            atLeft,
+            atRight,
+        });
+    };
 
     useEffect(() => {
-        if (itemListRef.current && suggestions.length > 0) {
-            // Use requestAnimationFrame to ensure DOM is fully rendered
-            requestAnimationFrame(() => {
-                if (itemListRef.current) {
-                    itemListRef.current.scrollLeft = 50;
-                }
-            });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        const el = itemListRef.current;
+        if (!el || suggestions.length === 0) return;
+
+        // Initial check
+        checkScrollState(el);
+
+        // Check on scroll
+        const handleScroll = () => {
+            checkScrollState(el);
+        };
+
+        // Check on resize (content might change)
+        const handleResize = () => {
+            checkScrollState(el);
+        };
+
+        el.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleResize);
+
+        // Use ResizeObserver to detect content size changes
+        const resizeObserver = new ResizeObserver(() => {
+            checkScrollState(el);
+        });
+        resizeObserver.observe(el);
+
+        return () => {
+            el.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleResize);
+            resizeObserver.disconnect();
+        };
+    }, [suggestions]);
 
     return (
         <Box display="flex" flexDirection="column" gap={2} padding={2}>
@@ -25,31 +70,78 @@ function ItemList({ suggestions, name, handleSaveStatusUpdate }) {
                 {name}
             </Typography>
             <Box
-                ref={itemListRef}
                 sx={{
-                    display: "flex",
-                    overflowX: "auto", // allow horizontal scroll inside this box
-                    gap: 2,
+                    position: "relative",
                     width: "100%",
-                    scrollbarWidth: "none",
                 }}
             >
-                {[...suggestions].map(
-                    (suggestion, index) =>
-                        suggestion && (
-                            <Box
-                                sx={{ flex: "0 0 auto", padding: 1 }}
-                                key={`${suggestion.external_id}-${index}`}
-                            >
-                                <Item
-                                    {...suggestion}
-                                    handleSaveStatusUpdate={
-                                        handleSaveStatusUpdate
-                                    }
-                                />
-                            </Box>
-                        )
+                {/* Left fade gradient indicator */}
+                {scrollState.canScrollLeft && (
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: 40,
+                            background: (theme) =>
+                                `linear-gradient(to right, ${theme.palette.background.paper}, transparent)`,
+                            pointerEvents: "none",
+                            zIndex: 1,
+                        }}
+                    />
                 )}
+
+                {/* Right fade gradient indicator */}
+                {scrollState.canScrollRight && (
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: 40,
+                            background: (theme) =>
+                                `linear-gradient(to left, ${theme.palette.background.paper}, transparent)`,
+                            pointerEvents: "none",
+                            zIndex: 1,
+                        }}
+                    />
+                )}
+
+                {/* Scrollable container */}
+                <Box
+                    ref={itemListRef}
+                    sx={{
+                        position: "relative",
+                        display: "flex",
+                        overflowX: "auto",
+                        gap: 2,
+                        scrollbarWidth: "none",
+                        "&::-webkit-scrollbar": {
+                            display: "none",
+                        },
+                        width: "100%",
+                        scrollBehavior: "smooth",
+                    }}
+                >
+                    {[...suggestions].map(
+                        (suggestion, index) =>
+                            suggestion && (
+                                <Box
+                                    sx={{ flex: "0 0 auto", padding: 1 }}
+                                    key={`${suggestion.external_id}-${index}`}
+                                >
+                                    <Item
+                                        {...suggestion}
+                                        handleSaveStatusUpdate={
+                                            handleSaveStatusUpdate
+                                        }
+                                    />
+                                </Box>
+                            )
+                    )}
+                </Box>
             </Box>
         </Box>
     );
