@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 import Item from "./Item";
 
-function ItemList({ suggestions, name }) {
+function ItemList({ suggestions, name, handleSaveStatusUpdate }) {
     const itemListRef = useRef(null);
 
     useEffect(() => {
@@ -16,7 +16,8 @@ function ItemList({ suggestions, name }) {
                 }
             });
         }
-    }, [suggestions]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <Box display="flex" flexDirection="column" gap={2} padding={2}>
@@ -40,7 +41,12 @@ function ItemList({ suggestions, name }) {
                                 sx={{ flex: "0 0 auto", padding: 1 }}
                                 key={`${suggestion.external_id}-${index}`}
                             >
-                                <Item {...suggestion} />
+                                <Item
+                                    {...suggestion}
+                                    handleSaveStatusUpdate={
+                                        handleSaveStatusUpdate
+                                    }
+                                />
                             </Box>
                         )
                 )}

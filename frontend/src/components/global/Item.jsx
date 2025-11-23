@@ -33,7 +33,7 @@ import { truncateString } from "../../utils";
  * @param {string} props.description - Item description
  * @param {string} props.image - URL of the item image
  * @param {boolean} props.is_saved - Whether the item is currently saved by the user
- * @param {Function} props.onSaveSuccess - Callback function called after successful save/unsave
+ * @param {Function} props.handleSaveStatusUpdate - Callback function called after successful save/unsave
  */
 function Item({
     external_id,
@@ -45,7 +45,7 @@ function Item({
     rate_count,
     saved_count,
     is_saved: initialIsSaved = false,
-    onSaveSuccess,
+    handleSaveStatusUpdate,
 }) {
     // React hooks
     const navigate = useNavigate();
@@ -81,8 +81,8 @@ function Item({
     const handleSave = async () => {
         await saveItem(external_id, isSaved, () => {
             setIsSaved(!isSaved);
-            if (onSaveSuccess) {
-                onSaveSuccess();
+            if (handleSaveStatusUpdate) {
+                handleSaveStatusUpdate();
             }
         });
     };
@@ -156,13 +156,13 @@ function Item({
                 </Stack>
                 <Stack alignItems="center" direction="row" gap={0.5}>
                     <Tooltip
-                        title="Save item"
+                        title={isSaved ? "Unsave item" : "Save item"}
                         placement="bottom"
                         arrow
                         sx={{ padding: 0 }}
                     >
                         <IconButton
-                            aria-label="Save item"
+                            aria-label={isSaved ? "Unsave item" : "Save item"}
                             onClick={handleSave}
                             color="primary"
                         >

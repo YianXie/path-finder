@@ -10,7 +10,11 @@ import usePageTitle from "../../hooks/usePageTitle";
 function Saved() {
     usePageTitle("PathFinder | Saved");
 
-    const { data: savedItems, isLoading } = useAsyncData(async () => {
+    const {
+        data: savedItems,
+        isLoading,
+        refetch: getSavedItems,
+    } = useAsyncData(async () => {
         const res = await api.post("/accounts/saved-items/");
         return res.data.suggestions;
     }, []);
@@ -41,6 +45,7 @@ function Saved() {
                             key={item.external_id}
                             {...item}
                             is_saved={item.is_saved}
+                            handleSaveStatusUpdate={getSavedItems}
                         />
                     ))}
                 </Grid>

@@ -69,7 +69,8 @@ function Home() {
 
     useEffect(() => {
         getSuggestions();
-    }, [getSuggestions]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <Container maxWidth="xl">
@@ -80,6 +81,7 @@ function Home() {
                     <ItemList
                         name={"Recommended For You"}
                         suggestions={personalizedSuggestions}
+                        handleSaveStatusUpdate={getSuggestions}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
@@ -89,6 +91,7 @@ function Home() {
                     <ItemList
                         name={"Saved by You"}
                         suggestions={savedSuggestions}
+                        handleSaveStatusUpdate={getSuggestions}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
@@ -100,6 +103,7 @@ function Home() {
                         suggestions={suggestions.filter((suggestion) =>
                             suggestion.tags.includes(tag)
                         )}
+                        handleSaveStatusUpdate={getSuggestions}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
