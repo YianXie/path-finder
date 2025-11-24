@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
+import { LoadingBackdrop } from "../common";
 
 /**
  * ProtectedRoute component for authentication-based route protection
@@ -11,10 +12,14 @@ import { useAuth } from "../../contexts/AuthContext";
  * @param {React.ReactNode} props.children - Child components to render if authenticated
  */
 function ProtectedRoute({ children }) {
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
+
+    if (isAuthenticated === null) {
+        return <LoadingBackdrop open={true} />;
+    }
 
     // Only render children if access is present
-    return access ? children : <Navigate to="/login" />;
+    return isAuthenticated ? children : <Navigate to="/login" />;
 }
 
 export default ProtectedRoute;

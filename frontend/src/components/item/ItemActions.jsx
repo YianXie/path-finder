@@ -5,7 +5,6 @@ import ShareIcon from "@mui/icons-material/Share";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
-import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
@@ -13,7 +12,7 @@ import { useItemDetail } from "../../contexts/ItemDetailContext";
 import { useItemActions } from "../../hooks";
 
 export function ItemActions() {
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { state, setters } = useItemDetail();
     const { handleShare, handleSave, handleExternalLink } = useItemActions();
     const { external_id } = useParams();
@@ -49,15 +48,11 @@ export function ItemActions() {
         }
     };
 
-    useEffect(() => {
-        console.log(state);
-    }, [state]);
-
     return (
         <Stack direction="row" spacing={1}>
             {/* Save Button */}
             {/* Show Item actions buttons if logged in */}
-            {access && (
+            {isAuthenticated && (
                 <Tooltip
                     title={state.isSaved ? "Remove from saved" : "Save item"}
                     placement="bottom"

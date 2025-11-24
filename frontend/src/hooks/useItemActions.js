@@ -15,7 +15,7 @@ import useApiError from "./useApiError";
  * @returns {Function} returns.handleShare - Function to share an item via clipboard
  */
 function useItemActions() {
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { handleError, handleSuccess } = useApiError();
 
     /**
@@ -26,7 +26,7 @@ function useItemActions() {
      */
     const handleSave = useCallback(
         async (externalId, isSaved, onSuccess) => {
-            if (!access) {
+            if (!isAuthenticated) {
                 handleError(null, "Please login to save items");
                 return;
             }
@@ -47,7 +47,7 @@ function useItemActions() {
                 handleError(error, "Failed to save item to your profile");
             }
         },
-        [access, handleError, handleSuccess]
+        [isAuthenticated, handleError, handleSuccess]
     );
 
     /**
@@ -74,7 +74,7 @@ function useItemActions() {
      */
     const handleRating = useCallback(
         async (externalId, rating, onSuccess) => {
-            if (!access) {
+            if (!isAuthenticated) {
                 handleError(null, "Please login to save items");
                 return;
             }
@@ -94,7 +94,7 @@ function useItemActions() {
                 handleError(error, "Failed to update item rating");
             }
         },
-        [access, handleError, handleSuccess]
+        [isAuthenticated, handleError, handleSuccess]
     );
 
     const handleExternalLink = useCallback((url) => {

@@ -9,7 +9,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useApiError } from "../hooks";
 
 function Home() {
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
     const { handleError } = useApiError();
     const [isLoading, setIsLoading] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
@@ -28,7 +28,7 @@ function Home() {
         async (page = 1) => {
             try {
                 setIsLoading(true);
-                const endpoint = access
+                const endpoint = isAuthenticated
                     ? "/api/suggestions/personalized-suggestions/"
                     : "/api/suggestions/suggestions";
 
@@ -37,7 +37,7 @@ function Home() {
 
                 setSuggestions(res.data.results);
 
-                if (access) {
+                if (isAuthenticated) {
                     const uniqueSuggestions = res.data.results.filter(
                         (suggestion, index, self) =>
                             index ===
@@ -64,7 +64,7 @@ function Home() {
                 setIsLoading(false);
             }
         },
-        [handleError, access]
+        [handleError, isAuthenticated]
     );
 
     useEffect(() => {

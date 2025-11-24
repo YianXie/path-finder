@@ -25,7 +25,7 @@ function Search() {
     usePageTitle("PathFinder | Home");
 
     const { handleError, handleSuccess } = useApiError();
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [suggestions, setSuggestions] = useState([]);
     const [sortBy, setSortBy] = useState("relevance");
@@ -75,10 +75,10 @@ function Search() {
 
     // Function to refresh suggestions (useful after saving/unsaving items)
     const refreshSuggestions = useCallback(() => {
-        if (access) {
+        if (isAuthenticated) {
             getSuggestions(pagination.page);
         }
-    }, [access, getSuggestions, pagination.page]);
+    }, [isAuthenticated, getSuggestions, pagination.page]);
 
     useEffect(() => {
         getSuggestions();

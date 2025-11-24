@@ -25,7 +25,7 @@ function ItemDetail() {
 
     const { state, setters } = useItemDetail();
     const { external_id } = useParams();
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,7 +36,7 @@ function ItemDetail() {
 
                 // Use different endpoints based on authentication status
                 // Authenticated users get saved status, anonymous users don't
-                const endpoint = access
+                const endpoint = isAuthenticated
                     ? `/api/suggestions/suggestions-with-saved-status/${external_id}/`
                     : `/api/suggestions/suggestions/${external_id}`;
 
@@ -59,7 +59,7 @@ function ItemDetail() {
         }
         getItemInfo();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [external_id, access]);
+    }, [external_id, isAuthenticated]);
 
     if (state.error) {
         return (

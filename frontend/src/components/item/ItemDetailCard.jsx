@@ -22,7 +22,7 @@ export function ItemDetailCard({ external_id }) {
     const { state } = useItemDetail();
     const [isRateItemOpen, setIsRateItemOpen] = useState(false);
     const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     const handleRateItem = () => {
         setIsRateItemOpen(true);
@@ -50,7 +50,7 @@ export function ItemDetailCard({ external_id }) {
                                 <ItemActions />
                             </Box>
 
-                            {access && (
+                            {isAuthenticated && (
                                 <Button
                                     color="primary"
                                     sx={{ width: "fit-content" }}

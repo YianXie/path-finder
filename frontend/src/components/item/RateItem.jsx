@@ -32,7 +32,7 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 function RateItem({ open, onClose, external_id, onSubmitted }) {
-    const { access } = useAuth();
+    const { isAuthenticated } = useAuth();
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
     const [image, setImage] = useState(null);
@@ -76,7 +76,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
 
     return (
         <>
-            {access && (
+            {isAuthenticated && (
                 <Container
                     maxWidth="md"
                     sx={{

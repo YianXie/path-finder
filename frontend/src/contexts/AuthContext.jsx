@@ -5,6 +5,7 @@ import {
     useContext,
     useEffect,
     useMemo,
+    useRef,
     useState,
 } from "react";
 
@@ -27,6 +28,9 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [access, setAccess] = useState(null);
     const [refresh, setRefresh] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const pendingLoginResolver = useRef(null);
+    const pendingLoginValues = useRef(null);
 
     /**
      * Checks if a JWT token is expired
@@ -136,6 +140,7 @@ export const AuthProvider = ({ children }) => {
                         const payload = jwtDecode(storedAccess);
                         setAccess(storedAccess);
                         setRefresh(storedRefresh);
+                        setIsAuthenticated(true);
 
                         // Check if email and name are in the token
                         if (payload.email && payload.name) {
@@ -156,16 +161,29 @@ export const AuthProvider = ({ children }) => {
                         // Clear invalid tokens
                         localStorage.removeItem("access");
                         localStorage.removeItem("refresh");
+                        setIsAuthenticated(false);
                     }
                 } else {
                     // Access token expired, try to refresh
                     refreshToken(storedRefresh);
                 }
+            } else {
+                setIsAuthenticated(false);
             }
         };
 
         initializeAuth();
     }, [refreshToken, fetchUserProfile]);
+
+    // useEffect(() => {
+    //     if (access === null || refresh === null || user === null) {
+    //         setIsAuthenticated(null);
+    //     } else if (access && refresh && user) {
+    //         setIsAuthenticated(true);
+    //     } else {
+    //         setIsAuthenticated(false);
+    //     }
+    // }, [access, refresh, user]);
 
     useEffect(() => {
         if (access) {
@@ -186,6 +204,23 @@ export const AuthProvider = ({ children }) => {
         }
     }, [access]);
 
+    // Resolve pending login promise after state updates are committed
+    useEffect(() => {
+        if (
+            pendingLoginResolver.current &&
+            pendingLoginValues.current &&
+            access === pendingLoginValues.current.access &&
+            refresh === pendingLoginValues.current.refresh &&
+            user === pendingLoginValues.current.user
+        ) {
+            // State updates have been committed and match expected values, resolve the promise
+            const resolver = pendingLoginResolver.current;
+            pendingLoginResolver.current = null;
+            pendingLoginValues.current = null;
+            resolver();
+        }
+    }, [access, refresh, user]);
+
     /**
      * Logs in a user with tokens and user data
      * @param {Object} tokens - Object containing access and refresh tokens
@@ -196,15 +231,19 @@ export const AuthProvider = ({ children }) => {
         return new Promise((resolve) => {
             localStorage.setItem("access", tokens.access);
             localStorage.setItem("refresh", tokens.refresh);
+
+            // Store the resolver and expected values to be checked after state updates
+            pendingLoginResolver.current = resolve;
+            pendingLoginValues.current = {
+                access: tokens.access,
+                refresh: tokens.refresh,
+                user: userData,
+            };
+
+            // Update state - React will batch these updates
             setAccess(tokens.access);
             setRefresh(tokens.refresh);
             setUser(userData);
-
-            // Use setTimeout to ensure state updates are processed
-            // TODO: this is not a good solution, we should use a better way to ensure state updates are processed
-            setTimeout(() => {
-                resolve();
-            }, 500);
         });
     }, []);
 
@@ -244,11 +283,20 @@ export const AuthProvider = ({ children }) => {
             user,
             access,
             refresh,
+            isAuthenticated,
             login,
             logout,
             getValidAccessToken,
         }),
-        [user, access, refresh, login, logout, getValidAccessToken]
+        [
+            user,
+            access,
+            refresh,
+            isAuthenticated,
+            login,
+            logout,
+            getValidAccessToken,
+        ]
     );
 
     return (
