@@ -36,7 +36,7 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -79,9 +79,11 @@ function Header() {
     const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // < 600px
     const isTablet = useMediaQuery(theme.breakpoints.between("sm", "md")); // 600px - 900px
     const searchBarRef = useRef(null);
+    const [searchParams] = useSearchParams();
+    const query = searchParams.get("query");
     const [searchActive, setSearchActive] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState(query || "");
     const [options, setOptions] = useState([]);
 
     const handleInput = () => {
@@ -135,6 +137,10 @@ function Header() {
             }
         }
     }, [searchActive, isMobile, handleClickOutside]);
+
+    useEffect(() => {
+        setValue(query || "");
+    }, [query]);
 
     const getSuggestions = useCallback(async (page = 1) => {
         try {

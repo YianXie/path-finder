@@ -184,13 +184,19 @@ function Search() {
                 justifyContent="center"
                 alignItems="center"
             >
-                {sortedSuggestions.map((suggestion, index) => (
-                    <Item
-                        key={`${suggestion.external_id}-${index}`}
-                        {...suggestion}
-                        onSaveSuccess={refreshSuggestions}
-                    />
-                ))}
+                {sortedSuggestions.length > 0 ? (
+                    sortedSuggestions.map((suggestion, index) => (
+                        <Item
+                            key={`${suggestion.external_id}-${index}`}
+                            {...suggestion}
+                            onSaveSuccess={refreshSuggestions}
+                        />
+                    ))
+                ) : (
+                    <Typography variant="body1" color="text.secondary">
+                        No suggestions found
+                    </Typography>
+                )}
             </Grid>
 
             {/* Pagination Controls */}
