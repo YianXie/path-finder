@@ -20,9 +20,9 @@ import RateItem from "./RateItem";
 
 export function ItemDetailCard({ external_id }) {
     const { state } = useItemDetail();
+    const { isAuthenticated } = useAuth();
     const [isRateItemOpen, setIsRateItemOpen] = useState(false);
     const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
-    const { isAuthenticated } = useAuth();
 
     const handleRateItem = () => {
         setIsRateItemOpen(true);

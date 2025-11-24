@@ -2,7 +2,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from "@mui/icons-material/Upload";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
+import Dialog from "@mui/material/Dialog";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Rating from "@mui/material/Rating";
@@ -12,12 +12,15 @@ import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
-import LoadingBackdrop from "../common/LoadingBackdrop";
+
+const Transition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -77,8 +80,13 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
     return (
         <>
             {isAuthenticated && (
-                <Container
+                <Dialog
+                    open={open}
+                    onClose={onClose}
                     maxWidth="md"
+                    slots={{
+                        transition: Transition,
+                    }}
                     sx={{
                         position: "fixed",
                         top: 0,
@@ -91,116 +99,105 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                         pointerEvents: open ? "auto" : "none",
                     }}
                 >
-                    <LoadingBackdrop
-                        open={open}
-                        onClick={onClose}
+                    <Box
                         sx={(theme) => ({
-                            color: theme.palette.primary.main,
-                            backdropFilter: "brightness(0.5)",
-                            zIndex: theme.zIndex.drawer + 1,
+                            zIndex: 10000,
+                            backgroundColor: theme.palette.background.paper,
+                            borderRadius: 2,
+                            padding: 2,
+                            boxShadow: 2,
+                            width: "500px",
+                            maxWidth: "100%",
                         })}
-                    ></LoadingBackdrop>
-                    <Slide direction="up" in={open} mountOnEnter unmountOnExit>
-                        <Box
-                            sx={(theme) => ({
-                                zIndex: 10000,
-                                backgroundColor: theme.palette.background.paper,
-                                borderRadius: 2,
-                                padding: 2,
-                                boxShadow: 2,
-                                width: "500px",
-                                maxWidth: "100%",
-                            })}
+                    >
+                        <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="center"
                         >
-                            <Stack
-                                direction="row"
-                                justifyContent="space-between"
-                                alignItems="center"
-                            >
-                                <Typography variant="h6" color="primary">
-                                    Write a review
-                                </Typography>
-                                <Tooltip title="Close" arrow>
-                                    <IconButton onClick={onClose}>
-                                        <CloseIcon color="primary" />
-                                    </IconButton>
-                                </Tooltip>
-                            </Stack>
-                            <Divider sx={{ my: 2 }} />
+                            <Typography variant="h6" color="primary">
+                                Write a review
+                            </Typography>
+                            <Tooltip title="Close" arrow>
+                                <IconButton onClick={onClose}>
+                                    <CloseIcon color="primary" />
+                                </IconButton>
+                            </Tooltip>
+                        </Stack>
+                        <Divider sx={{ my: 2 }} />
 
-                            <Box
-                                sx={{
-                                    my: 2,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 1,
-                                }}
-                            >
-                                <Typography variant="body1" color="primary">
-                                    Rating
-                                </Typography>
-                                <Rating
-                                    value={rating}
-                                    precision={1}
-                                    size="large"
-                                    onChange={(event, newValue) =>
-                                        setRating(newValue)
-                                    }
-                                />
-                            </Box>
-                            <Box
-                                sx={{
-                                    mt: 2,
-                                    mb: 1,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    gap: 1,
-                                }}
-                            >
-                                <Typography variant="body1" color="primary">
-                                    Review
-                                </Typography>
-                                <TextField
-                                    multiline
-                                    rows={4}
-                                    fullWidth
-                                    placeholder="Write your review here"
-                                    value={comment}
-                                    onChange={(event) =>
-                                        setComment(event.target.value)
-                                    }
-                                />
-                            </Box>
-                            <Button
-                                sx={{ fontWeight: 500, mb: 1 }}
-                                role={undefined}
-                                tabIndex={-1}
-                                startIcon={<UploadIcon />}
-                                component="label"
-                            >
-                                {image ? image.name : "Upload Image"}
-                                <VisuallyHiddenInput
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(event) =>
-                                        setImage(event.target.files[0])
-                                    }
-                                />
-                            </Button>
-
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                onClick={handleSubmit}
-                                disabled={!rating}
-                                sx={{ mt: 2 }}
-                            >
-                                Submit
-                            </Button>
+                        <Box
+                            sx={{
+                                my: 2,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1,
+                            }}
+                        >
+                            <Typography variant="body1" color="primary">
+                                Rating
+                            </Typography>
+                            <Rating
+                                value={rating}
+                                precision={1}
+                                size="large"
+                                onChange={(event, newValue) =>
+                                    setRating(newValue)
+                                }
+                            />
                         </Box>
-                    </Slide>
-                </Container>
+                        <Box
+                            sx={{
+                                mt: 2,
+                                mb: 1,
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: 1,
+                            }}
+                        >
+                            <Typography variant="body1" color="primary">
+                                Review
+                            </Typography>
+                            <TextField
+                                multiline
+                                rows={4}
+                                fullWidth
+                                placeholder="Write your review here"
+                                value={comment}
+                                onChange={(event) =>
+                                    setComment(event.target.value)
+                                }
+                            />
+                        </Box>
+                        <Button
+                            sx={{ fontWeight: 500, mb: 1 }}
+                            role={undefined}
+                            tabIndex={-1}
+                            startIcon={<UploadIcon />}
+                            component="label"
+                        >
+                            {image ? image.name : "Upload Image"}
+                            <VisuallyHiddenInput
+                                type="file"
+                                accept="image/*"
+                                onChange={(event) =>
+                                    setImage(event.target.files[0])
+                                }
+                            />
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            onClick={handleSubmit}
+                            disabled={!rating}
+                            sx={{ mt: 2 }}
+                        >
+                            Submit
+                        </Button>
+                    </Box>
+                </Dialog>
             )}
         </>
     );
