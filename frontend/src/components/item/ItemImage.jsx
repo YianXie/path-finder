@@ -12,6 +12,7 @@ export function ItemImage() {
                 component="img"
                 image={state.itemInfo.image}
                 alt={state.itemInfo.name}
+                draggable={false}
                 sx={{
                     height: { xs: 250, md: 400 },
                     objectFit: "cover",
@@ -19,6 +20,7 @@ export function ItemImage() {
                     backgroundColor: "grey.100",
                     cursor: "pointer",
                     transition: "transform 0.3s ease-in-out",
+                    userSelect: "none",
                 }}
                 onClick={() => {
                     window.open(state.itemInfo.image, "_blank");

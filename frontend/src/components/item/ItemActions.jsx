@@ -1,17 +1,21 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 import ShareIcon from "@mui/icons-material/Share";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { useItemDetail } from "../../contexts/ItemDetailContext";
 import { useItemActions } from "../../hooks";
 
-export function ItemActions() {
+export function ItemActions({ handleRateItem }) {
     const { isAuthenticated } = useAuth();
     const { state, setters } = useItemDetail();
     const { handleShare, handleSave, handleExternalLink } = useItemActions();
@@ -49,53 +53,79 @@ export function ItemActions() {
     };
 
     return (
-        <Stack direction="row" spacing={1}>
-            {/* Save Button */}
-            {/* Show Item actions buttons if logged in */}
-            {isAuthenticated && (
-                <Tooltip
-                    title={state.isSaved ? "Remove from saved" : "Save item"}
-                    placement="bottom"
-                >
-                    <IconButton
-                        onClick={onSave}
-                        color="primary"
-                        aria-label={
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 1,
+            }}
+        >
+            <Stack direction="row" spacing={1}>
+                {/* Save Button */}
+                {/* Show Item actions buttons if logged in */}
+                {isAuthenticated && (
+                    <Tooltip
+                        title={
                             state.isSaved ? "Remove from saved" : "Save item"
                         }
+                        placement="bottom"
                     >
-                        {state.isSaved ? (
-                            <FavoriteIcon />
-                        ) : (
-                            <FavoriteBorderIcon />
-                        )}
-                    </IconButton>
-                </Tooltip>
-            )}
+                        <IconButton
+                            onClick={onSave}
+                            color="primary"
+                            aria-label={
+                                state.isSaved
+                                    ? "Remove from saved"
+                                    : "Save item"
+                            }
+                        >
+                            {state.isSaved ? (
+                                <FavoriteIcon />
+                            ) : (
+                                <FavoriteBorderIcon />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+                )}
 
-            {/* Share Button */}
-            <Tooltip title="Share" placement="bottom">
-                <IconButton
-                    onClick={onShare}
-                    color="primary"
-                    aria-label="Share"
-                >
-                    <ShareIcon />
-                </IconButton>
-            </Tooltip>
-
-            {/* External Link Button */}
-            {state.itemInfo?.url && (
-                <Tooltip title="Visit Website" placement="bottom">
+                {/* Share Button */}
+                <Tooltip title="Share" placement="bottom">
                     <IconButton
-                        onClick={onExternalLink}
+                        onClick={onShare}
                         color="primary"
-                        aria-label="Visit Website"
+                        aria-label="Share"
                     >
-                        <OpenInNewIcon />
+                        <ShareIcon />
                     </IconButton>
                 </Tooltip>
+
+                {/* External Link Button */}
+                {state.itemInfo?.url && (
+                    <Tooltip title="Visit Website" placement="bottom">
+                        <IconButton
+                            onClick={onExternalLink}
+                            color="primary"
+                            aria-label="Visit Website"
+                        >
+                            <OpenInNewIcon />
+                        </IconButton>
+                    </Tooltip>
+                )}
+            </Stack>
+            {isAuthenticated && (
+                <Button
+                    color="primary"
+                    sx={{ width: "fit-content" }}
+                    onClick={handleRateItem}
+                >
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <RateReviewIcon color="primary" />
+                        <Typography variant="body1" fontWeight={500}>
+                            Write a review
+                        </Typography>
+                    </Stack>
+                </Button>
             )}
-        </Stack>
+        </Box>
     );
 }
