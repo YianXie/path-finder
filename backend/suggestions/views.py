@@ -216,9 +216,7 @@ def fuzzy_search_suggestions(query):
     # Extract top 50 IDs
     top_ids = [item_id for score, item_id in scored[:50]]
     ordered_ids = top_ids
-    preserved_order = Case(
-        *[When(id=pk, then=pos) for pos, pk in enumerate(ordered_ids)]
-    )
+    preserved_order = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ordered_ids)])
     qs = SuggestionModel.objects.filter(id__in=ordered_ids).order_by(preserved_order)
 
     return qs
@@ -252,9 +250,7 @@ class PersonalizedSuggestionsView(APIView):
         if suggestion_cache and len(suggestion_cache) > 0:
             ranked_suggestions = suggestion_cache[0]["suggestions"]
 
-            pagination_data, paginator, page_obj = get_pagination_data(
-                ranked_suggestions, page, page_size
-            )
+            pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
 
             for suggestion in pagination_data:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
@@ -319,9 +315,7 @@ class PersonalizedSuggestionsView(APIView):
         # Add to cache
         add_suggestion_cache_sync(user_model, ranked_suggestions)
 
-        pagination_data, paginator, page_obj = get_pagination_data(
-            ranked_suggestions, page, page_size
-        )
+        pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
         for suggestion in pagination_data:
             suggestion["is_saved"] = suggestion["external_id"] in saved_items
 
@@ -369,9 +363,7 @@ class PersonalizedSuggestionsView(APIView):
         if suggestion_cache and len(suggestion_cache) > 0:
             ranked_suggestions = suggestion_cache[0]["suggestions"]
 
-            pagination_data, paginator, page_obj = get_pagination_data(
-                ranked_suggestions, page, page_size
-            )
+            pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
 
             for suggestion in pagination_data:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
@@ -435,9 +427,7 @@ class PersonalizedSuggestionsView(APIView):
 
         add_suggestion_cache_sync(user_model, ranked_suggestions)
 
-        pagination_data, paginator, page_obj = get_pagination_data(
-            ranked_suggestions, page, page_size
-        )
+        pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
         for suggestion in pagination_data:
             suggestion["is_saved"] = suggestion["external_id"] in saved_items
 

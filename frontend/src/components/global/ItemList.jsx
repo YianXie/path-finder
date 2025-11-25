@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 import Item from "./Item";
 
-function ItemList({ suggestions, name, handleSaveStatusUpdate }) {
+function ItemList({
+    suggestions,
+    name,
+    handleSaveStatusUpdate,
+    selectedItems,
+    setSelectedItems,
+}) {
     const itemListRef = useRef(null);
     const [scrollState, setScrollState] = useState({
         canScrollLeft: false,
@@ -137,6 +143,8 @@ function ItemList({ suggestions, name, handleSaveStatusUpdate }) {
                                         handleSaveStatusUpdate={
                                             handleSaveStatusUpdate
                                         }
+                                        selectedItems={selectedItems}
+                                        setSelectedItems={setSelectedItems}
                                     />
                                 </Box>
                             )

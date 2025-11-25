@@ -1,4 +1,7 @@
-import { Container, Divider } from "@mui/material";
+import { Container, Divider, Typography } from "@mui/material";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Slide from "@mui/material/Slide";
 import { useCallback, useEffect, useState } from "react";
 import { Fragment } from "react";
 
@@ -15,6 +18,7 @@ function Home() {
     const [suggestions, setSuggestions] = useState([]);
     const [personalizedSuggestions, setPersonalizedSuggestions] = useState([]);
     const [savedSuggestions, setSavedSuggestions] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]);
 
     const tagsList = [
         "STEM & Innovation",
@@ -85,6 +89,8 @@ function Home() {
                         name={"Recommended For You"}
                         suggestions={personalizedSuggestions}
                         handleSaveStatusUpdate={getSuggestions}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
@@ -95,6 +101,8 @@ function Home() {
                         name={"Saved by You"}
                         suggestions={savedSuggestions}
                         handleSaveStatusUpdate={getSuggestions}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
@@ -107,10 +115,38 @@ function Home() {
                             suggestion.tags.includes(tag)
                         )}
                         handleSaveStatusUpdate={getSuggestions}
+                        selectedItems={selectedItems}
+                        setSelectedItems={setSelectedItems}
                     />
                     <Divider sx={{ marginY: 2 }} />
                 </Fragment>
             ))}
+            <Slide direction="up" in={selectedItems.length > 0}>
+                <Box
+                    sx={{
+                        position: "fixed",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        padding: 2,
+                        backgroundColor: "white",
+                        boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        zIndex: 999,
+                    }}
+                >
+                    <Typography variant="h6">Compare Items</Typography>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={selectedItems.length < 2}
+                    >
+                        Compare
+                    </Button>
+                </Box>
+            </Slide>
         </Container>
     );
 }
