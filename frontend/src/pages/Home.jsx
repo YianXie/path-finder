@@ -68,9 +68,12 @@ function Home() {
     );
 
     useEffect(() => {
+        // Still loading
+        if (isAuthenticated === null) return;
+
         getSuggestions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isAuthenticated]);
 
     return (
         <Container maxWidth="xl">
