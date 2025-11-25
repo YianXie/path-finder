@@ -4,14 +4,18 @@ import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
 import { useCallback, useEffect, useState } from "react";
 import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
 import ItemList from "../components/global/ItemList";
 import { useAuth } from "../contexts/AuthContext";
+import { usePageTitle } from "../hooks";
 import { useApiError } from "../hooks";
 
 function Home() {
+    usePageTitle("PathFinder");
+
     const { isAuthenticated } = useAuth();
     const { handleError } = useApiError();
     const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +23,7 @@ function Home() {
     const [personalizedSuggestions, setPersonalizedSuggestions] = useState([]);
     const [savedSuggestions, setSavedSuggestions] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
 
     const tagsList = [
         "STEM & Innovation",
@@ -70,6 +75,12 @@ function Home() {
         },
         [handleError, isAuthenticated]
     );
+
+    const handleCompare = () => {
+        navigate(
+            `/compare?item1=${selectedItems[0]}&item2=${selectedItems[1]}`
+        );
+    };
 
     useEffect(() => {
         // Still loading
@@ -129,7 +140,7 @@ function Home() {
                         left: 0,
                         right: 0,
                         padding: 2,
-                        backgroundColor: "white",
+                        backgroundColor: "primary.main",
                         boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
                         display: "flex",
                         justifyContent: "space-between",
@@ -137,11 +148,14 @@ function Home() {
                         zIndex: 999,
                     }}
                 >
-                    <Typography variant="h6">Compare Items</Typography>
+                    <Typography variant="h6" color="primary.contrastText">
+                        Compare Items
+                    </Typography>
                     <Button
                         variant="contained"
-                        color="primary"
+                        color="secondary"
                         disabled={selectedItems.length < 2}
+                        onClick={handleCompare}
                     >
                         Compare
                     </Button>

@@ -12,6 +12,7 @@ import ProtectedRoute from "./components/global/ProtectedRoute";
 import Layout from "./components/layout/Layout";
 import { ItemDetailProvider } from "./contexts/ItemDetailContext";
 import About from "./pages/About";
+import Compare from "./pages/Compare";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Login from "./pages/auth/Login";
@@ -65,6 +66,7 @@ function App() {
                             </ItemDetailProvider>
                         }
                     />
+                    <Route path="/compare" element={<Compare />} />
                     <Route path="*" element={<LazyNotFoundPage />} />
                 </Route>
             </Routes>

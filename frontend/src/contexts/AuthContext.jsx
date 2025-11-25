@@ -175,16 +175,6 @@ export const AuthProvider = ({ children }) => {
         initializeAuth();
     }, [refreshToken, fetchUserProfile]);
 
-    // useEffect(() => {
-    //     if (access === null || refresh === null || user === null) {
-    //         setIsAuthenticated(null);
-    //     } else if (access && refresh && user) {
-    //         setIsAuthenticated(true);
-    //     } else {
-    //         setIsAuthenticated(false);
-    //     }
-    // }, [access, refresh, user]);
-
     useEffect(() => {
         if (access) {
             try {
