@@ -8,7 +8,6 @@ import { useItemDetail } from "../../contexts/ItemDetailContext";
 
 export function ItemHeader() {
     const { state } = useItemDetail();
-
     return (
         <>
             {/* Name */}
@@ -48,8 +47,12 @@ export function ItemHeader() {
                         marginBottom: 2,
                     }}
                 >
-                    {state.averageRating.toFixed(1)} · {state.numRatings}{" "}
-                    ratings
+                    {state.averageRating.toFixed(1)}
+                    {state.numRatings > 0 ? (
+                        <> · {state.numRatings} rating(s)</>
+                    ) : (
+                        <> · No ratings yet</>
+                    )}
                 </Typography>
             </Stack>
 

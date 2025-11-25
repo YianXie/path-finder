@@ -1,14 +1,12 @@
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import MenuIcon from "@mui/icons-material/Menu";
+import ShareIcon from "@mui/icons-material/Share";
 import Card from "@mui/material/Card";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
@@ -51,28 +49,11 @@ function Item({
     const navigate = useNavigate();
     const { handleSave: saveItem, handleShare: shareItem } = useItemActions();
     const [isSaved, setIsSaved] = useState(initialIsSaved);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const openMenu = Boolean(anchorEl);
 
     // Sync local state with prop changes (useful when item is saved from elsewhere)
     useEffect(() => {
         setIsSaved(initialIsSaved);
     }, [initialIsSaved]);
-
-    /**
-     * Opens the menu by setting the anchor element
-     * @param {Event} event - The click event
-     */
-    const handleMenuClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    /**
-     * Closes the menu by clearing the anchor element
-     */
-    const handleCloseMenu = () => {
-        setAnchorEl(null);
-    };
 
     /**
      * Handles saving/unsaving the item
@@ -182,46 +163,19 @@ function Item({
                     </Typography>
                 </Stack>
                 <Tooltip
-                    title="Open menu"
+                    title="Share item"
                     placement="bottom"
                     arrow
                     sx={{ alignSelf: "center" }}
                 >
                     <IconButton
-                        aria-label="Open menu"
-                        onClick={handleMenuClick}
+                        aria-label="Share item"
+                        onClick={handleShare}
                         color="primary"
                     >
-                        <MenuIcon />
+                        <ShareIcon />
                     </IconButton>
                 </Tooltip>
-                {/* Dropdown menu with additional actions */}
-                <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={openMenu}
-                    onClose={handleCloseMenu}
-                    slotProps={{
-                        list: {
-                            "aria-labelledby": "basic-button",
-                        },
-                    }}
-                >
-                    <MenuItem
-                        onClick={() => {
-                            handleShare();
-                            handleCloseMenu();
-                        }}
-                    >
-                        Share
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseMenu}>
-                        Recommend more
-                    </MenuItem>
-                    <MenuItem onClick={handleCloseMenu}>
-                        Not interested
-                    </MenuItem>
-                </Menu>
             </CardActions>
         </Card>
     );

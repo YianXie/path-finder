@@ -47,7 +47,7 @@ function ItemDetail() {
                 setters.setAverageRating(
                     response.data.suggestion.average_rating
                 );
-                setters.setNumRatings(response.data.suggestion.total_ratings);
+                setters.setNumRatings(response.data.suggestion.rate_count);
             } catch (error) {
                 console.error("Failed to fetch item info:", error);
                 setters.setError(
