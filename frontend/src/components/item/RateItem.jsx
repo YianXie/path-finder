@@ -1,3 +1,4 @@
+import ClearIcon from "@mui/icons-material/Clear";
 import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from "@mui/icons-material/Upload";
 import Box from "@mui/material/Box";
@@ -63,10 +64,8 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
             const formData = new FormData();
             formData.append("rating", String(rating));
             formData.append("comment", comment);
+            formData.append("image", image);
             formData.append("external_id", external_id);
-            if (image) {
-                formData.append("image", image);
-            }
 
             const res = await api.post("/api/social/rate/", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
@@ -213,7 +212,14 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                             />
                         </Box>
                         <Button
-                            sx={{ fontWeight: 500, mb: 1 }}
+                            sx={{
+                                fontWeight: 500,
+                                mb: 1,
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "start",
+                            }}
                             role={undefined}
                             tabIndex={-1}
                             startIcon={<UploadIcon />}
@@ -227,6 +233,22 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                                     setImage(event.target.files[0])
                                 }
                             />
+                            {image && (
+                                <IconButton
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setImage(null);
+                                    }}
+                                    sx={{ ml: "auto" }}
+                                >
+                                    <ClearIcon
+                                        color="primary"
+                                        size="small"
+                                        sx={{ fontSize: 16 }}
+                                    />
+                                </IconButton>
+                            )}
                         </Button>
 
                         <Button

@@ -45,6 +45,8 @@ class UpdateOrModifySuggestionRating(APIView):
             content_type = getattr(image, "content_type", "")
             if not content_type.startswith("image/"):
                 raise errors.ValidationError("Only image files are allowed.")
+        else:
+            image = None
 
         try:
             suggestion = SuggestionModel.objects.get(external_id=external_id)
@@ -60,26 +62,17 @@ class UpdateOrModifySuggestionRating(APIView):
             # If review already exists, update it
             review.rating = rating
             review.comment = comment
-            if image is not None:
-                review.image = image
+            review.image = image
             review.save()
         else:
             # If review does not exist, create it
-            if image is not None:
-                UserRating.objects.get_or_create(
-                    user=user_profile,
-                    suggestion=suggestion,
-                    rating=rating,
-                    comment=comment,
-                    image=image,
-                )
-            else:
-                UserRating.objects.get_or_create(
-                    user=user_profile,
-                    suggestion=suggestion,
-                    rating=rating,
-                    comment=comment,
-                )
+            UserRating.objects.create(
+                user=user_profile,
+                suggestion=suggestion,
+                rating=rating,
+                comment=comment,
+                image=image,
+            )
         updated = UserRating.objects.get(user=user_profile, suggestion=suggestion)
         serializer = UserRatingSerializer(updated)
         return Response(serializer.data, status=status.HTTP_200_OK)
