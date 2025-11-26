@@ -6,6 +6,12 @@ import Typography from "@mui/material/Typography";
 
 import { useItemDetail } from "../../contexts/ItemDetailContext";
 
+/**
+ * ItemHeader component - Header section of item detail card
+ *
+ * Displays the item name, average rating with review count, and category chips.
+ * Uses Material-UI Typography and Rating components for consistent styling.
+ */
 export function ItemHeader() {
     const { state } = useItemDetail();
 

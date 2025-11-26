@@ -3,6 +3,17 @@ import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
 import Typography from "@mui/material/Typography";
 
+/**
+ * CompareSlider component - Fixed bottom bar for item comparison
+ *
+ * Displays a slide-up bar at the bottom of the screen when items are selected for comparison.
+ * Shows the number of selected items and provides a button to navigate to the compare page.
+ * Only enabled when exactly 2 items are selected.
+ *
+ * @param {Object} props - Component props
+ * @param {Array<string>} props.selectedItems - Array of selected item external IDs
+ * @param {Function} props.handleCompare - Callback function to handle comparison navigation
+ */
 function CompareSlider({ selectedItems, handleCompare }) {
     return (
         <Slide direction="up" in={selectedItems.length > 0}>

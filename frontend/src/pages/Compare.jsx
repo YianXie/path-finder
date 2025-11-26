@@ -28,6 +28,15 @@ import { useItemActions } from "../hooks";
 import { usePageTitle } from "../hooks";
 import { useApiError } from "../hooks";
 
+/**
+ * Compare page component - Side-by-side item comparison
+ *
+ * Displays two items side-by-side for detailed comparison.
+ * Reads item IDs from URL query parameters (item1 and item2).
+ * Shows comprehensive item information including images, ratings, categories,
+ * descriptions, and save functionality. Responsive layout with vertical
+ * stacking on mobile devices.
+ */
 function Compare() {
     usePageTitle("PathFinder | Compare");
 

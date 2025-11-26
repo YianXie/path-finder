@@ -11,6 +11,18 @@ import api from "../../api";
 import { useAsyncData } from "../../hooks";
 import { stringAvatar, toAbsoluteMediaUrl } from "../../utils/stringUtils.js";
 
+/**
+ * ItemComments component - User reviews and comments display
+ *
+ * Fetches and displays user reviews/ratings for a specific item.
+ * Shows user avatars, names, ratings, comments, and uploaded images.
+ * Only displays the section if there are reviews with comments or images.
+ * Automatically refreshes when refreshKey changes.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.external_id - Unique identifier for the item
+ * @param {number} props.refreshKey - Key used to trigger data refresh
+ */
 function ItemComments({ external_id, refreshKey }) {
     const [hasComments, setHasComments] = useState(false);
 

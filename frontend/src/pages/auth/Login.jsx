@@ -8,6 +8,13 @@ import GoogleButton from "../../components/global/GoogleButton";
 import { useAuth } from "../../contexts/AuthContext";
 import usePageTitle from "../../hooks/usePageTitle";
 
+/**
+ * Login page component - User authentication
+ *
+ * Provides Google Sign-In authentication interface.
+ * Redirects authenticated users to home page automatically.
+ * Displays a centered login card with Google authentication button.
+ */
 function Login() {
     usePageTitle("PathFinder | Login");
     const navigate = useNavigate();

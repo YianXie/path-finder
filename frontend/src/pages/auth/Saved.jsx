@@ -10,6 +10,14 @@ import Item from "../../components/global/Item";
 import { useAsyncData } from "../../hooks";
 import usePageTitle from "../../hooks/usePageTitle";
 
+/**
+ * Saved page component - User's saved items
+ *
+ * Displays all items that the authenticated user has saved.
+ * Fetches saved items from the backend and displays them in a grid layout.
+ * Includes item comparison functionality with a bottom slider.
+ * Shows empty state message when no items are saved.
+ */
 function Saved() {
     usePageTitle("PathFinder | Saved");
 

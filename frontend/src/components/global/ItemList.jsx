@@ -4,6 +4,21 @@ import { useEffect, useRef, useState } from "react";
 
 import Item from "./Item";
 
+/**
+ * ItemList component for displaying a horizontal scrollable list of items
+ *
+ * Displays a collection of Item components in a horizontally scrollable container.
+ * Includes scroll state management with visual indicators (fade gradients) showing
+ * when more content is available to scroll. Automatically detects scroll position
+ * and content size changes using ResizeObserver.
+ *
+ * @param {Object} props - Component props
+ * @param {Array<Object>} props.suggestions - Array of item objects to display
+ * @param {string} props.name - Title/heading for the item list
+ * @param {Function} props.handleSaveStatusUpdate - Callback called after save/unsave operations
+ * @param {Array<string>} props.selectedItems - Array of selected item external IDs for comparison
+ * @param {Function} props.setSelectedItems - Function to update selected items array
+ */
 function ItemList({
     suggestions,
     name,
@@ -19,6 +34,11 @@ function ItemList({
         atRight: false,
     });
 
+    /**
+     * Checks the current scroll state of the container
+     * Updates state to reflect whether scrolling is possible and current position
+     * @param {HTMLElement} el - The scrollable container element
+     */
     const checkScrollState = (el) => {
         if (!el) return;
 

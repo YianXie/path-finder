@@ -9,6 +9,17 @@ import { useState } from "react";
 
 import { useSnackBar } from "../../contexts/SnackBarContext";
 
+/**
+ * Step2 component - Interests selection step
+ *
+ * Allows users to select 1-3 interests from a predefined list.
+ * Validates that at least 1 interest is selected before proceeding.
+ * Shows warning messages when validation fails or limit is exceeded.
+ *
+ * @param {Object} props - Component props
+ * @param {Array<string>} props.interests - Current selected interests array
+ * @param {Function} props.setInterests - Function to update interests array
+ */
 function Step2({ interests, setInterests }) {
     const interestOptions = [
         {

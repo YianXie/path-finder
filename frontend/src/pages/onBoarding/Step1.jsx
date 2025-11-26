@@ -8,6 +8,17 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Select from "@mui/material/Select";
 
+/**
+ * Step1 component - Basic information collection step
+ *
+ * Collects user's role (student/teacher/other), grade level (for students),
+ * and subject (for teachers). Conditionally shows grade or subject selector
+ * based on selected role.
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.basicInformation - Current basic information state
+ * @param {Function} props.setBasicInformation - Function to update basic information state
+ */
 function Step1({ basicInformation, setBasicInformation }) {
     const subjectOptions = [
         {

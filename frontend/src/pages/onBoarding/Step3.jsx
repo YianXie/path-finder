@@ -7,6 +7,19 @@ import FormLabel from "@mui/material/FormLabel";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
+/**
+ * Step3 component - Goals selection step (optional)
+ *
+ * Allows users to select their main goals (competitions, clubs, tutoring, other).
+ * Includes an optional text field for additional comments or goals.
+ * This step can be skipped by users.
+ *
+ * @param {Object} props - Component props
+ * @param {Array<string>} props.goals - Current selected goals array
+ * @param {Function} props.setGoals - Function to update goals array
+ * @param {string} props.otherGoals - Additional goals/comments text
+ * @param {Function} props.setOtherGoals - Function to update other goals text
+ */
 function Step3({ goals, setGoals, otherGoals, setOtherGoals }) {
     const goalOptions = [
         {

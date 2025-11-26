@@ -8,6 +8,19 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api";
 import LoadingBackdrop from "../../components/common/LoadingBackdrop";
 
+/**
+ * OnBoardingFinished component - Final step of onboarding process
+ *
+ * Displays completion message and submits collected user information to the backend.
+ * Automatically sends user data to update user profile on mount.
+ * Provides navigation button to start exploring the application.
+ *
+ * @param {Object} props - Component props
+ * @param {Object} props.basicInformation - User's basic information (role, grade, subject)
+ * @param {Array<string>} props.interests - Array of selected interests
+ * @param {Array<string>} props.goals - Array of selected goals
+ * @param {string} props.otherGoals - Additional goals/comments text
+ */
 function OnBoardingFinished({
     basicInformation,
     interests,

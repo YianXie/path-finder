@@ -34,6 +34,19 @@ const VisuallyHiddenInput = styled("input")({
     width: 1,
 });
 
+/**
+ * RateItem component - Dialog for submitting item reviews
+ *
+ * Provides a modal dialog for authenticated users to rate and review items.
+ * Includes rating selection, comment text field, and optional image upload.
+ * Submits review data to the backend and triggers refresh callback on success.
+ *
+ * @param {Object} props - Component props
+ * @param {boolean} props.open - Whether the dialog is open
+ * @param {Function} props.onClose - Callback function to close the dialog
+ * @param {string} props.external_id - Unique identifier for the item being rated
+ * @param {Function} props.onSubmitted - Callback function called after successful submission
+ */
 function RateItem({ open, onClose, external_id, onSubmitted }) {
     const { isAuthenticated } = useAuth();
     const [rating, setRating] = useState(0);

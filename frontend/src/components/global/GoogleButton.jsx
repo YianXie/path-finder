@@ -5,6 +5,14 @@ import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 
+/**
+ * GoogleButton component for Google Sign-In authentication
+ *
+ * Initializes Google Sign-In button using Google Identity Services.
+ * Handles OAuth callback, sends credential to backend for authentication,
+ * and manages login state and navigation after successful authentication.
+ * Redirects to onboarding if user hasn't completed it, otherwise to home page.
+ */
 export default function GoogleButton() {
     const navigate = useNavigate();
     const { login } = useAuth();

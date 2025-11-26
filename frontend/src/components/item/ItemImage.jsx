@@ -3,6 +3,13 @@ import Grid from "@mui/material/Grid";
 
 import { useItemDetail } from "../../contexts/ItemDetailContext";
 
+/**
+ * ItemImage component - Image display for item detail page
+ *
+ * Displays the item's main image with responsive sizing.
+ * Includes hover effects (scale on hover) and click handler to open image in new tab.
+ * Handles image loading errors gracefully by hiding broken images.
+ */
 export function ItemImage() {
     const { state } = useItemDetail();
 

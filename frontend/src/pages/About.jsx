@@ -5,6 +5,18 @@ import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { useTheme } from "@mui/material/styles";
 
+/**
+ * AboutSection component - Individual section in the About page
+ *
+ * Displays a single information section with title and description.
+ * Includes fade-in animation with configurable delay for staggered appearance.
+ * Uses Material-UI Paper component with gradient text effects.
+ *
+ * @param {Object} props - Component props
+ * @param {string} props.title - Section title
+ * @param {string} props.description - Section description text
+ * @param {number} props.delay - Animation delay in milliseconds (default: 0)
+ */
 function AboutSection({ title, description, delay = 0 }) {
     const theme = useTheme();
 
@@ -52,6 +64,13 @@ function AboutSection({ title, description, delay = 0 }) {
     );
 }
 
+/**
+ * About page component - Information about PathFinder
+ *
+ * Displays information about the PathFinder application, its purpose,
+ * and how to use it. Uses a grid layout with animated sections that
+ * fade in with staggered delays for visual appeal.
+ */
 function About() {
     const theme = useTheme();
 
