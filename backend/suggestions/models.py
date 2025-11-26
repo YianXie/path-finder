@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+from pathfinder_api.vectordb import VectorField
+
 
 def slug_from_name_category(name, category, description):
     base = f"{name}-{category}-{description}".lower()
@@ -26,6 +28,9 @@ class SuggestionModel(models.Model):
     image = models.URLField(max_length=255, default=DEFAULT_IMAGE)
     created_at = models.DateTimeField(auto_now=True)
     score = models.IntegerField(default=0)
+
+    # To search
+    embedding = VectorField(dimensions=3, default=[])
 
     @classmethod
     def external_id_from_row(cls, row):

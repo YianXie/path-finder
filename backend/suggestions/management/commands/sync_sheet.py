@@ -7,6 +7,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from pathfinder_api.vectordb import get_embedding
 from suggestions.models import SuggestionModel
 
 logger = logging.getLogger(__name__)
@@ -72,6 +73,9 @@ class Command(BaseCommand):
 
                 if not payload.get("name"):
                     continue
+
+                # Don't query by embedding
+                payload["embedding"] = get_embedding(payload["name"] + " " + payload["description"])
 
                 SuggestionModel.objects.update_or_create(
                     external_id=external_id,

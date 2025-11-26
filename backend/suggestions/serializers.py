@@ -17,7 +17,9 @@ class SuggestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SuggestionModel
-        fields = "__all__"
+        # fields = "__all__"
+        # Important: Do not return the embedding field
+        exclude = ["embedding"]  # This uses fields = __all__, but excludes the specified
 
     def get_average_rating(self, obj):
         suggestion_id = getattr(obj, "id", None)
