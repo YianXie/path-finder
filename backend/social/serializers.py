@@ -1,5 +1,6 @@
-from rest_framework import serializers
 from PIL import Image
+from rest_framework import serializers
+
 from accounts.models import UserProfile
 
 from .models import UserRating
@@ -35,15 +36,11 @@ class UserRatingSerializer(serializers.ModelSerializer):
         try:
             # Open the image file using Pillow to validate and get format
             img = Image.open(image_file.file)
-            image_format = (
-                img.format
-            )  # Get the image format (e.g., 'JPEG', 'PNG', 'GIF')
+            image_format = img.format  # Get the image format (e.g., 'JPEG', 'PNG', 'GIF')
 
             # Validate image format
             if image_format not in ["JPEG", "PNG"]:
-                raise serializers.ValidationError(
-                    "Unsupported image format. Only JPEG and PNG are allowed."
-                )
+                raise serializers.ValidationError("Unsupported image format. Only JPEG and PNG are allowed.")
 
             # Map image format to content type
             content_type_map = {
@@ -69,6 +66,4 @@ class UserRatingSerializer(serializers.ModelSerializer):
         except IOError:
             raise serializers.ValidationError("IOError")
         except Exception as e:
-            raise serializers.ValidationError(
-                f"Could not determine image type or invalid image: {e}"
-            )
+            raise serializers.ValidationError(f"Could not determine image type or invalid image: {e}")
