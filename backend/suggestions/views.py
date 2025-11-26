@@ -23,7 +23,7 @@ from suggestions.serializers import SuggestionSerializer
 def search_suggestions(query):
     emb = get_embedding(query)
     items = vector_search(SuggestionModel, emb)[:50]
-    items = [item for item, dist in items] # Add if dist < threshold for threshold
+    items = [item for item, dist in items]  # Add if dist < threshold for threshold
     return items
 
 

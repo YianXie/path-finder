@@ -11,8 +11,8 @@ from django.db import models
 
 class LazySingleton:
     def __init__(self, factory):
-        self._factory = factory # The function to load the thing
-        self._instance = None # The current storage of the item
+        self._factory = factory  # The function to load the thing
+        self._instance = None  # The current storage of the item
         self._lock = threading.Lock()
         self._pid = None  # Track which process created the instance
 
