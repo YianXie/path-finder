@@ -12,10 +12,11 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
+import CompareSlider from "../components/global/CompareSlider";
 import Item from "../components/global/Item";
 import { useAuth } from "../contexts/AuthContext";
 import { useApiError } from "../hooks";
@@ -49,7 +50,9 @@ function Search() {
         has_next: false,
         has_previous: false,
     });
+    const [selectedItems, setSelectedItems] = useState([]);
 
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const query = searchParams.get("query");
 
@@ -139,101 +142,133 @@ function Search() {
         }
     }, [suggestions, sortBy, sortDirection]);
 
-    return (
-        <Container maxWidth="xl" sx={{ paddingBottom: 4 }}>
-            <LoadingBackdrop open={isLoading} />
-            <PageHeader
-                title="Welcome to PathFinder"
-                subtitle={"All items" + (query ? ` for "${query}"` : "")}
-                className="mt-6 mb-4"
-            />
-            <Box display="flex" flexDirection="row" gap={2} alignItems="center">
-                <FormControl sx={{ marginBlock: 2 }} size="small">
-                    <InputLabel id="sort-by-label">Sort by</InputLabel>
-                    <Select
-                        labelId="sort-by-label"
-                        label="Sort by"
-                        value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                    >
-                        <MenuItem value="relevance">Relevance</MenuItem>
-                        <MenuItem value="alphabetical">Alphabetical</MenuItem>
-                        <MenuItem value="newest">Newest</MenuItem>
-                        <MenuItem value="oldest">Oldest</MenuItem>
-                    </Select>
-                </FormControl>
-                <Tooltip title="Toggle sort direction" placement="bottom" arrow>
-                    <IconButton
-                        onClick={() => {
-                            handleSuccess(
-                                `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`
-                            );
-                            setSortDirection(sortDirection * -1);
-                        }}
-                        aria-label="Toggle sort direction"
-                    >
-                        {sortDirection === 1 ? (
-                            <SwapVertIcon
-                                sx={{
-                                    transition: "transform 0.3s ease-in-out",
-                                }}
-                            />
-                        ) : (
-                            <SwapVertIcon
-                                sx={{
-                                    transform: "scaleY(-1)",
-                                    transition: "transform 0.3s ease-in-out",
-                                }}
-                            />
-                        )}
-                    </IconButton>
-                </Tooltip>
-            </Box>
-            <Grid
-                container
-                spacing={6}
-                justifyContent="center"
-                alignItems="center"
-            >
-                {sortedSuggestions.length > 0 ? (
-                    sortedSuggestions.map((suggestion, index) => (
-                        <Item
-                            key={`${suggestion.external_id}-${index}`}
-                            {...suggestion}
-                            onSaveSuccess={refreshSuggestions}
-                        />
-                    ))
-                ) : (
-                    <Typography variant="body1" color="text.secondary">
-                        No suggestions found
-                    </Typography>
-                )}
-            </Grid>
+    const handleCompare = () => {
+        navigate(
+            `/compare?item1=${selectedItems[0]}&item2=${selectedItems[1]}`
+        );
+    };
 
-            {/* Pagination Controls */}
-            {pagination.total_pages > 1 && (
-                <Stack spacing={2} alignItems="center" sx={{ marginTop: 4 }}>
-                    <Pagination
-                        count={pagination.total_pages}
-                        page={pagination.page}
-                        onChange={(event, page) => getSuggestions(page)}
-                        color="primary"
-                        size="large"
-                        showFirstButton
-                        showLastButton
-                    />
-                    <Typography variant="body2" color="text.secondary">
-                        Showing{" "}
-                        {(pagination.page - 1) * pagination.page_size + 1} to{" "}
-                        {Math.min(
-                            pagination.page * pagination.page_size,
-                            pagination.total_count
-                        )}{" "}
-                        of {pagination.total_count} items
-                    </Typography>
-                </Stack>
-            )}
-        </Container>
+    return (
+        <>
+            <Container maxWidth="xl" sx={{ paddingBottom: 4 }}>
+                <LoadingBackdrop open={isLoading} />
+                <PageHeader
+                    title="Welcome to PathFinder"
+                    subtitle={"All items" + (query ? ` for "${query}"` : "")}
+                    className="mt-6 mb-4"
+                />
+                <Box
+                    display="flex"
+                    flexDirection="row"
+                    gap={2}
+                    alignItems="center"
+                >
+                    <FormControl sx={{ marginBlock: 2 }} size="small">
+                        <InputLabel id="sort-by-label">Sort by</InputLabel>
+                        <Select
+                            labelId="sort-by-label"
+                            label="Sort by"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                        >
+                            <MenuItem value="relevance">Relevance</MenuItem>
+                            <MenuItem value="alphabetical">
+                                Alphabetical
+                            </MenuItem>
+                            <MenuItem value="newest">Newest</MenuItem>
+                            <MenuItem value="oldest">Oldest</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <Tooltip
+                        title="Toggle sort direction"
+                        placement="bottom"
+                        arrow
+                    >
+                        <IconButton
+                            onClick={() => {
+                                handleSuccess(
+                                    `Sorting direction changed to ${sortDirection === 1 ? "ascending" : "descending"}`
+                                );
+                                setSortDirection(sortDirection * -1);
+                            }}
+                            aria-label="Toggle sort direction"
+                        >
+                            {sortDirection === 1 ? (
+                                <SwapVertIcon
+                                    sx={{
+                                        transition:
+                                            "transform 0.3s ease-in-out",
+                                    }}
+                                />
+                            ) : (
+                                <SwapVertIcon
+                                    sx={{
+                                        transform: "scaleY(-1)",
+                                        transition:
+                                            "transform 0.3s ease-in-out",
+                                    }}
+                                />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+                <Grid
+                    container
+                    spacing={6}
+                    justifyContent="center"
+                    alignItems="center"
+                >
+                    {sortedSuggestions.length > 0 ? (
+                        sortedSuggestions.map((suggestion, index) => (
+                            <Item
+                                key={`${suggestion.external_id}-${index}`}
+                                {...suggestion}
+                                onSaveSuccess={refreshSuggestions}
+                                selectedItems={selectedItems}
+                                setSelectedItems={setSelectedItems}
+                            />
+                        ))
+                    ) : (
+                        <Typography variant="body1" color="text.secondary">
+                            No suggestions found
+                        </Typography>
+                    )}
+                </Grid>
+
+                {/* Pagination Controls */}
+                {pagination.total_pages > 1 && (
+                    <Stack
+                        spacing={2}
+                        alignItems="center"
+                        sx={{ marginTop: 4 }}
+                    >
+                        <Pagination
+                            count={pagination.total_pages}
+                            page={pagination.page}
+                            onChange={(event, page) => getSuggestions(page)}
+                            color="primary"
+                            size="large"
+                            showFirstButton
+                            showLastButton
+                        />
+                        <Typography variant="body2" color="text.secondary">
+                            Showing{" "}
+                            {(pagination.page - 1) * pagination.page_size + 1}{" "}
+                            to{" "}
+                            {Math.min(
+                                pagination.page * pagination.page_size,
+                                pagination.total_count
+                            )}{" "}
+                            of {pagination.total_count} items
+                        </Typography>
+                    </Stack>
+                )}
+            </Container>
+            <CompareSlider
+                selectedItems={selectedItems}
+                handleCompare={handleCompare}
+            />
+        </>
     );
 }
 
