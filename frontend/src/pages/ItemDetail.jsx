@@ -3,7 +3,7 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api";
@@ -26,6 +26,7 @@ function ItemDetail() {
     const { state, setters } = useItemDetail();
     const { external_id } = useParams();
     const { isAuthenticated } = useAuth();
+    const [refreshKey, setRefreshKey] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -59,7 +60,7 @@ function ItemDetail() {
         }
         getItemInfo();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [external_id, isAuthenticated]);
+    }, [external_id, isAuthenticated, refreshKey]);
 
     if (state.error) {
         return (
@@ -85,7 +86,13 @@ function ItemDetail() {
             </Box>
 
             {/* Main item content */}
-            {state.itemInfo && <ItemDetailCard external_id={external_id} />}
+            {state.itemInfo && (
+                <ItemDetailCard
+                    external_id={external_id}
+                    refreshKey={refreshKey}
+                    setRefreshKey={setRefreshKey}
+                />
+            )}
         </Container>
     );
 }

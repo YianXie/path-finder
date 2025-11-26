@@ -8,6 +8,7 @@ import { useItemDetail } from "../../contexts/ItemDetailContext";
 
 export function ItemHeader() {
     const { state } = useItemDetail();
+
     return (
         <>
             {/* Name */}

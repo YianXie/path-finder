@@ -51,3 +51,16 @@ export const stringAvatar = (name) => {
         children: `${name.split(" ")[0][0]}${name.split(" ")[1] ? name.split(" ")[1][0] : ""}`,
     };
 };
+
+export const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
+export const toAbsoluteMediaUrl = (maybeRelativeUrl) => {
+    if (!maybeRelativeUrl) return "";
+    if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
+    // Ensure leading slash on relative media path
+    const path = maybeRelativeUrl.startsWith("/")
+        ? maybeRelativeUrl
+        : `/${maybeRelativeUrl}`;
+    // Fallback to localhost:8000 if env is missing in dev
+    const origin = apiBaseUrl || "http://localhost:8000";
+    return `${origin}${path}`;
+};

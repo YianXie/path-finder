@@ -13,10 +13,9 @@ import { ItemHeader } from "./ItemHeader";
 import { ItemImage } from "./ItemImage";
 import RateItem from "./RateItem";
 
-export function ItemDetailCard({ external_id }) {
+export function ItemDetailCard({ external_id, refreshKey, setRefreshKey }) {
     const { state } = useItemDetail();
     const [isRateItemOpen, setIsRateItemOpen] = useState(false);
-    const [reviewsRefreshKey, setReviewsRefreshKey] = useState(0);
 
     const handleRateItem = () => {
         setIsRateItemOpen(true);
@@ -52,15 +51,12 @@ export function ItemDetailCard({ external_id }) {
                     </Grid>
                 </Grid>
             </Card>
-            <ItemComments
-                external_id={external_id}
-                refreshKey={reviewsRefreshKey}
-            />
+            <ItemComments external_id={external_id} refreshKey={refreshKey} />
             <RateItem
                 open={isRateItemOpen}
                 onClose={() => setIsRateItemOpen(false)}
                 external_id={external_id}
-                onSubmitted={() => setReviewsRefreshKey((k) => k + 1)}
+                onSubmitted={() => setRefreshKey((prev) => prev + 1)}
             />
         </>
     );

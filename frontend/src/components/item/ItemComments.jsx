@@ -9,11 +9,11 @@ import { useEffect, useState } from "react";
 
 import api from "../../api";
 import { useAsyncData } from "../../hooks";
-import { stringAvatar } from "../../utils/stringUtils.js";
+import { stringAvatar, toAbsoluteMediaUrl } from "../../utils/stringUtils.js";
 
 function ItemComments({ external_id, refreshKey }) {
     const [hasComments, setHasComments] = useState(false);
-    const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
+
     const { data: reviews } = useAsyncData(async () => {
         const res = await api.get(
             `/api/social/reviews?external_id=${external_id}`
@@ -34,18 +34,6 @@ function ItemComments({ external_id, refreshKey }) {
             }
         }
     }, [reviews]);
-
-    const toAbsoluteMediaUrl = (maybeRelativeUrl) => {
-        if (!maybeRelativeUrl) return "";
-        if (/^https?:\/\//i.test(maybeRelativeUrl)) return maybeRelativeUrl;
-        // Ensure leading slash on relative media path
-        const path = maybeRelativeUrl.startsWith("/")
-            ? maybeRelativeUrl
-            : `/${maybeRelativeUrl}`;
-        // Fallback to localhost:8000 if env is missing in dev
-        const origin = apiBaseUrl || "http://localhost:8000";
-        return `${origin}${path}`;
-    };
 
     return (
         <>
