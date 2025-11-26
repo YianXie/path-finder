@@ -6,6 +6,7 @@ import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
+import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Rating from "@mui/material/Rating";
 import Stack from "@mui/material/Stack";
@@ -44,11 +45,14 @@ function Item({
     saved_count,
     is_saved: initialIsSaved = false,
     handleSaveStatusUpdate,
+    selectedItems,
+    setSelectedItems,
 }) {
     // React hooks
     const navigate = useNavigate();
     const { handleSave: saveItem, handleShare: shareItem } = useItemActions();
     const [isSaved, setIsSaved] = useState(initialIsSaved);
+    const [showCheckbox, setShowCheckbox] = useState(false);
 
     // Sync local state with prop changes (useful when item is saved from elsewhere)
     useEffect(() => {
@@ -68,6 +72,27 @@ function Item({
         });
     };
 
+    const handleHover = () => {
+        if (selectedItems.length > 0) return;
+        setShowCheckbox(true);
+    };
+
+    const handleLeave = () => {
+        if (selectedItems.length > 0) return;
+        setShowCheckbox(false);
+    };
+
+    // WIP
+    const handleCheckboxChange = () => {
+        if (!selectedItems.includes(external_id) && selectedItems.length >= 2) {
+            setSelectedItems((prev) => [prev[1], external_id]);
+        } else if (!selectedItems.includes(external_id)) {
+            setSelectedItems((prev) => [...prev, external_id]);
+        } else {
+            setSelectedItems((prev) => prev.filter((id) => id !== external_id));
+        }
+    };
+
     /**
      * Handles sharing the item by copying its URL to clipboard
      */
@@ -75,9 +100,20 @@ function Item({
         await shareItem(location.href + `item/${external_id}`);
     };
 
+    useEffect(() => {
+        if (selectedItems.length === 0) {
+            setShowCheckbox(false);
+        } else {
+            setShowCheckbox(true);
+        }
+    }, [selectedItems]);
+
     return (
         <Card
+            onMouseEnter={handleHover}
+            onMouseLeave={handleLeave}
             sx={{
+                position: "relative",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
@@ -85,6 +121,28 @@ function Item({
                 height: 375,
             }}
         >
+            <Checkbox
+                size="medium"
+                color="primary"
+                sx={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    zIndex: 999,
+                    transition: "opacity 0.3s ease-in-out",
+                    opacity: showCheckbox ? 1 : 0,
+                    backgroundColor: "rgba(255, 255, 255, 0.3)",
+                    borderRadius: "4px",
+                    padding: "4px",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                    "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.5)",
+                        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                    },
+                }}
+                checked={selectedItems.includes(external_id)}
+                onChange={handleCheckboxChange}
+            />
             {/* Clickable area that navigates to item detail page */}
             <CardActionArea onClick={() => navigate(`/item/${external_id}`)}>
                 <CardMedia

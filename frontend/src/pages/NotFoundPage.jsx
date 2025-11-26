@@ -5,6 +5,12 @@ import { useNavigate } from "react-router-dom";
 
 import usePageTitle from "../hooks/usePageTitle";
 
+/**
+ * NotFoundPage component - 404 error page
+ *
+ * Displays a user-friendly 404 error page when a route is not found.
+ * Provides navigation back to the home page.
+ */
 function NotFoundPage() {
     usePageTitle("PathFinder | Not Found");
 

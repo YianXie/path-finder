@@ -227,6 +227,7 @@ class PersonalizedSuggestionsView(APIView):
             ranked_suggestions = suggestion_cache[0]["suggestions"]
 
             pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
+            pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
 
             for suggestion in pagination_data:
                 suggestion["is_saved"] = suggestion["external_id"] in saved_items
@@ -436,7 +437,6 @@ class SuggestionDetailView(APIView):
                 {
                     "suggestion": serializer.data,
                     "is_saved": False,
-                    "rating": 0,
                 },
                 status=status.HTTP_200_OK,
             )

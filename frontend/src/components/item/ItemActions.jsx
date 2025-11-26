@@ -15,6 +15,16 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useItemDetail } from "../../contexts/ItemDetailContext";
 import { useItemActions } from "../../hooks";
 
+/**
+ * ItemActions component - Action buttons for item detail page
+ *
+ * Provides action buttons for saving, sharing, and accessing external links.
+ * Includes optimistic UI updates for save/unsave functionality.
+ * Shows "Write a review" button for authenticated users.
+ *
+ * @param {Object} props - Component props
+ * @param {Function} props.handleRateItem - Callback function to open rate item dialog
+ */
 export function ItemActions({ handleRateItem }) {
     const { isAuthenticated } = useAuth();
     const { state, setters } = useItemDetail();

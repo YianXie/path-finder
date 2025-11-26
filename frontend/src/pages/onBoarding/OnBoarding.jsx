@@ -16,6 +16,15 @@ import Step1 from "./Step1";
 import Step2 from "./Step2";
 import Step3 from "./Step3";
 
+/**
+ * OnBoarding component - Multi-step user onboarding wizard
+ *
+ * Guides new users through collecting their basic information, interests, and goals.
+ * Uses Material-UI Stepper component for step navigation.
+ * Validates user input (requires at least 1 interest) before proceeding.
+ * Pre-populates form fields with existing user data if available.
+ * Allows skipping optional steps (goals step).
+ */
 function OnBoarding() {
     usePageTitle("PathFinder | Onboarding");
 

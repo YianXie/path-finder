@@ -14,9 +14,9 @@ import Typography from "@mui/material/Typography";
  * @param {string} props.subtitle - Optional subtitle text
  * @param {string} props.className - Additional CSS classes
  */
-function PageHeader({ title, subtitle, className = "" }) {
+function PageHeader({ title, subtitle, ...props }) {
     return (
-        <Container maxWidth="xl" className={className}>
+        <Container maxWidth="xl" {...props}>
             <Box display="flex" flexDirection="column" gap={2}>
                 <Typography variant="h3" fontWeight={500}>
                     {title}

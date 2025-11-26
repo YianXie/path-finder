@@ -21,6 +21,17 @@ import { useAuth } from "../contexts/AuthContext";
 import { useApiError } from "../hooks";
 import usePageTitle from "../hooks/usePageTitle";
 
+/**
+ * Search page component - Search and filter items
+ *
+ * Provides search functionality with query parameter support from URL.
+ * Displays search results in a grid layout with sorting options:
+ * - Relevance (default)
+ * - Alphabetical
+ * - Newest/Oldest
+ * Includes pagination controls and sort direction toggle.
+ * Supports item comparison functionality.
+ */
 function Search() {
     usePageTitle("PathFinder | Home");
 

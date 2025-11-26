@@ -1,20 +1,36 @@
-import { Container, Divider } from "@mui/material";
+import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
 import { useCallback, useEffect, useState } from "react";
 import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
+import CompareSlider from "../components/global/CompareSlider";
 import ItemList from "../components/global/ItemList";
 import { useAuth } from "../contexts/AuthContext";
+import { usePageTitle } from "../hooks";
 import { useApiError } from "../hooks";
 
+/**
+ * Home page component - Main landing page with personalized suggestions
+ *
+ * Displays personalized item suggestions based on user authentication status.
+ * For authenticated users: shows "Recommended For You" and "Saved by You" sections.
+ * For all users: displays items organized by predefined tags/categories.
+ * Includes item comparison functionality with a bottom slider for selected items.
+ */
 function Home() {
+    usePageTitle("PathFinder");
+
     const { isAuthenticated } = useAuth();
     const { handleError } = useApiError();
     const [isLoading, setIsLoading] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [personalizedSuggestions, setPersonalizedSuggestions] = useState([]);
     const [savedSuggestions, setSavedSuggestions] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
 
     const tagsList = [
         "STEM & Innovation",
@@ -67,6 +83,12 @@ function Home() {
         [handleError, isAuthenticated]
     );
 
+    const handleCompare = () => {
+        navigate(
+            `/compare?item1=${selectedItems[0]}&item2=${selectedItems[1]}`
+        );
+    };
+
     useEffect(() => {
         // Still loading
         if (isAuthenticated === null) return;
@@ -76,42 +98,57 @@ function Home() {
     }, [isAuthenticated]);
 
     return (
-        <Container maxWidth="xl">
-            <LoadingBackdrop open={isLoading} />
-            <PageHeader title="Welcome to PathFinder" className="mt-6 mb-4" />
-            {personalizedSuggestions.length > 0 && (
-                <Fragment key="recommended-for-you">
-                    <ItemList
-                        name={"Recommended For You"}
-                        suggestions={personalizedSuggestions}
-                        handleSaveStatusUpdate={getSuggestions}
-                    />
-                    <Divider sx={{ marginY: 2 }} />
-                </Fragment>
-            )}
-            {savedSuggestions.length > 0 && (
-                <Fragment key="saved-by-you">
-                    <ItemList
-                        name={"Saved by You"}
-                        suggestions={savedSuggestions}
-                        handleSaveStatusUpdate={getSuggestions}
-                    />
-                    <Divider sx={{ marginY: 2 }} />
-                </Fragment>
-            )}
-            {tagsList.map((tag, index) => (
-                <Fragment key={tag + index}>
-                    <ItemList
-                        name={tag}
-                        suggestions={suggestions.filter((suggestion) =>
-                            suggestion.tags.includes(tag)
-                        )}
-                        handleSaveStatusUpdate={getSuggestions}
-                    />
-                    <Divider sx={{ marginY: 2 }} />
-                </Fragment>
-            ))}
-        </Container>
+        <>
+            <Container maxWidth="xl">
+                <LoadingBackdrop open={isLoading} />
+                <PageHeader
+                    title="Welcome to PathFinder"
+                    className="mt-6 mb-4"
+                />
+                {personalizedSuggestions.length > 0 && (
+                    <Fragment key="recommended-for-you">
+                        <ItemList
+                            name={"Recommended For You"}
+                            suggestions={personalizedSuggestions}
+                            handleSaveStatusUpdate={getSuggestions}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
+                        />
+                        <Divider sx={{ marginY: 2 }} />
+                    </Fragment>
+                )}
+                {savedSuggestions.length > 0 && (
+                    <Fragment key="saved-by-you">
+                        <ItemList
+                            name={"Saved by You"}
+                            suggestions={savedSuggestions}
+                            handleSaveStatusUpdate={getSuggestions}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
+                        />
+                        <Divider sx={{ marginY: 2 }} />
+                    </Fragment>
+                )}
+                {tagsList.map((tag, index) => (
+                    <Fragment key={tag + index}>
+                        <ItemList
+                            name={tag}
+                            suggestions={suggestions.filter((suggestion) =>
+                                suggestion.tags.includes(tag)
+                            )}
+                            handleSaveStatusUpdate={getSuggestions}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
+                        />
+                        <Divider sx={{ marginY: 2 }} />
+                    </Fragment>
+                ))}
+            </Container>
+            <CompareSlider
+                selectedItems={selectedItems}
+                handleCompare={handleCompare}
+            />
+        </>
     );
 }
 

@@ -3,7 +3,7 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import api from "../api";
@@ -16,9 +16,10 @@ import usePageTitle from "../hooks/usePageTitle";
 /**
  * ItemDetail component for displaying detailed information about a specific item
  *
- * Shows comprehensive item information including image, description, categories,
- * and external links. Provides save/unsave and share functionality.
- * Handles loading states and error conditions gracefully.
+ * Fetches and displays comprehensive item information including image, description,
+ * categories, ratings, and external links. Provides save/unsave and share functionality.
+ * Uses different API endpoints based on authentication status to include saved status.
+ * Handles loading states and error conditions gracefully with user-friendly messages.
  */
 function ItemDetail() {
     usePageTitle("PathFinder | Item Detail");
@@ -26,6 +27,7 @@ function ItemDetail() {
     const { state, setters } = useItemDetail();
     const { external_id } = useParams();
     const { isAuthenticated } = useAuth();
+    const [refreshKey, setRefreshKey] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -59,7 +61,7 @@ function ItemDetail() {
         }
         getItemInfo();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [external_id, isAuthenticated]);
+    }, [external_id, isAuthenticated, refreshKey]);
 
     if (state.error) {
         return (
@@ -71,7 +73,7 @@ function ItemDetail() {
 
     return (
         <Container maxWidth="lg" sx={{ paddingBlock: 4 }}>
-            <LoadingBackdrop open={state.sLoading} />
+            <LoadingBackdrop open={state.isLoading} />
 
             {/* Back navigation button */}
             <Box sx={{ marginBottom: 3 }}>
@@ -85,7 +87,13 @@ function ItemDetail() {
             </Box>
 
             {/* Main item content */}
-            {state.itemInfo && <ItemDetailCard external_id={external_id} />}
+            {state.itemInfo && (
+                <ItemDetailCard
+                    external_id={external_id}
+                    refreshKey={refreshKey}
+                    setRefreshKey={setRefreshKey}
+                />
+            )}
         </Container>
     );
 }

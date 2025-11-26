@@ -5,6 +5,12 @@ import Typography from "@mui/material/Typography";
 
 import { useItemDetail } from "../../contexts/ItemDetailContext";
 
+/**
+ * ItemDescription component - Description section of item detail
+ *
+ * Displays the item's description text with an icon header.
+ * Uses Material-UI Typography for consistent text styling.
+ */
 export function ItemDescription() {
     const { state } = useItemDetail();
 
