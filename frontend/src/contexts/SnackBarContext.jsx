@@ -24,7 +24,7 @@ export const SnackBarProvider = ({ children }) => {
         open: false,
         severity: "info",
         message: "",
-        duration: 3000,
+        duration: undefined,
         action: null,
     });
 
@@ -51,7 +51,7 @@ export const SnackBarProvider = ({ children }) => {
             <Snackbar
                 open={snackBar.open}
                 onClose={handleClose}
-                autoHideDuration={snackBar.duration}
+                autoHideDuration={snackBar.duration || 3000}
             >
                 <Alert
                     severity={snackBar.severity}

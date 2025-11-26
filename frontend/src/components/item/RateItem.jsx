@@ -2,6 +2,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import UploadIcon from "@mui/icons-material/Upload";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
@@ -49,13 +50,15 @@ const VisuallyHiddenInput = styled("input")({
  */
 function RateItem({ open, onClose, external_id, onSubmitted }) {
     const { isAuthenticated } = useAuth();
+    const { setSnackBar } = useSnackBar();
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
     const [image, setImage] = useState(null);
-    const { setSnackBar } = useSnackBar();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
         try {
+            setIsLoading(true);
             const formData = new FormData();
             formData.append("rating", String(rating));
             formData.append("comment", comment || "");
@@ -67,6 +70,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
             const res = await api.post("/api/social/rate/", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
+            await sleep(2000);
             if (res.status === 200) {
                 if (typeof onSubmitted === "function") {
                     onSubmitted();
@@ -87,8 +91,13 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
             });
         } finally {
             onClose();
+            setIsLoading(false);
         }
     };
+
+    async function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
 
     return (
         <>
@@ -207,7 +216,24 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                             disabled={!rating}
                             sx={{ mt: 2 }}
                         >
-                            Submit
+                            {isLoading ? (
+                                <>
+                                    <CircularProgress
+                                        size={20}
+                                        color="inherit"
+                                        sx={{ mr: 1 }}
+                                    />
+                                    <Typography
+                                        variant="body1"
+                                        fontWeight={500}
+                                        color="inherit"
+                                    >
+                                        Loading...
+                                    </Typography>
+                                </>
+                            ) : (
+                                "Submit"
+                            )}
                         </Button>
                     </Box>
                 </Dialog>
