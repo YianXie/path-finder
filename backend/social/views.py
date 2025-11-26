@@ -52,7 +52,9 @@ class UpdateOrModifySuggestionRating(APIView):
             raise errors.ValidationError("Failed due to external ID not existing")
 
         user_profile = UserProfile.objects.get(user=request.user)
-        review = UserRating.objects.filter(user=user_profile, suggestion=suggestion).first()
+        review = UserRating.objects.filter(
+            user=user_profile, suggestion=suggestion
+        ).first()
 
         if review:
             # If review already exists, update it
@@ -99,3 +101,31 @@ class GetSuggestionReviews(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except SuggestionModel.DoesNotExist:
             raise errors.ValidationError("Failed due to external ID not existing")
+
+
+class GetUserReview(APIView):
+    """Get user review"""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_profile = UserProfile.objects.get(user=request.user)
+        external_id = request.GET.get("external_id", "")
+        if not external_id:
+            raise errors.ValidationError("External ID is required")
+
+        try:
+            suggestion = SuggestionModel.objects.get(external_id=external_id)
+        except SuggestionModel.DoesNotExist:
+            raise errors.ValidationError("Failed due to external ID not existing")
+
+        reviews = UserRating.objects.filter(
+            user=user_profile, suggestion=suggestion
+        ).first()
+
+        if not reviews:
+            return Response(None, status=status.HTTP_200_OK)
+
+        serializer = UserRatingSerializer(reviews)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

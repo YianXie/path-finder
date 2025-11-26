@@ -13,11 +13,12 @@ import TextField from "@mui/material/TextField";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
+import { useAsyncData } from "../../hooks";
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -61,7 +62,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
             setIsLoading(true);
             const formData = new FormData();
             formData.append("rating", String(rating));
-            formData.append("comment", comment || "");
+            formData.append("comment", comment);
             formData.append("external_id", external_id);
             if (image) {
                 formData.append("image", image);
@@ -70,7 +71,6 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
             const res = await api.post("/api/social/rate/", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            await sleep(2000);
             if (res.status === 200) {
                 if (typeof onSubmitted === "function") {
                     onSubmitted();
@@ -95,9 +95,30 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
         }
     };
 
-    async function sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-    }
+    const { data: userReview } = useAsyncData(async () => {
+        const res = await api.get("/api/social/user-review/", {
+            params: { external_id: external_id },
+        });
+        return res.data;
+    }, [external_id]);
+
+    useEffect(() => {
+        if (userReview) {
+            setRating(userReview.rating);
+            setComment(userReview.comment);
+
+            if (userReview.image) {
+                const file = new File(
+                    [userReview.image],
+                    userReview.image.name,
+                    {
+                        type: userReview.image.content_type,
+                    }
+                );
+                setImage(file);
+            }
+        }
+    }, [userReview]);
 
     return (
         <>
