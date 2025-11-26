@@ -27,9 +27,11 @@ function ItemComments({ external_id, refreshKey }) {
     const [hasComments, setHasComments] = useState(false);
 
     const { data: reviews } = useAsyncData(async () => {
-        const res = await api.get(
-            `/api/social/reviews?external_id=${external_id}`
-        );
+        const res = await api.get(`/api/social/reviews`, {
+            params: {
+                external_id: external_id,
+            },
+        });
         return res.data;
     }, [external_id, refreshKey]);
 
@@ -126,10 +128,10 @@ function ItemComments({ external_id, refreshKey }) {
                                                 {review.comment?.trim() ||
                                                     "No comment"}
                                             </Typography>
-                                            {review.image && (
+                                            {review.image?.url && (
                                                 <Link
                                                     href={toAbsoluteMediaUrl(
-                                                        review.image
+                                                        review.image.url
                                                     )}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
