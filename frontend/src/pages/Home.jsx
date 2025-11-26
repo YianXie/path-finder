@@ -1,13 +1,12 @@
-import { Container, Divider, Typography } from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Slide from "@mui/material/Slide";
+import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
 import { useCallback, useEffect, useState } from "react";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 
 import api from "../api";
 import { LoadingBackdrop, PageHeader } from "../components/common";
+import CompareSlider from "../components/global/CompareSlider";
 import ItemList from "../components/global/ItemList";
 import { useAuth } from "../contexts/AuthContext";
 import { usePageTitle } from "../hooks";
@@ -91,77 +90,57 @@ function Home() {
     }, [isAuthenticated]);
 
     return (
-        <Container maxWidth="xl">
-            <LoadingBackdrop open={isLoading} />
-            <PageHeader title="Welcome to PathFinder" className="mt-6 mb-4" />
-            {personalizedSuggestions.length > 0 && (
-                <Fragment key="recommended-for-you">
-                    <ItemList
-                        name={"Recommended For You"}
-                        suggestions={personalizedSuggestions}
-                        handleSaveStatusUpdate={getSuggestions}
-                        selectedItems={selectedItems}
-                        setSelectedItems={setSelectedItems}
-                    />
-                    <Divider sx={{ marginY: 2 }} />
-                </Fragment>
-            )}
-            {savedSuggestions.length > 0 && (
-                <Fragment key="saved-by-you">
-                    <ItemList
-                        name={"Saved by You"}
-                        suggestions={savedSuggestions}
-                        handleSaveStatusUpdate={getSuggestions}
-                        selectedItems={selectedItems}
-                        setSelectedItems={setSelectedItems}
-                    />
-                    <Divider sx={{ marginY: 2 }} />
-                </Fragment>
-            )}
-            {tagsList.map((tag, index) => (
-                <Fragment key={tag + index}>
-                    <ItemList
-                        name={tag}
-                        suggestions={suggestions.filter((suggestion) =>
-                            suggestion.tags.includes(tag)
-                        )}
-                        handleSaveStatusUpdate={getSuggestions}
-                        selectedItems={selectedItems}
-                        setSelectedItems={setSelectedItems}
-                    />
-                    <Divider sx={{ marginY: 2 }} />
-                </Fragment>
-            ))}
-            <Slide direction="up" in={selectedItems.length > 0}>
-                <Box
-                    sx={{
-                        position: "fixed",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        padding: 2,
-                        backgroundColor: "primary.main",
-                        boxShadow: "0 -2px 8px rgba(0, 0, 0, 0.1)",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        zIndex: 999,
-                    }}
-                >
-                    <Typography variant="h6" color="primary.contrastText">
-                        Compare Items
-                    </Typography>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        disabled={selectedItems.length < 2}
-                        onClick={handleCompare}
-                    >
-                        Compare
-                    </Button>
-                </Box>
-            </Slide>
-        </Container>
+        <>
+            <Container maxWidth="xl">
+                <LoadingBackdrop open={isLoading} />
+                <PageHeader
+                    title="Welcome to PathFinder"
+                    className="mt-6 mb-4"
+                />
+                {personalizedSuggestions.length > 0 && (
+                    <Fragment key="recommended-for-you">
+                        <ItemList
+                            name={"Recommended For You"}
+                            suggestions={personalizedSuggestions}
+                            handleSaveStatusUpdate={getSuggestions}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
+                        />
+                        <Divider sx={{ marginY: 2 }} />
+                    </Fragment>
+                )}
+                {savedSuggestions.length > 0 && (
+                    <Fragment key="saved-by-you">
+                        <ItemList
+                            name={"Saved by You"}
+                            suggestions={savedSuggestions}
+                            handleSaveStatusUpdate={getSuggestions}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
+                        />
+                        <Divider sx={{ marginY: 2 }} />
+                    </Fragment>
+                )}
+                {tagsList.map((tag, index) => (
+                    <Fragment key={tag + index}>
+                        <ItemList
+                            name={tag}
+                            suggestions={suggestions.filter((suggestion) =>
+                                suggestion.tags.includes(tag)
+                            )}
+                            handleSaveStatusUpdate={getSuggestions}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
+                        />
+                        <Divider sx={{ marginY: 2 }} />
+                    </Fragment>
+                ))}
+            </Container>
+            <CompareSlider
+                selectedItems={selectedItems}
+                handleCompare={handleCompare}
+            />
+        </>
     );
 }
 

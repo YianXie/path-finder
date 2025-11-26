@@ -1,8 +1,11 @@
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import api from "../../api";
 import { LoadingBackdrop, PageHeader } from "../../components/common";
+import CompareSlider from "../../components/global/CompareSlider";
 import Item from "../../components/global/Item";
 import { useAsyncData } from "../../hooks";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -18,6 +21,14 @@ function Saved() {
         const res = await api.post("/accounts/saved-items/");
         return res.data.suggestions;
     }, []);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const navigate = useNavigate();
+
+    const handleCompare = () => {
+        navigate(
+            `/compare?item1=${selectedItems[0]}&item2=${selectedItems[1]}`
+        );
+    };
 
     return (
         <>
@@ -46,10 +57,16 @@ function Saved() {
                             {...item}
                             is_saved={item.is_saved}
                             handleSaveStatusUpdate={getSavedItems}
+                            selectedItems={selectedItems}
+                            setSelectedItems={setSelectedItems}
                         />
                     ))}
                 </Grid>
             )}
+            <CompareSlider
+                selectedItems={selectedItems}
+                handleCompare={handleCompare}
+            />
         </>
     );
 }

@@ -308,7 +308,7 @@ function Compare() {
                 <Box sx={{ marginBottom: 3 }}>
                     <Button
                         startIcon={<ArrowBackIcon />}
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate(-1)}
                     >
                         Back
                     </Button>
