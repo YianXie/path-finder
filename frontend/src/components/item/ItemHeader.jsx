@@ -68,8 +68,20 @@ export function ItemHeader() {
                 {state.itemInfo.category?.map((cat, index) => (
                     <Chip
                         key={index}
-                        icon={<CategoryIcon />}
+                        color="primary"
                         label={cat}
+                        variant="outlined"
+                        size="small"
+                        sx={{
+                            padding: 1,
+                        }}
+                    />
+                ))}
+                {state.itemInfo.tags?.map((tag, index) => (
+                    <Chip
+                        key={index}
+                        color="secondary"
+                        label={tag}
                         variant="outlined"
                         size="small"
                         sx={{

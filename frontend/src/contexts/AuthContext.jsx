@@ -78,6 +78,9 @@ export const AuthProvider = ({ children }) => {
             setAccess(null);
             setRefresh(null);
             setUser(null);
+            setIsAuthenticated(false);
+            pendingLoginResolver.current = null;
+            pendingLoginValues.current = null;
         } catch (error) {
             console.error("Error logging out:", error);
         }

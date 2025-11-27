@@ -44,6 +44,8 @@ function ItemDetail() {
 
                 const response = await api.get(endpoint);
 
+                console.log(response.data);
+
                 setters.setItemInfo(response.data.suggestion);
                 setters.setIsSaved(response.data.is_saved);
                 setters.setAverageRating(
