@@ -18,7 +18,6 @@ import { forwardRef, useEffect, useState } from "react";
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
-import { useAsyncData } from "../../hooks";
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -55,6 +54,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
     const [image, setImage] = useState(null);
+    const [userReview, setUserReview] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async () => {
@@ -95,12 +95,20 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
         }
     };
 
-    const { data: userReview } = useAsyncData(async () => {
-        const res = await api.get("/api/social/user-review/", {
-            params: { external_id: external_id },
-        });
-        return res.data;
-    }, [external_id]);
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        async function fetchUserReview() {
+            try {
+                const res = await api.get("/api/social/user-review/", {
+                    params: { external_id: external_id },
+                });
+                setUserReview(res.data);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        fetchUserReview();
+    }, [isAuthenticated, external_id]);
 
     useEffect(() => {
         if (userReview) {
