@@ -52,7 +52,8 @@ export default function GoogleButton() {
                 { theme: "outline", size: "large" }
             );
         }
-    }, [login, navigate, setSnackBar, snackBar]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [login]);
 
     return <div id="google-signin" />;
 }

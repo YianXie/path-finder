@@ -228,12 +228,14 @@ export const AuthProvider = ({ children }) => {
                 access: tokens.access,
                 refresh: tokens.refresh,
                 user: userData,
+                isAuthenticated: true,
             };
 
             // Update state - React will batch these updates
             setAccess(tokens.access);
             setRefresh(tokens.refresh);
             setUser(userData);
+            setIsAuthenticated(true);
         });
     }, []);
 
