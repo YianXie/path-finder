@@ -44,7 +44,7 @@ PathFinder helps SAS high school students discover extracurricular opportunities
 
 **Backend**
 
--   Python 3.11, Django 5, Django REST Framework 3.16
+-   Python 3.11, Django 5.2+, Django REST Framework 3.16+
 -   Async APIs via `adrf` for personalized recommendations
 -   PostgreSQL (prod) and SQLite (local default)
 -   Background ingestion via management commands and logging under `backend/var/log`
@@ -57,7 +57,7 @@ PathFinder helps SAS high school students discover extracurricular opportunities
 
 **Tooling & DevOps**
 
--   Ruff, Black, isort, Bandit, Safety for Python quality and security
+-   Ruff (formatter and linter), isort, Bandit, Safety for Python quality and security
 -   ESLint, Prettier, and Tailwind plugins for the frontend
 -   Makefile helpers and `scripts/ci-local.sh` to mirror CI locally
 
@@ -73,8 +73,7 @@ path-finder/
 │   ├── pathfinder_api/          # Django settings, URLs, ASGI/WSGI config
 │   ├── var/log/                 # Import logs (created at runtime)
 │   ├── manage.py
-│   ├── requirements.txt
-│   └── requirements-dev.txt
+│   └── pyproject.toml           # Dependencies managed via uv
 ├── frontend/                    # React single-page app
 │   ├── src/
 │   │   ├── components/          # UI primitives, layout, shared widgets
@@ -111,8 +110,8 @@ cd path-finder/backend
 uv venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 uv sync
-python backend/manage.py migrate
-python backend/manage.py runserver
+python manage.py migrate
+python manage.py runserver
 ```
 
 The API listens on `http://localhost:8000`.
@@ -141,7 +140,7 @@ make install        # installs backend + frontend deps
 make backend-prod   # optional: run backend with gunicorn
 ```
 
-For routine development, run `python backend/manage.py runserver` and `npm run dev` concurrently.
+For routine development, run `python manage.py runserver` (from `backend/`) and `npm run dev` (from `frontend/`) concurrently.
 
 ## Environment Variables
 
@@ -215,6 +214,7 @@ Log files for ingestion live under `backend/var/log/`.
 
 -   `POST /api/social/rate/` – create or update a rating/comment for an opportunity (auth)
 -   `GET /api/social/reviews/?external_id=<id>` – fetch reviews for an opportunity (public)
+-   `GET /api/social/user-review/` – get the current user's review for an opportunity (auth)
 
 ### Auth
 

@@ -43,12 +43,13 @@ Thank you for your interest in contributing to PathFinder! This guide explains h
 4. **Run the development servers**
 
     ```bash
-    # terminal 1 (from the repository root)
+    # terminal 1 (from backend directory)
+    cd backend
     source .venv/bin/activate  # if not already active
-    python backend/manage.py runserver
+    python manage.py runserver
 
-    # terminal 2
-    cd path-finder/frontend  # from home directory; omit the prefix if already in the repo
+    # terminal 2 (from frontend directory)
+    cd frontend
     npm run dev
     ```
 
@@ -97,8 +98,8 @@ make lint
 
 ### Testing
 
--   **Backend**: Django test suite (`python backend/manage.py test`)
--   **Frontend**: Vite build verification (`npm run build`)
+-   **Backend**: Django test suite (`python manage.py test` from `backend/` directory)
+-   **Frontend**: Vite build verification (`npm run build` from `frontend/` directory)
 
 ```bash
 make test
@@ -197,8 +198,7 @@ path-finder/
 │   ├── suggestions/             # Suggestion models, ingestion, LLM personalization
 │   │   └── management/commands/ # sync_sheet, add_missing_tags, etc.
 │   ├── pathfinder_api/          # Django settings, urls, ASGI/WSGI
-│   ├── requirements.txt
-│   └── requirements-dev.txt
+│   └── pyproject.toml           # Dependencies managed via uv
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
@@ -218,7 +218,7 @@ path-finder/
 
 -   Browse [GitHub Issues](https://github.com/YianXie/path-finder/issues) before filing new ones
 -   Run `make help` for available automation commands
--   Check the [GitHub Actions README](.github/README_TEMPLATE.md) for CI details
+-   Check the [GitHub Actions documentation](docs/GitHub_Action.md) for CI details
 -   Reach out via [yianxie52@gmail.com](mailto:yianxie52@gmail.com) for urgent support
 
 ## Code of Conduct

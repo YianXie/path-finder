@@ -28,7 +28,7 @@ You can run the same checks locally using the provided scripts:
 
 ```bash
 # Install all dependencies
-make install-dev
+make install
 
 # Run all CI checks
 make ci-local
@@ -52,8 +52,10 @@ chmod +x scripts/ci-local.sh
 
 ## Configuration Files
 
--   `backend/pyproject.toml` - Ruff and isort configuration
+-   `backend/pyproject.toml` - Ruff and isort configuration, dependency management via uv
 -   `frontend/.prettierignore` - Prettier ignore patterns
+
+> **Note**: The CI workflow generates `requirements.txt` from `pyproject.toml` using `uv export` for Safety vulnerability scanning. This file is not committed to the repository.
 
 ## Environment Variables
 
@@ -67,15 +69,16 @@ The CI workflows use the following environment variables for testing:
 -   `CORS_ALLOWED_ORIGINS`: Comma-separated list of CORS origins
 -   `GOOGLE_CLIENT_ID`: Google OAuth client ID (test value)
 -   `ALLOWED_GOOGLE_HD`: Google hosted domain (test value)
+-   `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Cloudinary configuration (test values)
 
-Or check .env.example file for more details
+See the [Environment Variables section in README.md](../README.md#environment-variables) for more details.
 
 ## Adding New Checks
 
 To add new CI checks:
 
 1. Update the appropriate workflow file in `.github/workflows/`
-2. Add any new dependencies to `requirements.txt` (backend) or `package.json` (frontend)
+2. Add any new dependencies to `backend/pyproject.toml` (backend) or `frontend/package.json` (frontend)
 3. Update the local CI script in `scripts/ci-local.sh`
 4. Update this README with documentation
 
