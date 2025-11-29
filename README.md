@@ -30,6 +30,7 @@ PathFinder helps SAS high school students discover extracurricular opportunities
 
 -   [GitHub Actions](/docs/GitHub_Action.md)
 -   [Connection to the Themes](/docs/Theme_Connection.md)
+-   [How to Use This Site](/docs/How_To_Use.md)
 
 ## Overview
 
