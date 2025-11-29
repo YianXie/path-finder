@@ -3,6 +3,7 @@ import ComputerIcon from "@mui/icons-material/Computer";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import InfoIcon from "@mui/icons-material/Info";
 import InterestsIcon from "@mui/icons-material/Interests";
 import LightModeIcon from "@mui/icons-material/LightMode";
@@ -188,6 +189,13 @@ function Header() {
             label: "About Us",
             icon: <InfoIcon />,
             path: "/about",
+            requiresAuth: false,
+        },
+        {
+            label: "Source Code",
+            icon: <GitHubIcon />,
+            path: "https://github.com/YianXie/path-finder",
+            external: "https://github.com/YianXie/path-finder",
             requiresAuth: false,
         },
         {
@@ -586,6 +594,24 @@ function Header() {
                                 >
                                     <HeaderLink to="/about">
                                         About Us
+                                    </HeaderLink>
+                                    <HeaderLink
+                                        to="https://github.com/YianXie/path-finder"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Tooltip title="Source Code" arrow>
+                                            <GitHubIcon
+                                                fontSize="large"
+                                                sx={{
+                                                    transition:
+                                                        "opacity 0.2s ease-in-out",
+                                                    "&:hover": {
+                                                        opacity: 0.8,
+                                                    },
+                                                }}
+                                            />
+                                        </Tooltip>
                                     </HeaderLink>
                                     <Divider orientation="vertical" flexItem />
                                     {access && user ? (
