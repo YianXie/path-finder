@@ -242,7 +242,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                             color="primary"
                             fullWidth
                             onClick={handleSubmit}
-                            disabled={!rating}
+                            disabled={!rating || isLoading}
                             sx={{ mt: 2 }}
                         >
                             {isLoading ? (
