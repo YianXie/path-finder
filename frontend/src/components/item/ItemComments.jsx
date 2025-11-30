@@ -56,146 +56,149 @@ function ItemComments({ external_id, refreshKey }) {
 
     return (
         <>
-            {hasComments ? (
-                <Box sx={{ my: 4 }}>
-                    <Typography variant="h4" fontWeight={500}>
-                        User Review
-                    </Typography>
-                    {isLoading ? (
-                        <Stack
-                            spacing={2}
-                            direction="row"
-                            alignItems="center"
-                            my={2}
-                        >
-                            <Skeleton
-                                variant="circular"
-                                animation="wave"
-                                height={40}
-                                width={40}
-                            />
-                            <Stack direction="column" width="100%">
-                                <Skeleton
-                                    variant="text"
-                                    animation="wave"
-                                    height={40}
-                                    width="100%"
-                                />
-                                <Skeleton
-                                    variant="text"
-                                    animation="wave"
-                                    height={100}
-                                    width="100%"
-                                />
-                            </Stack>
-                        </Stack>
-                    ) : (
-                        <Stack spacing={2}>
-                            {reviews.map((review) => {
-                                return (
-                                    <>
-                                        <Stack
-                                            direction="row"
-                                            alignItems="center"
-                                            spacing={2}
-                                            key={review.id}
-                                            sx={{ p: 2 }}
-                                        >
-                                            <Avatar
-                                                {...stringAvatar(
-                                                    review.user.name
-                                                )}
-                                                sx={{ width: 40, height: 40 }}
-                                            />
+            {isLoading ? (
+                <Stack spacing={2} direction="row" alignItems="center" my={2}>
+                    <Skeleton
+                        variant="circular"
+                        animation="wave"
+                        height={40}
+                        width={40}
+                    />
+                    <Stack direction="column" width="100%">
+                        <Skeleton
+                            variant="text"
+                            animation="wave"
+                            height={40}
+                            width="100%"
+                        />
+                        <Skeleton
+                            variant="text"
+                            animation="wave"
+                            height={100}
+                            width="100%"
+                        />
+                    </Stack>
+                </Stack>
+            ) : (
+                <>
+                    {hasComments ? (
+                        <Box sx={{ my: 4 }}>
+                            <Typography variant="h4" fontWeight={500}>
+                                User Review
+                            </Typography>
+                            <Stack spacing={2}>
+                                {reviews.map((review) => {
+                                    return (
+                                        <>
                                             <Stack
-                                                direction="column"
-                                                alignItems="flex-start"
-                                                spacing={1}
-                                                sx={{ ml: 2 }}
-                                                width="100%"
+                                                direction="row"
+                                                alignItems="center"
+                                                spacing={2}
+                                                key={review.id}
+                                                sx={{ p: 2 }}
                                             >
+                                                <Avatar
+                                                    {...stringAvatar(
+                                                        review.user.name
+                                                    )}
+                                                    sx={{
+                                                        width: 40,
+                                                        height: 40,
+                                                    }}
+                                                />
                                                 <Stack
-                                                    direction="row"
+                                                    direction="column"
+                                                    alignItems="flex-start"
                                                     spacing={1}
-                                                    alignItems="center"
-                                                    justifyContent="space-between"
+                                                    sx={{ ml: 2 }}
                                                     width="100%"
                                                 >
-                                                    <Box
-                                                        sx={{
-                                                            display: "flex",
-                                                            alignItems:
-                                                                "center",
-                                                        }}
+                                                    <Stack
+                                                        direction="row"
+                                                        spacing={1}
+                                                        alignItems="center"
+                                                        justifyContent="space-between"
+                                                        width="100%"
                                                     >
-                                                        <Typography
-                                                            fontWeight={500}
+                                                        <Box
+                                                            sx={{
+                                                                display: "flex",
+                                                                alignItems:
+                                                                    "center",
+                                                            }}
                                                         >
-                                                            {review.user.name}
+                                                            <Typography
+                                                                fontWeight={500}
+                                                            >
+                                                                {
+                                                                    review.user
+                                                                        .name
+                                                                }
+                                                            </Typography>
+                                                            <Rating
+                                                                value={
+                                                                    review.rating
+                                                                }
+                                                                size="small"
+                                                                readOnly
+                                                                sx={{ ml: 1 }}
+                                                            />
+                                                        </Box>
+                                                        <Typography
+                                                            variant="body2"
+                                                            color="text.secondary"
+                                                        >
+                                                            {new Date(
+                                                                review.created_at
+                                                            ).toLocaleDateString()}
                                                         </Typography>
-                                                        <Rating
-                                                            value={
-                                                                review.rating
-                                                            }
-                                                            size="small"
-                                                            readOnly
-                                                            sx={{ ml: 1 }}
-                                                        />
-                                                    </Box>
+                                                    </Stack>
                                                     <Typography
-                                                        variant="body2"
-                                                        color="text.secondary"
+                                                        sx={
+                                                            review.comment
+                                                                ? {
+                                                                      fontStyle:
+                                                                          "normal",
+                                                                  }
+                                                                : {
+                                                                      fontStyle:
+                                                                          "italic",
+                                                                  }
+                                                        }
                                                     >
-                                                        {new Date(
-                                                            review.created_at
-                                                        ).toLocaleDateString()}
+                                                        {review.comment?.trim() ||
+                                                            "No comment"}
                                                     </Typography>
+                                                    {review.image?.url && (
+                                                        <Link
+                                                            href={toAbsoluteMediaUrl(
+                                                                review.image.url
+                                                            )}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            View Image
+                                                        </Link>
+                                                    )}
                                                 </Stack>
-                                                <Typography
-                                                    sx={
-                                                        review.comment
-                                                            ? {
-                                                                  fontStyle:
-                                                                      "normal",
-                                                              }
-                                                            : {
-                                                                  fontStyle:
-                                                                      "italic",
-                                                              }
-                                                    }
-                                                >
-                                                    {review.comment?.trim() ||
-                                                        "No comment"}
-                                                </Typography>
-                                                {review.image?.url && (
-                                                    <Link
-                                                        href={toAbsoluteMediaUrl(
-                                                            review.image.url
-                                                        )}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        View Image
-                                                    </Link>
-                                                )}
                                             </Stack>
-                                        </Stack>
-                                        <Divider />
-                                    </>
-                                );
-                            })}
-                        </Stack>
+                                            <Divider />
+                                        </>
+                                    );
+                                })}
+                            </Stack>
+                        </Box>
+                    ) : (
+                        <Typography
+                            variant="body1"
+                            color="text.secondary"
+                            align="center"
+                            sx={{ my: 4 }}
+                        >
+                            No comments yet
+                        </Typography>
                     )}
-                </Box>
-            ) : (
-                <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    align="center"
-                    sx={{ my: 4 }}
-                >
-                    No comments yet
-                </Typography>
+                </>
             )}
         </>
     );
