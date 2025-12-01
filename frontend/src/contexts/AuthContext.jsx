@@ -89,6 +89,7 @@ export const AuthProvider = ({ children }) => {
     /**
      * Refreshes the access token using the refresh token
      * @param {string} refreshTokenValue - The refresh token to use for renewal
+     * @returns {Promise<boolean>} Promise that resolves to true if refresh succeeded, false otherwise
      */
     const refreshToken = useCallback(
         async (refreshTokenValue) => {
@@ -104,6 +105,7 @@ export const AuthProvider = ({ children }) => {
                     // Update stored tokens
                     localStorage.setItem("access", newAccessToken);
                     setAccess(newAccessToken);
+                    setIsAuthenticated(true);
 
                     // Extract user info from new token
                     const payload = jwtDecode(newAccessToken);
@@ -116,12 +118,15 @@ export const AuthProvider = ({ children }) => {
                             "Email or name not found in refreshed token payload"
                         );
                     }
+                    return true;
                 } else {
                     logout();
+                    return false;
                 }
             } catch (error) {
                 console.error("Error refreshing token:", error);
                 logout();
+                return false;
             }
         },
         [logout]
@@ -167,8 +172,9 @@ export const AuthProvider = ({ children }) => {
                         setIsAuthenticated(false);
                     }
                 } else {
-                    // Access token expired, try to refresh
-                    refreshToken(storedRefresh);
+                    // Access token expired, try to refresh and wait for completion
+                    // refreshToken will handle updating state and setting isAuthenticated
+                    await refreshToken(storedRefresh);
                 }
             } else {
                 setIsAuthenticated(false);
