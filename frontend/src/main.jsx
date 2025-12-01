@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 
 import App from "./App.jsx";
 import { AuthProvider } from "./contexts/AuthContext";
+import { SearchActiveProvider } from "./contexts/SearchActiveContext";
 import { SnackBarProvider } from "./contexts/SnackBarContext";
 import "./index.css";
 
@@ -20,16 +21,19 @@ createRoot(document.getElementById("root")).render(
     <StrictMode>
         {/* Authentication context provider */}
         <AuthProvider>
-            {/* Global snackbar notifications provider */}
-            <SnackBarProvider>
-                {/* Material-UI theme provider */}
-                <ThemeProvider theme={theme}>
-                    {/* Reset CSS and normalize styles */}
-                    <CssBaseline />
-                    {/* Main application component */}
-                    <App />
-                </ThemeProvider>
-            </SnackBarProvider>
+            {/* Search active context provider */}
+            <SearchActiveProvider>
+                {/* Global snackbar notifications provider */}
+                <SnackBarProvider>
+                    {/* Material-UI theme provider */}
+                    <ThemeProvider theme={theme}>
+                        {/* Reset CSS and normalize styles */}
+                        <CssBaseline />
+                        {/* Main application component */}
+                        <App />
+                    </ThemeProvider>
+                </SnackBarProvider>
+            </SearchActiveProvider>
         </AuthProvider>
     </StrictMode>
 );

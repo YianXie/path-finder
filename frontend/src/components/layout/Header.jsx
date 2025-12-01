@@ -41,6 +41,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import api from "../../api";
 import { useAuth } from "../../contexts/AuthContext";
+import { useSearchActive } from "../../contexts/SearchActiveContext";
 import { useSnackBar } from "../../contexts/SnackBarContext";
 import { useMenu } from "../../hooks";
 import { stringAvatar } from "../../utils";
@@ -57,7 +58,7 @@ const HideOnScroll = ({ children }) => {
 
     return (
         <Slide appear={false} direction="down" in={!trigger} timeout={200}>
-            {children ?? <div />}
+            {children}
         </Slide>
     );
 };
@@ -72,6 +73,7 @@ const HideOnScroll = ({ children }) => {
 function Header() {
     const { access, user, logout } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
+    const { searchActive, setSearchActive } = useSearchActive();
     const { mode, setMode } = useColorScheme();
     const mainMenu = useMenu();
     const themeMenu = useMenu();
@@ -82,22 +84,19 @@ function Header() {
     const searchBarRef = useRef(null);
     const [searchParams] = useSearchParams();
     const query = searchParams.get("query");
-    const [searchActive, setSearchActive] = useState(false);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [value, setValue] = useState(query || "");
     const [options, setOptions] = useState([]);
 
-    const handleInput = () => {
-        setSearchActive(true);
-    };
-
     const handleClick = () => {
         setSearchActive(true);
+        console.log("click");
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setSearchActive(false);
+        console.log("submit");
         if (e.target[0].value.trim() !== "") {
             navigate(`/search?query=${e.target[0].value.trim()}`);
         }
@@ -105,38 +104,28 @@ function Header() {
 
     const handleClickOutside = useCallback(
         (e) => {
-            if (
-                !isMobile &&
-                searchBarRef.current &&
-                !searchBarRef.current.contains(e.target)
-            ) {
+            if (!isMobile && !searchBarRef.current.contains(e.target)) {
                 setSearchActive(false);
+                console.log("click outside");
             }
         },
-        [isMobile, searchBarRef]
+        [isMobile, setSearchActive]
     );
 
     useEffect(() => {
+        if (isMobile) return;
+
         if (searchActive) {
             // Only add click listener on desktop (mobile uses Dialog's onClose)
-            if (!isMobile) {
-                document.body.style.overflow = "hidden";
-                document.addEventListener("click", handleClickOutside);
-            }
-
-            return () => {
-                if (!isMobile) {
-                    document.body.style.overflow = "";
-                    document.removeEventListener("click", handleClickOutside);
-                }
-            };
+            document.addEventListener("click", handleClickOutside);
         } else {
             // Clean up listener if it exists (shouldn't happen, but safety check)
-            if (!isMobile) {
-                document.body.style.overflow = "";
-                document.removeEventListener("click", handleClickOutside);
-            }
+            document.removeEventListener("click", handleClickOutside);
         }
+
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
     }, [searchActive, isMobile, handleClickOutside]);
 
     useEffect(() => {
@@ -415,6 +404,7 @@ function Header() {
                 <header
                     style={{
                         position: "sticky",
+                        width: "100%",
                         top: 0,
                         zIndex: 1000,
                         backdropFilter: "blur(6px)",
@@ -519,9 +509,6 @@ function Header() {
                                         value={value}
                                         onChange={(_, newValue) =>
                                             setValue(newValue)
-                                        }
-                                        onInputChange={(_, newInputValue) =>
-                                            handleInput(newInputValue)
                                         }
                                         options={options}
                                         slotProps={{
@@ -897,9 +884,6 @@ function Header() {
                                 freeSolo
                                 value={value}
                                 onChange={(_, newValue) => setValue(newValue)}
-                                onInputChange={(_, newInputValue) =>
-                                    handleInput(newInputValue)
-                                }
                                 options={options}
                                 renderInput={(params) => (
                                     <TextField
