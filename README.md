@@ -22,7 +22,6 @@ PathFinder helps SAS high school students discover extracurricular opportunities
     -   [Social](#social)
     -   [Auth](#auth)
 -   [Current Features](#current-features)
--   [Roadmap](#roadmap)
 -   [Support](#support)
 -   [License](#license)
 
@@ -148,23 +147,30 @@ For routine development, run `python manage.py runserver` (from `backend/`) and 
 Create a `.env` file in `backend/`:
 
 ```bash
-SECRET_KEY=django-insecure-change-me
-ENVIRONMENT=development
-ALLOWED_HOSTS=localhost,127.0.0.1
-CORS_ALLOWED_ORIGINS=http://localhost:5173
-DATABASE_URL=postgres://username:password@localhost:5432/pathfinder  # optional in dev
-GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
-ALLOWED_GOOGLE_HD=sas.edu.sg
-OPENAI_API_KEY=sk-your-openai-key
-SHEET_ID=your_google_sheet_id
+ENVIRONMENT=""  # the environment where your backend is running, for local development, use 'development'
+SECRET_KEY=""  # your Django secret_key, can be re-generated if needed
+ALLOWED_HOSTS=""  # your domain (without https:// or http://)
+CORS_ALLOWED_ORIGINS=""  # your domain (with https:// or http://)
+CSRF_TRUSTED_ORIGINS=""  # your domain (with https:// or http://)
+DATABASE_URL=""  # the url to access your PostgreSQL database
+
+CLOUDINARY_CLOUD_NAME=""  # Your Cloudinary Cloud Name, can be found on the Cloudinary website
+CLOUDINARY_API_KEY=""  # Your Cloudinary API Key, can be found on the Cloudinary website
+CLOUDINARY_API_SECRET=""  # Your Cloudinary API Secret, can be found on the Cloudinary website
+
+GOOGLE_CLIENT_ID=""  # your Google Client ID for google login (should match with frontend)
+ALLOWED_GOOGLE_HD=""  # (optional) only allow specific email address domain to login (e.g., your-company.com)
+SHEET_ID=""  # the Google Spreadsheet ID, can be found in the url of the sheet, sheet must be set to publicly visible
+
+OPENAI_API_KEY=""  # your OpenAI API Key, can be found on the OpenAI website
 ```
 
-Create a `.env.local` (or `.env`) file in `frontend/`:
+Create a `.env` file in `frontend/`:
 
 ```bash
-VITE_API_URL=http://localhost:8000
-VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id.apps.googleusercontent.com
-VITE_ENVIRONMENT=development
+VITE_ENVIRONMENT=""  # the environment (default is 'development')
+VITE_API_URL=""  # the url where you backend (Django Rest Framework) runs
+VITE_GOOGLE_CLIENT_ID=""  # your Google Client's ID (should match with backend)
 ```
 
 > The backend falls back to SQLite when `ENVIRONMENT=development`. Provide `DATABASE_URL` for production or local Postgres.

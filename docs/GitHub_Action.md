@@ -61,15 +61,19 @@ chmod +x scripts/ci-local.sh
 
 The CI workflows use the following environment variables for testing:
 
--   `SECRET_KEY`: Django secret key
--   `ENVIRONMENT`: Set to 'development'
--   `DATABASE_URL`: PostgreSQL connection string
--   `DEBUG`: Set to 'True'
--   `ALLOWED_HOSTS`: Comma-separated list of allowed hosts
--   `CORS_ALLOWED_ORIGINS`: Comma-separated list of CORS origins
--   `GOOGLE_CLIENT_ID`: Google OAuth client ID (test value)
--   `ALLOWED_GOOGLE_HD`: Google hosted domain (test value)
--   `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Cloudinary configuration (test values)
+-   `ENVIRONMENT`="" # the environment where your backend is running, for local development, use 'development'
+-   `SECRET_KEY`="" # your Django secret_key, can be re-generated if needed
+-   `ALLOWED_HOSTS`="" # your domain (without https:// or http://)
+-   `CORS_ALLOWED_ORIGINS`="" # your domain (with https:// or http://)
+-   `CSRF_TRUSTED_ORIGINS`="" # your domain (with https:// or http://)
+-   `DATABASE_URL`="" # the url to access your PostgreSQL database
+-   `CLOUDINARY_CLOUD_NAME`="" # Your Cloudinary Cloud Name, can be found on the Cloudinary website
+-   `CLOUDINARY_API_KEY`="" # Your Cloudinary API Key, can be found on the Cloudinary website
+-   `CLOUDINARY_API_SECRET`="" # Your Cloudinary API Secret, can be found on the Cloudinary website
+-   `GOOGLE_CLIENT_ID`="" # your Google Client ID for google login (should match with frontend)
+-   `ALLOWED_GOOGLE_HD`="" # (optional) only allow specific email address domain to login (e.g., your-company.com)
+-   `SHEET_ID`="" # the Google Spreadsheet ID, can be found in the url of the sheet, sheet must be set to publicly visible
+-   `OPENAI_API_KEY`="" # your OpenAI API Key, can be found on the OpenAI website
 
 See the [Environment Variables section in README.md](../README.md#environment-variables) for more details.
 
