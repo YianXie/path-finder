@@ -90,13 +90,11 @@ function Header() {
 
     const handleClick = () => {
         setSearchActive(true);
-        console.log("click");
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setSearchActive(false);
-        console.log("submit");
         if (e.target[0].value.trim() !== "") {
             navigate(`/search?query=${e.target[0].value.trim()}`);
         }
@@ -106,7 +104,6 @@ function Header() {
         (e) => {
             if (!isMobile && !searchBarRef.current.contains(e.target)) {
                 setSearchActive(false);
-                console.log("click outside");
             }
         },
         [isMobile, setSearchActive]

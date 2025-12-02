@@ -50,10 +50,6 @@ function ItemComments({ external_id, refreshKey }) {
         }
     }, [reviews]);
 
-    useEffect(() => {
-        console.log(isLoading);
-    }, [isLoading]);
-
     return (
         <>
             {isLoading ? (

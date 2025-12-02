@@ -64,7 +64,15 @@ export function ItemHeader() {
             </Stack>
 
             {/* Category */}
-            <Stack direction="row" spacing={1} sx={{ marginBottom: 2 }}>
+            <Stack
+                direction="row"
+                spacing={1}
+                sx={{
+                    marginBottom: 2,
+                    overflowX: "scroll",
+                    scrollbarWidth: "none",
+                }}
+            >
                 {state.itemInfo.category?.map((cat, index) => (
                     <Chip
                         key={index}
