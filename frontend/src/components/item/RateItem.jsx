@@ -157,8 +157,6 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                             borderRadius: 2,
                             padding: 2,
                             boxShadow: 2,
-                            width: "500px",
-                            maxWidth: "100%",
                         })}
                     >
                         <Stack
