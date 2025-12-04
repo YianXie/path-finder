@@ -1,7 +1,7 @@
 import rest_framework.exceptions as errors
 from rest_framework import status
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
 
 from django.contrib.auth import get_user_model
@@ -86,7 +86,7 @@ class UpdateOrModifySuggestionRating(APIView):
 class GetSuggestionReviews(APIView):
     """Check average rating and suggestions"""
 
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         try:

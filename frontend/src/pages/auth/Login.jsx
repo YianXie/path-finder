@@ -1,5 +1,8 @@
 import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -27,28 +30,105 @@ function Login() {
     }, [isAuthenticated, navigate]);
 
     return (
-        <Container className="flex h-screen items-center justify-center">
-            <Box
-                padding={4}
-                bgcolor="primary.light"
-                className="flex w-96 flex-col items-center justify-center gap-4 rounded-lg bg-white shadow-md"
+        <Container
+            maxWidth="sm"
+            sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "calc(100vh - 200px)",
+                py: 4,
+            }}
+        >
+            <Card
+                elevation={8}
+                sx={{
+                    width: "100%",
+                    maxWidth: 440,
+                    borderRadius: 3,
+                    overflow: "visible",
+                }}
             >
-                <Typography
-                    variant="h4"
-                    color="primary.dark"
-                    className="text-center text-2xl font-bold"
-                >
-                    Login
-                </Typography>
-                <Typography
-                    variant="body1"
-                    color="primary.dark"
-                    className="text-center text-sm"
-                >
-                    Sign in with your school Google account to continue
-                </Typography>
-                <GoogleButton />
-            </Box>
+                <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+                    <Stack spacing={3} alignItems="center">
+                        {/* Logo and Branding */}
+                        <Stack spacing={2} alignItems="center" sx={{ mb: 1 }}>
+                            <Box
+                                component="img"
+                                src="/logo.png"
+                                alt="PathFinder"
+                                sx={{
+                                    width: 64,
+                                    height: 64,
+                                    userSelect: "none",
+                                }}
+                            />
+                            <Typography
+                                variant="h4"
+                                component="h1"
+                                fontWeight={600}
+                                textAlign="center"
+                            >
+                                Welcome to PathFinder
+                            </Typography>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                textAlign="center"
+                                sx={{ maxWidth: 320 }}
+                            >
+                                Sign in with your school Google account to
+                                discover personalized opportunities and pathways
+                            </Typography>
+                        </Stack>
+
+                        {/* Divider */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 2,
+                                my: 1,
+                            }}
+                        >
+                            <Box
+                                sx={{
+                                    flex: 1,
+                                    height: 1,
+                                    bgcolor: "divider",
+                                }}
+                            />
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ px: 1 }}
+                            >
+                                Sign in with
+                            </Typography>
+                            <Box
+                                sx={{
+                                    flex: 1,
+                                    height: 1,
+                                    bgcolor: "divider",
+                                }}
+                            />
+                        </Box>
+
+                        {/* Google Sign-In Button */}
+                        <Box
+                            sx={{
+                                width: "100%",
+                                display: "flex",
+                                justifyContent: "center",
+                                mt: 1,
+                            }}
+                        >
+                            <GoogleButton />
+                        </Box>
+                    </Stack>
+                </CardContent>
+            </Card>
         </Container>
     );
 }

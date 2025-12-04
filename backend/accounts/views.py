@@ -1,5 +1,4 @@
 import os
-from re import U
 
 import rest_framework.exceptions as errors
 from google.auth.transport import requests as grequests

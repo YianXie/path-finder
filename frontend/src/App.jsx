@@ -23,16 +23,38 @@ import Logout from "./pages/auth/Logout";
  *
  * Defines all application routes with lazy-loaded components for better performance.
  * Uses ProtectedRoute for authenticated pages and Layout for consistent page structure.
- * Includes public routes (Home, Login) and protected routes (Saved, OnBoarding, etc.).
  */
 function App() {
     return (
         <Router>
             <Routes>
                 <Route path="/" element={<Layout />}>
-                    <Route index element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/search" element={<Search />} />
+                    <Route
+                        index
+                        element={
+                            <>
+                                <ProtectedRoute>
+                                    <Home />
+                                </ProtectedRoute>
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/about"
+                        element={
+                            <ProtectedRoute>
+                                <About />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/search"
+                        element={
+                            <ProtectedRoute>
+                                <Search />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route
                         path="/saved"
                         element={
@@ -61,12 +83,21 @@ function App() {
                     <Route
                         path="/item/:external_id"
                         element={
-                            <ItemDetailProvider>
-                                <LazyItemDetail />
-                            </ItemDetailProvider>
+                            <ProtectedRoute>
+                                <ItemDetailProvider>
+                                    <LazyItemDetail />
+                                </ItemDetailProvider>
+                            </ProtectedRoute>
                         }
                     />
-                    <Route path="/compare" element={<Compare />} />
+                    <Route
+                        path="/compare"
+                        element={
+                            <ProtectedRoute>
+                                <Compare />
+                            </ProtectedRoute>
+                        }
+                    />
                     <Route path="*" element={<LazyNotFoundPage />} />
                 </Route>
             </Routes>

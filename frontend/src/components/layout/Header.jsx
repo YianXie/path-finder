@@ -71,7 +71,7 @@ const HideOnScroll = ({ children }) => {
  * Automatically hides on scroll for better user experience.
  */
 function Header() {
-    const { access, user, logout } = useAuth();
+    const { isAuthenticated, user, logout } = useAuth();
     const { snackBar, setSnackBar } = useSnackBar();
     const { searchActive, setSearchActive } = useSearchActive();
     const { mode, setMode } = useColorScheme();
@@ -150,9 +150,9 @@ function Header() {
     }, []);
 
     useEffect(() => {
+        if (!isAuthenticated) return;
         getSuggestions();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [isAuthenticated, getSuggestions]);
 
     // Navigation items for the mobile drawer
     const drawerListItems = [
@@ -164,7 +164,7 @@ function Header() {
         },
         {
             label:
-                access && user && user.finished_onboarding
+                isAuthenticated && user && user.finished_onboarding
                     ? "Update your information"
                     : "Finish onboarding",
             icon: <InterestsIcon />,
@@ -190,7 +190,7 @@ function Header() {
             path: null,
             external: "https://forms.gle/yeXqMeYjKnoHSmdo6",
         },
-        ...(access && user
+        ...(isAuthenticated && user
             ? [
                   {
                       label: "Logout",
@@ -207,7 +207,7 @@ function Header() {
                       requiresAuth: false,
                   },
               ]),
-    ].filter((item) => !item.requiresAuth || (access && user));
+    ].filter((item) => !item.requiresAuth || (isAuthenticated && user));
 
     /**
      * Toggles the mobile drawer open/closed state
@@ -227,7 +227,7 @@ function Header() {
             }}
         >
             {/* User info section at top of drawer */}
-            {access && user && (
+            {isAuthenticated && user && (
                 <>
                     <Box
                         sx={{
@@ -598,7 +598,7 @@ function Header() {
                                         </Tooltip>
                                     </HeaderLink>
                                     <Divider orientation="vertical" flexItem />
-                                    {access && user ? (
+                                    {isAuthenticated && user ? (
                                         <>
                                             <Tooltip
                                                 title="Account Settings"
