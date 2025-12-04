@@ -252,30 +252,36 @@ class PersonalizedSuggestionsView(APIView):
         # Use synchronous run for async OpenAI call
         import asyncio
 
-        completion = asyncio.run(
-            client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[
-                    {"role": "system", "content": SYSTEM_RULES},
-                    {
-                        "role": "user",
-                        "content": json.dumps(
-                            {
-                                "basic_info": user_model.basic_information,
-                                "interests": user_model.interests,
-                                "goals": user_model.goals,
-                                "additional_info": user_model.other_goals,
-                                "suggestions": suggestions_data,
-                            }
-                        ),
-                    },
-                ],
-                response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
-                timeout=20_000,
-                temperature=0.2,
-            )
-        )
+        async def get_completion():
+            """Async wrapper to ensure client is properly closed"""
+            try:
+                return await client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {"role": "system", "content": SYSTEM_RULES},
+                        {
+                            "role": "user",
+                            "content": json.dumps(
+                                {
+                                    "basic_info": user_model.basic_information,
+                                    "interests": user_model.interests,
+                                    "goals": user_model.goals,
+                                    "additional_info": user_model.other_goals,
+                                    "suggestions": suggestions_data,
+                                }
+                            ),
+                        },
+                    ],
+                    response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
+                    timeout=20_000,
+                    temperature=0.2,
+                )
+            finally:
+                # Ensure the async client is properly closed before the event loop closes
+                # This prevents "Event loop is closed" warnings
+                await client.close()
 
+        completion = asyncio.run(get_completion())
         content = json.loads(completion.choices[0].message.content)
 
         # Merge scores

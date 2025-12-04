@@ -356,7 +356,7 @@ class UpdateUserInformationView(APIView):
         user_model.basic_information = basic_information
         user_model.interests = interests
         user_model.goals = goals
-        user_model.other_goals = other_goals if other_goals else None
+        user_model.other_goals = other_goals
         user_model.finished_onboarding = True
         user_model.save()
         return Response(

@@ -100,6 +100,35 @@ class UserProfileViewTestCase(APITestCase):
         self.assertEqual(response.data["name"], "Test User")
         self.assertEqual(response.data["google_sub"], "google_sub_123")
 
+    def test_user_profile_includes_all_fields(self):
+        """Test that user profile includes all expected fields"""
+        UserProfile.objects.create(
+            user=self.user,
+            name="Test User",
+            google_sub="google_sub_123",
+            basic_information={"role": "student"},
+            interests=["math"],
+            goals=["learn"],
+            other_goals="Other goals",
+            saved_items=["item1"],
+            finished_onboarding=True,
+        )
+
+        response = self.client.get(
+            "/accounts/profile/",
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("email", response.data)
+        self.assertIn("name", response.data)
+        self.assertIn("google_sub", response.data)
+        self.assertIn("finished_onboarding", response.data)
+        self.assertIn("basic_information", response.data)
+        self.assertIn("interests", response.data)
+        self.assertIn("goals", response.data)
+        self.assertIn("other_goals", response.data)
+        self.assertIn("saved_items", response.data)
+
 
 class SaveItemViewTestCase(APITestCase):
     """Tests for the save item endpoint"""
@@ -177,6 +206,49 @@ class SaveItemViewTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data["status"], "error")
         self.assertIn("User not found", response.data["message"])
+
+    def test_save_item_multiple_items(self):
+        """Test that save item can handle multiple saved items"""
+        # Add first item
+        response1 = self.client.post(
+            "/accounts/save-item/",
+            {"external_id": "item1"},
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+        )
+        self.assertEqual(response1.status_code, status.HTTP_200_OK)
+
+        # Add second item
+        response2 = self.client.post(
+            "/accounts/save-item/",
+            {"external_id": "item2"},
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+        )
+        self.assertEqual(response2.status_code, status.HTTP_200_OK)
+
+        # Verify both items are saved
+        self.user_model.refresh_from_db()
+        self.assertIn("item1", self.user_model.saved_items)
+        self.assertIn("item2", self.user_model.saved_items)
+
+    def test_save_item_remove_one_keeps_others(self):
+        """Test that removing one item doesn't affect other saved items"""
+        # Add multiple items
+        self.user_model.saved_items = ["item1", "item2", "item3"]
+        self.user_model.save()
+
+        # Remove one item
+        response = self.client.post(
+            "/accounts/save-item/",
+            {"external_id": "item2"},
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Verify other items are still saved
+        self.user_model.refresh_from_db()
+        self.assertIn("item1", self.user_model.saved_items)
+        self.assertNotIn("item2", self.user_model.saved_items)
+        self.assertIn("item3", self.user_model.saved_items)
 
 
 class CheckItemSavedViewTestCase(APITestCase):
@@ -430,3 +502,102 @@ class UpdateUserInformationViewTestCase(APITestCase):
             format="json",
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_user_information_missing_interests(self):
+        """Test that update user information returns 400 when interests is missing"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "goals": self.GOALS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_user_information_missing_goals(self):
+        """Test that update user information returns 400 when goals is missing"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_user_information_sets_finished_onboarding(self):
+        """Test that update user information sets finished_onboarding to True"""
+        self.assertFalse(self.user_model.finished_onboarding)
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user_model.refresh_from_db()
+        self.assertTrue(self.user_model.finished_onboarding)
+
+    def test_update_user_information_updates_user_profile_fields(self):
+        """Test that update user information correctly updates user profile fields"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+                "other_goals": self.OTHER_GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user_model.refresh_from_db()
+        self.assertEqual(self.user_model.basic_information, self.BASIC_INFORMATION)
+        self.assertEqual(self.user_model.interests, self.INTERESTS)
+        self.assertEqual(self.user_model.goals, self.GOALS)
+        self.assertEqual(self.user_model.other_goals, self.OTHER_GOALS)
+
+    def test_update_user_information_with_empty_other_goals(self):
+        """Test that update user information accepts empty other_goals"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+                "other_goals": "",
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user_model.refresh_from_db()
+        self.assertEqual(self.user_model.other_goals, "")
+
+    def test_update_user_information_with_none_other_goals(self):
+        """Test that update user information accepts None for other_goals"""
+        response = self.client.post(
+            "/accounts/update-user-information/",
+            {
+                "basic_information": self.BASIC_INFORMATION,
+                "interests": self.INTERESTS,
+                "goals": self.GOALS,
+            },
+            HTTP_AUTHORIZATION=f"Bearer {self.access}",
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user_model.refresh_from_db()
+        self.assertIsNone(self.user_model.other_goals)
