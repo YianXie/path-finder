@@ -134,7 +134,7 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                 <Dialog
                     open={open}
                     onClose={onClose}
-                    maxWidth="md"
+                    maxWidth="sm"
                     slots={{
                         transition: Transition,
                     }}
@@ -144,9 +144,6 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                         left: 0,
                         right: 0,
                         bottom: 0,
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
                         pointerEvents: open ? "auto" : "none",
                     }}
                 >
@@ -157,6 +154,8 @@ function RateItem({ open, onClose, external_id, onSubmitted }) {
                             borderRadius: 2,
                             padding: 2,
                             boxShadow: 2,
+                            width: { xs: "350px", md: "500px" },
+                            maxWidth: "100%",
                         })}
                     >
                         <Stack
