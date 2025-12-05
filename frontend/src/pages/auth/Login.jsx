@@ -1,12 +1,18 @@
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import LockIcon from "@mui/icons-material/Lock";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Container from "@mui/material/Container";
+import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import api from "../../api";
 import GoogleButton from "../../components/global/GoogleButton";
 import { useAuth } from "../../contexts/AuthContext";
 import usePageTitle from "../../hooks/usePageTitle";
@@ -21,7 +27,26 @@ import usePageTitle from "../../hooks/usePageTitle";
 function Login() {
     usePageTitle("PathFinder | Login");
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, login, fetchUserProfile } = useAuth();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const username = formData.get("username");
+        const password = formData.get("password");
+
+        try {
+            const response = await api.post("/api/token/", {
+                username: username,
+                password: password,
+            });
+            const { access, refresh } = response.data;
+            const profile = await fetchUserProfile(access);
+            await login({ access, refresh }, profile);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -31,9 +56,11 @@ function Login() {
 
     return (
         <Container
-            maxWidth="sm"
+            maxWidth="md"
             sx={{
                 display: "flex",
+                flexDirection: "column",
+                gap: 2,
                 justifyContent: "center",
                 alignItems: "center",
                 minHeight: "calc(100vh - 200px)",
@@ -41,7 +68,7 @@ function Login() {
             }}
         >
             <Card
-                elevation={8}
+                elevation={4}
                 sx={{
                     width: "100%",
                     maxWidth: 440,
@@ -128,6 +155,79 @@ function Login() {
                         </Box>
                     </Stack>
                 </CardContent>
+            </Card>
+            <Divider sx={{ width: "100%", my: 4 }}>
+                Or login as an admin
+            </Divider>
+            <Card
+                elevation={4}
+                sx={{
+                    width: "100%",
+                    maxWidth: 440,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    borderRadius: 3,
+                    overflow: "visible",
+                    padding: { xs: 1, sm: 2 },
+                    alignItems: "center",
+                }}
+            >
+                <form
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "4px",
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}
+                    onSubmit={handleSubmit}
+                >
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "flex-end",
+                            width: "100%",
+                        }}
+                    >
+                        <AccountCircle sx={{ color: "action.active", mr: 1 }} />
+                        <TextField
+                            label="Username"
+                            name="username"
+                            variant="standard"
+                            fullWidth
+                            type="text"
+                            required
+                        />
+                    </Box>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "flex-end",
+                            width: "100%",
+                        }}
+                    >
+                        <LockIcon sx={{ color: "action.active", mr: 1 }} />
+                        <TextField
+                            label="Password"
+                            name="password"
+                            variant="standard"
+                            fullWidth
+                            type="password"
+                            required
+                        />
+                    </Box>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        fullWidth
+                        sx={{ mt: 2 }}
+                    >
+                        Login
+                    </Button>
+                </form>
             </Card>
         </Container>
     );

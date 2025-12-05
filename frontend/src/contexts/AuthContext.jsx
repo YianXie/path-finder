@@ -287,6 +287,7 @@ export const AuthProvider = ({ children }) => {
             isAuthenticated,
             login,
             logout,
+            fetchUserProfile,
             getValidAccessToken,
         }),
         [
@@ -296,6 +297,7 @@ export const AuthProvider = ({ children }) => {
             isAuthenticated,
             login,
             logout,
+            fetchUserProfile,
             getValidAccessToken,
         ]
     );
@@ -315,6 +317,7 @@ export const AuthProvider = ({ children }) => {
  * @returns {string|null} returns.refresh - Current refresh token
  * @returns {Function} returns.login - Function to log in a user
  * @returns {Function} returns.logout - Function to log out current user
+ * @returns {Function} returns.fetchUserProfile - Function to fetch user profile
  * @returns {Function} returns.getValidAccessToken - Function to get valid access token
  */
 // eslint-disable-next-line react-refresh/only-export-components

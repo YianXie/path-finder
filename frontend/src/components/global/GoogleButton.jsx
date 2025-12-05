@@ -28,6 +28,7 @@ export default function GoogleButton() {
                             credential: response.credential,
                         });
                         await login(data.tokens, data.user); // ensure login is complete before redirecting
+                        console.log(data);
                         setSnackBar({
                             ...snackBar,
                             open: true,

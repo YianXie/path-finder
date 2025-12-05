@@ -5,11 +5,9 @@ from google.auth.transport import requests as grequests
 from google.oauth2 import id_token
 from jwt import decode
 from rest_framework import status
-from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -148,41 +146,12 @@ class UserProfileView(APIView):
         Response: Response
     """
 
-    authentication_classes = [JWTAuthentication, SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
-
         try:
-            if user.is_superuser:
-                user_model, created = UserProfile.objects.get_or_create(user=user)
-                if created:
-                    user_model.name = user.username or user.first_name
-                    user_model.finished_onboarding = False
-                    user_model.basic_information = None
-                    user_model.interests = None
-                    user_model.goals = None
-                    user_model.other_goals = None
-                    user_model.saved_items = []
-                    user_model.save()
-                return Response(
-                    {
-                        "email": user.email,
-                        "name": user_model.name,
-                        "finished_onboarding": user_model.finished_onboarding,
-                        "basic_information": user_model.basic_information,
-                        "interests": user_model.interests,
-                        "goals": user_model.goals,
-                        "other_goals": user_model.other_goals,
-                        "saved_items": user_model.saved_items,
-                    },
-                    status=status.HTTP_200_OK,
-                )
-
-            # Try to get user data from UserProfile first
             user_model = UserProfile.objects.get(user=user)
-
             return Response(
                 {
                     "email": user.email,
