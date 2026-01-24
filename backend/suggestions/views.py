@@ -18,11 +18,35 @@ from suggestions.reco_schema import RANKING_SCHEMA, SYSTEM_RULES
 from suggestions.serializers import SuggestionSerializer
 
 
-def search_suggestions(query):
+def search_suggestions(query, limit=50):
+    """
+    Search suggestions using vector similarity.
+    
+    Args:
+        query: Search query string
+        limit: Maximum number of results to return (default 50)
+    
+    Returns:
+        List of SuggestionModel objects sorted by relevance
+    """
+    from django.db.models import Avg, Count
+    
     emb = get_embedding(query)
-    items = vector_search(SuggestionModel, emb)[:50]
-    items = [item for item, dist in items]  # Add if dist < threshold for threshold
-    return items
+    # Get limited results from vector search
+    items = vector_search(SuggestionModel, emb, limit=limit)
+    # Extract just the objects (discard distances)
+    item_ids = [item.id for item, dist in items]
+    
+    # Fetch full objects with annotations in a single query, preserving order
+    suggestions = {
+        s.id: s for s in SuggestionModel.objects.filter(id__in=item_ids).annotate(
+            avg_rating=Avg('userrating__rating'),
+            rating_count=Count('userrating')
+        )
+    }
+    
+    # Return in the same order as vector search results
+    return [suggestions[item_id] for item_id in item_ids if item_id in suggestions]
 
 
 class HealthCheckView(APIView):

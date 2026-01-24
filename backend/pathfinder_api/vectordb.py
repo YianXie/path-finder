@@ -70,7 +70,36 @@ class VectorField(models.Field):
         return json.loads(value)
 
 
-def vector_search(model, query_vec):
-    objs = list(model.objects.all())
-    dists = [np.linalg.norm(np.array(o.embedding) - query_vec).item() for o in objs]
-    return sorted(zip(objs, dists), key=lambda x: x[1])  # Sort by distance, but return (objs, dists)
+def vector_search(model, query_vec, limit=None):
+    """
+    Perform vector similarity search on a model with embeddings.
+    
+    Args:
+        model: The Django model class to search
+        query_vec: Query vector as numpy array or list
+        limit: Optional limit on number of results to return
+    
+    Returns:
+        List of tuples (object, distance) sorted by distance
+    
+    Note: For production use with large datasets, consider using a dedicated
+    vector database like pgvector, Pinecone, or Weaviate. This implementation
+    loads all embeddings into memory which doesn't scale beyond ~10k items.
+    """
+    # Use only() to load just the ID and embedding fields to reduce memory
+    objs = list(model.objects.only('id', 'embedding'))
+    
+    # Convert query to numpy array if it's a list
+    query_array = np.array(query_vec) if not isinstance(query_vec, np.ndarray) else query_vec
+    
+    # Calculate distances
+    dists = [np.linalg.norm(np.array(o.embedding) - query_array).item() for o in objs]
+    
+    # Sort by distance
+    sorted_results = sorted(zip(objs, dists), key=lambda x: x[1])
+    
+    # Apply limit if specified
+    if limit is not None:
+        sorted_results = sorted_results[:limit]
+    
+    return sorted_results  # Return (objs, dists) tuples
