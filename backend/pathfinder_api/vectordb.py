@@ -82,11 +82,19 @@ def vector_search(model, query_vec, limit=None):
     Returns:
         List of tuples (object, distance) sorted by distance
     
-    Note: For production use with large datasets, consider using a dedicated
-    vector database like pgvector, Pinecone, or Weaviate. This implementation
-    loads all embeddings into memory which doesn't scale beyond ~10k items.
+    PERFORMANCE WARNING: This implementation loads all embeddings into memory,
+    which limits scalability to ~10k items. For production with larger datasets,
+    consider migrating to a dedicated vector database solution:
+    - pgvector extension for PostgreSQL (recommended for existing PG users)
+    - Pinecone, Weaviate, or Qdrant for managed vector search
+    - FAISS for in-memory search with better performance
+    
+    Current implementation uses .only() to minimize memory footprint by loading
+    just ID and embedding fields, but still requires O(n) memory where n is the
+    total number of items in the database.
     """
     # Use only() to load just the ID and embedding fields to reduce memory
+    # Note: This still loads ALL embeddings, so memory usage is O(n)
     objs = list(model.objects.only('id', 'embedding'))
     
     # Convert query to numpy array if it's a list

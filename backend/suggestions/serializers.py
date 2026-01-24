@@ -69,8 +69,8 @@ class SuggestionSerializer(serializers.ModelSerializer):
         # However, to maintain compatibility with both SQLite and PostgreSQL:
         from django.db import connection
         
-        # Check database backend
-        if 'postgresql' in connection.vendor:
+        # Check database backend with exact matching
+        if connection.vendor == 'postgresql':
             # For PostgreSQL, use efficient database-level filtering
             saved_count = UserProfile.objects.filter(saved_items__contains=[suggestion_id]).count()
         else:
