@@ -53,10 +53,22 @@ class SuggestionSerializer(serializers.ModelSerializer):
         if suggestion_id is None:
             return 0
 
-        profiles = UserProfile.objects.all()
-        saved_count = 0
-        for profile in profiles:
-            if suggestion_id in profile.saved_items:
-                saved_count += 1
+        # Use Python-level filtering for SQLite compatibility
+        # For PostgreSQL, you could use: UserProfile.objects.filter(saved_items__contains=[suggestion_id]).count()
+        # However, to maintain compatibility with both SQLite and PostgreSQL:
+        from django.db.models import Q
+        from django.db import connection
+        
+        # Check database backend
+        if 'postgresql' in connection.vendor:
+            # For PostgreSQL, use efficient database-level filtering
+            saved_count = UserProfile.objects.filter(saved_items__contains=[suggestion_id]).count()
+        else:
+            # For SQLite, use raw SQL with JSON functions or iterate (less efficient but compatible)
+            # Note: This is still better than loading all profiles if we can limit the queryset
+            saved_count = sum(
+                1 for profile in UserProfile.objects.only('saved_items').iterator()
+                if suggestion_id in profile.saved_items
+            )
 
         return saved_count

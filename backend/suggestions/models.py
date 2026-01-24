@@ -19,7 +19,7 @@ class SuggestionModel(models.Model):
     # The average rating field is not stored here, as it is computed in the
     # serializer.
 
-    external_id = models.CharField(max_length=64, unique=True)
+    external_id = models.CharField(max_length=64, unique=True, db_index=True)
     name = models.CharField(max_length=255)
     category = models.JSONField(default=list)
     tags = models.JSONField(default=list)

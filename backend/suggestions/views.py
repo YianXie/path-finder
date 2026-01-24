@@ -209,22 +209,17 @@ class PersonalizedSuggestionsView(APIView):
         user_model = get_user_model_sync(user)
         saved_items = get_saved_items_sync(user)
 
-        # Check cached suggestions
-        suggestions_cache = get_all_suggestions_cache_sync()
-        suggestion_cache = list(
-            filter(
-                lambda cache: cache["interests"] == user_model.interests
-                and cache["basic_information"] == user_model.basic_information
-                and cache["goals"] == user_model.goals
-                and cache["other_goals"] == user_model.other_goals,
-                suggestions_cache,
-            )
-        )
+        # Check cached suggestions using database query instead of loading all and filtering in Python
+        suggestion_cache = SuggestionsCacheModel.objects.filter(
+            basic_information=user_model.basic_information,
+            interests=user_model.interests,
+            goals=user_model.goals,
+            other_goals=user_model.other_goals,
+        ).first()
 
-        if suggestion_cache and len(suggestion_cache) > 0:
-            ranked_suggestions = suggestion_cache[0]["suggestions"]
+        if suggestion_cache:
+            ranked_suggestions = suggestion_cache.suggestions
 
-            pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
             pagination_data, paginator, page_obj = get_pagination_data(ranked_suggestions, page, page_size)
 
             for suggestion in pagination_data:
@@ -284,13 +279,12 @@ class PersonalizedSuggestionsView(APIView):
         completion = asyncio.run(get_completion())
         content = json.loads(completion.choices[0].message.content)
 
-        # Merge scores
+        # Merge scores - use dictionary lookup instead of nested loop for O(n) complexity
+        score_dict = {s["external_id"]: s["score"] for s in content["suggestions"][:20]}
         ranked_suggestions = []
         for s in suggestions_data:
-            for suggestion in content["suggestions"][:20]:
-                if s["external_id"] == suggestion["external_id"]:
-                    s["score"] = suggestion["score"]
-                    break
+            if s["external_id"] in score_dict:
+                s["score"] = score_dict[s["external_id"]]
             ranked_suggestions.append(s)
 
         # Add to cache
