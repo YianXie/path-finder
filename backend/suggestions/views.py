@@ -3,7 +3,6 @@ import os
 
 import rest_framework.exceptions as errors
 from asgiref.sync import sync_to_async
-from openai import AsyncOpenAI
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -282,43 +281,37 @@ class PersonalizedSuggestionsView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-        # If no cache, call OpenAI API (still async client)
+        # If no cache, call OpenAI API using synchronous client
         api_key = os.environ.get("OPENAI_API_KEY")
-        client = AsyncOpenAI(api_key=api_key)
-
-        # Use synchronous run for async OpenAI call
-        import asyncio
-
-        async def get_completion():
-            """Async wrapper to ensure client is properly closed"""
-            try:
-                return await client.chat.completions.create(
-                    model="gpt-4o-mini",
-                    messages=[
-                        {"role": "system", "content": SYSTEM_RULES},
-                        {
-                            "role": "user",
-                            "content": json.dumps(
-                                {
-                                    "basic_info": user_model.basic_information,
-                                    "interests": user_model.interests,
-                                    "goals": user_model.goals,
-                                    "additional_info": user_model.other_goals,
-                                    "suggestions": suggestions_data,
-                                }
-                            ),
-                        },
-                    ],
-                    response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
-                    timeout=20_000,
-                    temperature=0.2,
-                )
-            finally:
-                # Ensure the async client is properly closed before the event loop closes
-                # This prevents "Event loop is closed" warnings
-                await client.close()
-
-        completion = asyncio.run(get_completion())
+        from openai import OpenAI
+        
+        client = OpenAI(api_key=api_key)
+        
+        try:
+            completion = client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=[
+                    {"role": "system", "content": SYSTEM_RULES},
+                    {
+                        "role": "user",
+                        "content": json.dumps(
+                            {
+                                "basic_info": user_model.basic_information,
+                                "interests": user_model.interests,
+                                "goals": user_model.goals,
+                                "additional_info": user_model.other_goals,
+                                "suggestions": suggestions_data,
+                            }
+                        ),
+                    },
+                ],
+                response_format={"type": "json_schema", "json_schema": RANKING_SCHEMA},
+                timeout=20_000,
+                temperature=0.2,
+            )
+        finally:
+            client.close()
+            
         content = json.loads(completion.choices[0].message.content)
 
         # Merge scores - use dictionary lookup instead of nested loop for O(n) complexity
