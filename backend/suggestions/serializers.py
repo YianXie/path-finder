@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from django.db.models import Avg, Count
+from django.db.models import Avg
 
 from accounts.models import UserProfile
 from social.models import UserRating
@@ -67,7 +67,6 @@ class SuggestionSerializer(serializers.ModelSerializer):
         # Use Python-level filtering for SQLite compatibility
         # For PostgreSQL, you could use: UserProfile.objects.filter(saved_items__contains=[suggestion_id]).count()
         # However, to maintain compatibility with both SQLite and PostgreSQL:
-        from django.db.models import Q
         from django.db import connection
         
         # Check database backend
