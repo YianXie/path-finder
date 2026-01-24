@@ -269,15 +269,21 @@ class SavedItemsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        from django.db.models import Avg, Count
+        
         user = request.user
 
         try:
-            user_model = UserProfile.objects.get(user=user)
+            user_model = UserProfile.objects.select_related('user').get(user=user)
         except UserProfile.DoesNotExist:
             raise errors.ValidationError("User not found")
 
         saved_items = user_model.saved_items
-        suggestions = SuggestionModel.objects.filter(external_id__in=saved_items)
+        # Use annotations to avoid N+1 queries for ratings
+        suggestions = SuggestionModel.objects.filter(external_id__in=saved_items).annotate(
+            avg_rating=Avg('userrating__rating'),
+            rating_count=Count('userrating')
+        )
         suggestions_data = SuggestionSerializer(suggestions, many=True).data
         for suggestion in suggestions_data:
             suggestion["is_saved"] = True

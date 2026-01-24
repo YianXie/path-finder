@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from django.db.models import Avg
+from django.db.models import Avg, Count
 
 from accounts.models import UserProfile
 from social.models import UserRating
@@ -9,8 +9,9 @@ from .models import SuggestionModel
 
 
 class SuggestionSerializer(serializers.ModelSerializer):
-    # Thse fields are computed by the serializer, using the function
-    # get_average_rating
+    # These fields are computed by the serializer, using the function
+    # get_average_rating. If the view provides annotations, they will be used instead
+    # of executing additional queries
     average_rating = serializers.SerializerMethodField()
     rate_count = serializers.SerializerMethodField()
     saved_count = serializers.SerializerMethodField()
@@ -22,6 +23,11 @@ class SuggestionSerializer(serializers.ModelSerializer):
         exclude = ["embedding"]  # This uses fields = __all__, but excludes the specified
 
     def get_average_rating(self, obj):
+        # Check if the view annotated this field (performance optimization)
+        if hasattr(obj, 'avg_rating'):
+            return obj.avg_rating or 0
+        
+        # Fallback to querying (less efficient but still works)
         suggestion_id = getattr(obj, "id", None)
         if suggestion_id is None and isinstance(obj, dict):
             suggestion_id = obj.get("id")
@@ -35,6 +41,11 @@ class SuggestionSerializer(serializers.ModelSerializer):
         return 0
 
     def get_rate_count(self, obj):
+        # Check if the view annotated this field (performance optimization)
+        if hasattr(obj, 'rating_count'):
+            return obj.rating_count or 0
+        
+        # Fallback to querying (less efficient but still works)
         suggestion_id = getattr(obj, "id", None)
         if suggestion_id is None and isinstance(obj, dict):
             suggestion_id = obj.get("id")

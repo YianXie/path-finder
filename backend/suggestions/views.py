@@ -84,19 +84,37 @@ class SuggestionListView(APIView):
 
 
 def get_all_suggestions():
-    qs = SuggestionModel.objects.all().order_by("name").values()
+    """Get all suggestions with annotations for performance"""
+    from django.db.models import Avg, Count
+    
+    qs = SuggestionModel.objects.all().annotate(
+        avg_rating=Avg('userrating__rating'),
+        rating_count=Count('userrating')
+    ).order_by("name").values()
     return list(qs)
 
 
 def get_suggestions():
-    suggestions = SuggestionModel.objects.all().order_by("name")
+    """Get all suggestions with annotations for performance"""
+    from django.db.models import Avg, Count
+    
+    suggestions = SuggestionModel.objects.all().annotate(
+        avg_rating=Avg('userrating__rating'),
+        rating_count=Count('userrating')
+    ).order_by("name")
     serializer = SuggestionSerializer(suggestions, many=True)
     return serializer.data
 
 
 @sync_to_async
 def get_async_suggestions():
-    suggestions = SuggestionModel.objects.all().order_by("name")
+    """Get all suggestions with annotations for performance"""
+    from django.db.models import Avg, Count
+    
+    suggestions = SuggestionModel.objects.all().annotate(
+        avg_rating=Avg('userrating__rating'),
+        rating_count=Count('userrating')
+    ).order_by("name")
     serializer = SuggestionSerializer(suggestions, many=True)
     return serializer.data
 
@@ -316,8 +334,13 @@ class SuggestionDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, external_id):
+        from django.db.models import Avg, Count
+        
         try:
-            suggestion = SuggestionModel.objects.get(external_id=external_id)
+            suggestion = SuggestionModel.objects.annotate(
+                avg_rating=Avg('userrating__rating'),
+                rating_count=Count('userrating')
+            ).get(external_id=external_id)
             serializer = SuggestionSerializer(suggestion)
             return Response(
                 {
@@ -338,11 +361,16 @@ class SuggestionDetailWithSavedStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, external_id):
+        from django.db.models import Avg, Count
+        
         user = request.user
 
         try:
-            suggestion = SuggestionModel.objects.get(external_id=external_id)
-            user_profile = UserProfile.objects.get(user=user)
+            suggestion = SuggestionModel.objects.annotate(
+                avg_rating=Avg('userrating__rating'),
+                rating_count=Count('userrating')
+            ).get(external_id=external_id)
+            user_profile = UserProfile.objects.select_related('user').get(user=user)
             saved_items = set(user_profile.saved_items)
             is_saved = external_id in saved_items
             serializer = SuggestionSerializer(suggestion)
